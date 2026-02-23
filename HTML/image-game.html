@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Image Guessing Game</title>
+
+  <!-- Font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="image-game.css" />
+</head>
+
+<body>
+  <main class="page">
+    <section class="card">
+
+      <!-- ✅ Logo Only -->
+      <header class="header">
+        <img src="logo.png" alt="GDG Logo" class="logo-only" />
+      </header>
+
+      <!-- Title -->
+      <h1 class="title">
+        Image Guessing
+        <span class="game-word">
+          <span class="g">G</span><span class="a">a</span><span class="m">m</span><span class="e">e</span>
+        </span>
+      </h1>
+
+      <p class="subtitle">Guess the image before it becomes clear.</p>
+
+      <!-- Image Placeholder -->
+      <div class="placeholder">
+        <img src="guess.png" alt="Pixelated placeholder" class="placeholder-img" />
+        <div class="placeholder">
+  <img src="guess.png" alt="Pixelated placeholder" class="placeholder-img" />
+</div>
+      </div>
+
+      <button class="start-btn">Start Game</button>
+      <a class="return-link" href="#">Return home</a>
+
+    </section>
+  </main>
+
+  <script src="image-game.js"></script>
+</body>
+</html>
