@@ -1,0 +1,324 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+}
+
+header {
+  background-image: url('../HTML/Head.png'); 
+  background-repeat: repeat-x;
+  background-size: auto 100%;
+  height: 60px;
+  margin: 0px;
+  padding: 0px;
+}
+
+.title {
+  text-align: center;
+  margin: 50px;
+  font-weight: 400;
+  font-family: 'Noto Sans Arabic', sans-serif;
+}
+
+.levels {
+  align-items: center;
+  display: flex;
+  margin: auto;
+}
+
+.QM {
+  align-items: center;
+  display:flex;
+  flex-direction: column;
+  align-items: center;
+  margin: auto;
+  margin-right: 20px;
+  width: 200px;
+  height: 300px;
+  border-style: solid;
+  border-radius: 5px;
+  border-color:   #2CB35D;
+  border-width: 1px;
+  box-shadow: 0px 0px 10px rgba(44, 179, 93, 1);
+}
+
+
+.QM-text{
+  text-align: center;
+  margin: auto;
+  margin-top: 40px;
+  margin-bottom: 5px;
+  font-weight: bold;
+  font-size: 25px;
+  font-family: 'Noto Sans Arabic', sans-serif;
+  color: #2CB35D;
+}
+
+.QM-text2{
+  text-align: center;
+  margin: auto;
+  margin-top: 10px;
+  margin-bottom: 5px;
+  font-weight: normal;
+  font-size: 20px;
+  font-family: 'Noto Sans Arabic', sans-serif;
+  color: #2CB35D;
+}
+
+.QM-img {
+  width: 120px;
+  align-items: center;
+}
+
+.QM:hover {
+    cursor: pointer;
+    transform: scale(1.05); 
+    transition: 0.3s ease-in-out; 
+}
+
+/* إخفاء نص الوصف الافتراضي */
+.description1 {
+    opacity: 0;
+    visibility: hidden;
+    transition: 0.3s ease;
+    margin-top: 20px; /* مسافة بسيطة تحت الصورة */
+    color: #333;   /* نفس اللون الأخضر في صورتك */
+    font-size: 14px;
+    font-family: 'Noto Sans Arabic', sans-serif;
+    display: flex;
+    width: 600px;
+    align-items: center;
+}
+
+/* إظهاره عند الهوفر على الكرت */
+.QM:hover .description1 {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(-2px); /* حركة خفيفة للأعلى */
+}
+
+
+
+
+.standard {
+  align-items: center;
+  display:flex;
+  flex-direction: column;
+  align-items: center;
+  margin: auto;
+  margin-left: 20px;
+  margin-right: 20px;
+  width: 200px;
+  height: 300px;
+  border-style: solid;
+  border-radius: 5px;
+  border-color:    #007AC0;
+  border-width: 1px;
+  box-shadow: 0px 0px 10px rgba(0, 122, 192, 1);
+}
+
+
+.standard-text{
+  text-align: center;
+  margin: auto;
+  margin-top: 40px;
+  margin-bottom: 5px;
+  font-weight: bold;
+  font-size: 25px;
+  font-family: 'Noto Sans Arabic', sans-serif;
+  color:  #007AC0;
+}
+
+.standard-text2{
+  text-align: center;
+  margin: auto;
+  margin-top: 10px;
+  margin-bottom: 5px;
+  font-weight: normal;
+  font-size: 20px;
+  font-family: 'Noto Sans Arabic', sans-serif;
+  color:  #007AC0;
+}
+
+.standard-img {
+  width: 120px;
+  align-items: center;
+}
+
+.standard:hover {
+    cursor: pointer;
+    transform: scale(1.05); 
+    transition: 0.3s ease-in-out; 
+}
+
+/* إخفاء نص الوصف الافتراضي */
+.description2 {
+    opacity: 0;
+    visibility: hidden;
+    transition: 0.3s ease;
+    margin-top: 20px; /* مسافة بسيطة تحت الصورة */
+    color: #333;   /* نفس اللون الأخضر في صورتك */
+    font-size: 14px;
+    font-family: 'Noto Sans Arabic', sans-serif;
+    display: flex;
+    width: 600px;
+    align-items: center;
+}
+
+/* إظهاره عند الهوفر على الكرت */
+.standard:hover .description2 {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(-2px); /* حركة خفيفة للأعلى */
+}
+
+
+.advanced {
+  align-items: center;
+  display:flex;
+  flex-direction: column;
+  align-items: center;
+  margin: auto;
+   margin-left: 20px;
+  margin-right: 20px;
+  width: 200px;
+  height: 300px;
+  border-style: solid;
+  border-radius: 5px;
+  border-color:    #FFC10E;
+  border-width: 1px;
+  box-shadow: 0px 0px 10px rgba(255, 193, 14, 1);
+}
+
+
+.advanced-text{
+  text-align: center;
+  margin: auto;
+  margin-top: 40px;
+  margin-bottom: 5px;
+  font-weight: bold;
+  font-size: 25px;
+  font-family: 'Noto Sans Arabic', sans-serif;
+  color:  #FFC10E;
+}
+
+.advanced-text2{
+  text-align: center;
+  margin: auto;
+  margin-top: 10px;
+  margin-bottom: 5px;
+  font-weight: normal;
+  font-size: 20px;
+  font-family: 'Noto Sans Arabic', sans-serif;
+  color:  #FFC10E;
+}
+
+.advanced-img {
+  width: 120px;
+  align-items: center;
+}
+
+.advanced:hover {
+    cursor: pointer;
+    transform: scale(1.05); 
+    transition: 0.3s ease-in-out; 
+}
+
+/* إخفاء نص الوصف الافتراضي */
+.description3 {
+    opacity: 0;
+    visibility: hidden;
+    transition: 0.3s ease;
+    margin-top: 20px; /* مسافة بسيطة تحت الصورة */
+    color: #333;   /* نفس اللون الأخضر في صورتك */
+    font-size: 14px;
+    font-family: 'Noto Sans Arabic', sans-serif;
+    display: flex;
+    width: 600px;
+    align-items: center;
+}
+
+/* إظهاره عند الهوفر على الكرت */
+.advanced:hover .description3 {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(-2px); /* حركة خفيفة للأعلى */
+}
+
+
+
+.expert {
+  align-items: center;
+  display:flex;
+  flex-direction: column;
+  align-items: center;
+  margin: auto;
+  margin-left: 20px;
+  width: 200px;
+  height: 300px;
+  border-style: solid;
+  border-radius: 5px;
+  border-color:     #EE4032;
+  border-width: 1px;
+  box-shadow: 0px 0px 10px rgba(283, 64, 50, 1);
+}
+
+
+.expert-text{
+  text-align: center;
+  margin: auto;
+  margin-top: 40px;
+  margin-bottom: 5px;
+  font-weight: bold;
+  font-size: 25px;
+  font-family: 'Noto Sans Arabic', sans-serif;
+  color:    #EE4032;
+}
+
+.expert-text2{
+  text-align: center;
+  margin: auto;
+  margin-top: 10px;
+  margin-bottom: 5px;
+  font-weight: normal;
+  font-size: 20px;
+  font-family: 'Noto Sans Arabic', sans-serif;
+  color:   #EE4032;
+}
+
+.expert-img {
+  width: 120px;
+  align-items: center;
+}
+
+.expert:hover {
+    cursor: pointer;
+    transform: scale(1.05); 
+    transition: 0.3s ease-in-out; 
+}
+
+/* إخفاء نص الوصف الافتراضي */
+.description4 {
+    opacity: 0;
+    visibility: hidden;
+    transition: 0.3s ease;
+    margin-top: 20px; /* مسافة بسيطة تحت الصورة */
+    color: #333;   /* نفس اللون الأخضر في صورتك */
+    font-size: 14px;
+    font-family: 'Noto Sans Arabic', sans-serif;
+    display: flex;
+    width: 600px;
+    align-items: center;
+}
+
+/* إظهاره عند الهوفر على الكرت */
+.expert:hover .description4 {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(-2px); /* حركة خفيفة للأعلى */
+}
