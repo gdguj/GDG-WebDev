@@ -20,7 +20,7 @@ header {
 
 .title {
   text-align: center;
-  margin: 50px;
+  margin: 40px;
   font-weight: 400;
   font-family: 'Noto Sans Arabic', sans-serif;
 }
@@ -82,28 +82,6 @@ header {
 }
 
 
-.description1 {
-    opacity: 0;
-    visibility: hidden;
-    transition: 0.3s ease;
-    margin-top: 20px; 
-    color: #333;  
-    font-size: 14px;
-    font-family: 'Noto Sans Arabic', sans-serif;
-    display: flex;
-    width: 600px;
-    align-items: center;
-}
-
-
-.QM:hover .description1 {
-    opacity: 1;
-    visibility: visible;
-    transform: translateY(-2px); 
-}
-
-
-
 
 .standard {
   align-items: center;
@@ -157,25 +135,7 @@ header {
 }
 
 
-.description2 {
-    opacity: 0;
-    visibility: hidden;
-    transition: 0.3s ease;
-    margin-top: 20px; 
-    color: #333;   
-    font-size: 14px;
-    font-family: 'Noto Sans Arabic', sans-serif;
-    display: flex;
-    width: 600px;
-    align-items: center;
-}
 
-
-.standard:hover .description2 {
-    opacity: 1;
-    visibility: visible;
-    transform: translateY(-2px); 
-}
 
 
 .advanced {
@@ -227,27 +187,6 @@ header {
     cursor: pointer;
     transform: scale(1.05); 
     transition: 0.3s ease-in-out; 
-}
-
-
-.description3 {
-    opacity: 0;
-    visibility: hidden;
-    transition: 0.3s ease;
-    margin-top: 20px; 
-    color: #333; 
-    font-size: 14px;
-    font-family: 'Noto Sans Arabic', sans-serif;
-    display: flex;
-    width: 600px;
-    align-items: center;
-}
-
-
-.advanced:hover .description3 {
-    opacity: 1;
-    visibility: visible;
-    transform: translateY(-2px); 
 }
 
 
@@ -303,22 +242,53 @@ header {
 }
 
 
-.description4 {
+.description1, .description2, .description3, .description4 {
+    position: fixed;
+    left: 50%;
+    bottom: 70px;
+    transform: translateX(-50%);  
+    width: max-content;
     opacity: 0;
     visibility: hidden;
-    transition: 0.3s ease;
-    margin-top: 20px; 
-    color: #333; 
-    font-size: 14px;
+    transition: opacity 0.3s ease; 
+    color: #333;
+    font-size: 18px;
     font-family: 'Noto Sans Arabic', sans-serif;
-    display: flex;
-    width: 600px;
-    align-items: center;
+    z-index: 9999;
+    pointer-events: none;
+    text-align: center;
 }
 
 
-.expert:hover .description4 {
+.QM:hover + .description1,
+.standard:hover + .description2,
+.advanced:hover + .description3,
+.expert:hover + .description4 {
     opacity: 1;
     visibility: visible;
-    transform: translateY(-2px);
+}
+
+.playbutton {
+  background-color: #007AC0;
+  width: 200px;
+  height: 40px;
+  margin: auto;
+  align-items: center;
+  margin-top: 60px;
+  border-radius: 15px;
+}
+
+.button {
+  color: #FFFFFF;
+  text-align: center;
+  font-weight: bold;
+  font-size: larger;
+  font-family: 'Noto Sans Arabic', sans-serif;
+  margin: auto;
+}
+
+.playbutton:hover {
+  cursor: pointer;
+  transform: scale(1.05); 
+  transition: 0.3s ease-in-out; 
 }
