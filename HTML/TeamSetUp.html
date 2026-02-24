@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+  
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Set Up Your Teams</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="..//CSS/SetUpTeam.css">
+</head>
+<body>
+
+  <!-- Top Banner Image -->
+  <div class="banner">
+    <img src="top_pattren.png" alt=" Banner" id="banner-img">
+    <div class="banner-placeholder" id="banner-placeholder">
+      <span></span>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="page">
+    <h1>Set Up Your Teams</h1>
+
+    <div class="teams-container">
+
+      <!-- GREEN TEAM -->
+      <div class="team-card green" id="team-green">
+        <div class="team-title">Green Team</div>
+        <input class="team-name-input" type="text" placeholder="Type your team name..." id="name-green" maxlength="30">
+        <div class="add-row">
+          <input class="member-count" type="number" id="count-green" value="1" min="1" max="20">
+          <span>Members</span>
+          <button class="btn-add" onclick="addMembers('green')">Add</button>
+        </div>
+        <ul class="member-list" id="list-green"></ul>
+      </div>
+
+      <!-- BLUE TEAM -->
+      <div class="team-card blue" id="team-blue">
+        <div class="team-title">Blue Team</div>
+        <input class="team-name-input" type="text" placeholder="Type your team name..." id="name-blue" maxlength="30">
+        <div class="add-row">
+          <input class="member-count" type="number" id="count-blue" value="1" min="1" max="20">
+          <span>Members</span>
+          <button class="btn-add" onclick="addMembers('blue')">Add</button>
+        </div>
+        <ul class="member-list" id="list-blue"></ul>
+      </div>
+
+    </div>
+
+    <p class="validation-note" id="val-note">*Minimum 1 member per team required</p>
+  </div>
+
+  <!-- Footer -->
+  <div class="footer">
+    <button class="btn-next" onclick="handleNext()">
+      Next
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="9 18 15 12 9 6"/>
+      </svg>
+    </button>
+  </div>
+
+  <!-- Success Overlay -->
+  <div class="success-overlay" id="success-overlay">
+    <div class="success-box">
+      <h2>Teams Ready!</h2>
+      <p>Both teams are set up and ready to play.</p>
+      <button onclick="document.getElementById('success-overlay').classList.remove('show')">Continue</button>
+    </div>
+  </div>
+
+  <script src="../JS/SetUpTeam.js"></script>
+</body>
+</html>

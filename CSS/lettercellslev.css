@@ -81,13 +81,13 @@ header {
     transition: 0.3s ease-in-out; 
 }
 
-/* إخفاء نص الوصف الافتراضي */
+
 .description1 {
     opacity: 0;
     visibility: hidden;
     transition: 0.3s ease;
-    margin-top: 20px; /* مسافة بسيطة تحت الصورة */
-    color: #333;   /* نفس اللون الأخضر في صورتك */
+    margin-top: 20px; 
+    color: #333;  
     font-size: 14px;
     font-family: 'Noto Sans Arabic', sans-serif;
     display: flex;
@@ -95,11 +95,11 @@ header {
     align-items: center;
 }
 
-/* إظهاره عند الهوفر على الكرت */
+
 .QM:hover .description1 {
     opacity: 1;
     visibility: visible;
-    transform: translateY(-2px); /* حركة خفيفة للأعلى */
+    transform: translateY(-2px); 
 }
 
 
@@ -156,13 +156,13 @@ header {
     transition: 0.3s ease-in-out; 
 }
 
-/* إخفاء نص الوصف الافتراضي */
+
 .description2 {
     opacity: 0;
     visibility: hidden;
     transition: 0.3s ease;
-    margin-top: 20px; /* مسافة بسيطة تحت الصورة */
-    color: #333;   /* نفس اللون الأخضر في صورتك */
+    margin-top: 20px; 
+    color: #333;   
     font-size: 14px;
     font-family: 'Noto Sans Arabic', sans-serif;
     display: flex;
@@ -170,11 +170,11 @@ header {
     align-items: center;
 }
 
-/* إظهاره عند الهوفر على الكرت */
+
 .standard:hover .description2 {
     opacity: 1;
     visibility: visible;
-    transform: translateY(-2px); /* حركة خفيفة للأعلى */
+    transform: translateY(-2px); 
 }
 
 
@@ -229,13 +229,13 @@ header {
     transition: 0.3s ease-in-out; 
 }
 
-/* إخفاء نص الوصف الافتراضي */
+
 .description3 {
     opacity: 0;
     visibility: hidden;
     transition: 0.3s ease;
-    margin-top: 20px; /* مسافة بسيطة تحت الصورة */
-    color: #333;   /* نفس اللون الأخضر في صورتك */
+    margin-top: 20px; 
+    color: #333; 
     font-size: 14px;
     font-family: 'Noto Sans Arabic', sans-serif;
     display: flex;
@@ -243,11 +243,11 @@ header {
     align-items: center;
 }
 
-/* إظهاره عند الهوفر على الكرت */
+
 .advanced:hover .description3 {
     opacity: 1;
     visibility: visible;
-    transform: translateY(-2px); /* حركة خفيفة للأعلى */
+    transform: translateY(-2px); 
 }
 
 
@@ -302,13 +302,13 @@ header {
     transition: 0.3s ease-in-out; 
 }
 
-/* إخفاء نص الوصف الافتراضي */
+
 .description4 {
     opacity: 0;
     visibility: hidden;
     transition: 0.3s ease;
-    margin-top: 20px; /* مسافة بسيطة تحت الصورة */
-    color: #333;   /* نفس اللون الأخضر في صورتك */
+    margin-top: 20px; 
+    color: #333; 
     font-size: 14px;
     font-family: 'Noto Sans Arabic', sans-serif;
     display: flex;
@@ -316,9 +316,9 @@ header {
     align-items: center;
 }
 
-/* إظهاره عند الهوفر على الكرت */
+
 .expert:hover .description4 {
     opacity: 1;
     visibility: visible;
-    transform: translateY(-2px); /* حركة خفيفة للأعلى */
+    transform: translateY(-2px);
 }
