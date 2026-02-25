@@ -8,9 +8,10 @@ body{
 .decorations{
   height: 60px;
   width: 100%;
-  position: fixed;
-  bottom: 0;
-  left: 0;
+  position: static;
+  display: flex;
+  justify-content: space-between;
+  margin-top: 65px;
   background-image: url(../Images/google-themed.png);
   background-size: 30% 100px;
   background-repeat: repeat-x;
@@ -24,9 +25,8 @@ button{
 .buttons{
   height: 95px;
   width: 100%;
-  position: fixed;
-  bottom: 95px;
-  left: 0;
+  position: static;
+  margin-top: 70px;
   display: flex;
   justify-content: center;
   align-items: flex-end;
@@ -75,7 +75,8 @@ button{
   width:100px;
   text-align: center;
   margin: 0 auto;
-  margin-bottom: 20px;
+  margin-bottom: 30px;
+  margin-top: 10px;
 }
 
 .google-logo{
