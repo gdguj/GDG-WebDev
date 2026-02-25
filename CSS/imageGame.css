@@ -31,8 +31,8 @@ body {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  padding-bottom: 100px;
+
+
 }
 
 
@@ -42,7 +42,7 @@ body {
   background: #fff;
   border-bottom: 1.5px solid var(--light-gray);
   padding: 14px 32px 14px;
-  position: sticky;
+  position: static;
   top: 0;
   z-index: 10;
   box-shadow: 0 1px 6px rgba(0,0,0,.05);
@@ -109,6 +109,7 @@ body {
   flex-direction: column;
   align-items: center;
   gap: 24px;
+  margin: 0 auto;
 }
 
 
@@ -292,9 +293,7 @@ body {
 }
 /* ── TEAM SCORE BARS ── */
 .teams-bar {
-  position: fixed;
-  bottom: 0;
-  left: 0;
+  position: static;
   width: 100%;
   display: flex;
   justify-content: space-between;

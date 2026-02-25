@@ -8,8 +8,8 @@
 body {
   background-color: #ffffff;
   min-height: 100vh;
-  display: flex;
-  justify-content: center;
+  display: block;
+  justify-content: flex-start;
   align-items: center;
 }
 
@@ -25,16 +25,17 @@ body {
 .panel {
   width: 100%;
   text-align: center;
-  position: relative;
   padding-top: 60px;
+  max-width: 1100px;
+  margin: 0 auto;
 }
 
 /* Corner Decorations */
 .corner {
-  position: fixed;
+  position: absolute;
   width: 200px;
   pointer-events: none;
-  z-index: 100;
+  z-index: 1;
 }
 
 .corner-left {
@@ -50,8 +51,10 @@ body {
 
 /* GDG Icon */
 .gdg-icon {
-  width: 70px;
+  width: 110px;
   margin-bottom: 15px;
+  display: block;
+  margin: 0 auto 15px;
 }
 
 /* Title */
