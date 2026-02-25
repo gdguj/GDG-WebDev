@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Guess the Word</title>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet"/>
+  <link rel="stylesheet" href="../../CSS/imageGame.css"/>
+</head>
+<body>
+
+  <div class="topbar">
+    <div class="topbar-row">
+      <div class="timer-label">Time Remaining &nbsp;⏳</div>
+      <div class="active-team-badge" id="active-team-badge">🔵 Team A's Turn</div>
+    </div>
+
+    <div class="bar-track">
+      <div class="bar-fill" id="bar"></div>
+    </div>
+  </div>
+
+  <div class="content">
+    <!-- 🔮 AI INTEGRATION: pic1 & pic2 will become <img> tags when AI is connected -->
+    <div class="question-card" id="qcard">
+      <span class="pic" id="pic1">☕</span>
+      <span class="plus">+</span>
+      <span class="pic" id="pic2">📜</span>
+    </div>
+
+    <div class="input-row" id="input-row">
+      <input id="answer" type="text" placeholder="type your answer..." autocomplete="off"/>
+      <button class="hint-btn" id="hint-btn" onclick="openHint()">
+        💡 Use Hint (<span id="hcount">0</span>/3)
+      </button>
+    </div>
+
+    <div class="feedback" id="feedback"></div>
+
+    <!-- Submit button: blue for Team A, green for Team B -->
+    <button class="submit-btn" id="submit-btn" onclick="check()">Submit</button>
+
+  </div>
+
+  <div class="teams-bar">
+  <div class="team-card team-a" id="team-a-card">
+    <span class="t-name">Team A</span>
+    <span class="t-divider"></span>
+    <span class="t-score" id="score-a">0</span>
+  </div>
+
+  <div class="team-card team-b" id="team-b-card">
+    <span class="t-name">Team B</span>
+    <span class="t-divider"></span>
+    <span class="t-score" id="score-b">0</span>
+  </div>
+</div>
+
+  </div>
+
+  <div class="overlay" id="overlay" onclick="closeHint(event)">
+    <div class="modal">
+      <div class="modal-head">
+        <span style="font-size:2rem">💡</span>
+        <span class="modal-title">Hint!</span>
+      </div>
+      <div class="modal-body">
+        <!--  AI INTEGRATION: hint text will come from AI question object (q.hint) -->
+        <div class="hint-box" id="hint-text">...</div>
+      </div>
+      <div class="modal-foot">
+        <button class="got-it-btn" onclick="closeHint()">Got it</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+  <div class="confetti-wrap" id="cwrap"></div>
+  <script src="../../JS/imageGame.js"></script>
+</body>
+</html>

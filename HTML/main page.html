@@ -12,6 +12,39 @@
         body {
             font-family: 'Cairo', sans-serif;
         }
+
+        .flip-card {
+            perspective: 1000px;
+        }
+
+        .flip-card-inner {
+            position: relative;
+            width: 100%;
+            height: 250px;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+        }
+
+        .flip-card:hover .flip-card-inner {
+            transform: rotateY(180deg);
+        }
+
+        .flip-card-front,
+        .flip-card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 1rem;
+        }
+
+        .flip-card-back {
+            transform: rotateY(180deg);
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
     </style>
 </head>
 
@@ -26,22 +59,24 @@
 
             <!-- Links -->
             <div class="hidden md:flex items-center gap-8 font-semibold text-gray-600">
-                <a href="#main" class="hover:text-[#0078BF]">الرئيسية</a>
+                <a href="#hero" class="hover:text-[#0078BF]">الرئيسية</a>
                 <a href="#about" class="hover:text-[#0078BF]">من نحن</a>
                 <a href="#goals" class="hover:text-[#0078BF]">أهدافنا</a>
                 <a href="#games" class="hover:text-[#0078BF]">الألعاب</a>
             </div>
 
             <!-- Button -->
-            <button class="bg-[#0078BF] text-white px-6 py-2 rounded-full font-semibold hover:bg-[#086AA4] transition">
+            <a href="#games"
+                class="bg-[#0078BF] text-white px-6 py-2 rounded-full font-semibold hover:bg-[#086AA4] transition inline-block">
                 ابدأ اللعب!
-            </button>
+            </a>
+
         </div>
     </nav>
 
 
     <!-- ================= HERO ================= -->
-    <section id = "main" class="text-center py-20 px-6">
+    <section id="hero" class="text-center py-20 px-6">
         <div class="max-w-3xl mx-auto">
 
             <img src="../Images/google-developer-group.png" class="h-24 mx-auto mb-6">
@@ -82,7 +117,7 @@
 
 
     <!-- ================= ABOUT ================= -->
-    <section id = "about" class="py-20 px-6 md:px-12 lg:px-20 bg-white">
+    <section id="about" class="py-20 px-6 md:px-12 lg:px-20 bg-white">
         <div class="max-w-6xl mx-auto grid md:grid-cols-2 gap-12 items-center">
 
             <!-- Text -->
@@ -106,42 +141,58 @@
 
 
     <!-- ================= GOALS ================= -->
-    <section id = "goals" class="bg-gray-50 py-20 px-6">
+    <section id="goals" class="bg-gray-50 py-20 px-6">
         <div class="text-center mb-12">
             <h2 class="text-3xl font-bold mb-6">أهدافنا ورؤيتنا</h2>
             <p class="text-gray-500">نحن هنا لنمكنك من الوصول إلى أقصى إمكاناتك من خلال توفير البيئة والأدوات المناسبة.
             </p>
         </div>
 
-        <div class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-6 text-center">
-            <div class="bg-yellow-50 p-8 rounded-2xl border border-yellow-100">
-                <div class="text-yellow-500 text-3xl mb-4">💡</div>
-                <h3 class="font-bold mb-2">تعلم</h3>
-                <p class="text-sm text-gray-600">اكتساب مهارات جديدة من خلال ورش العمل والجلسات التدريبية المباشرة.</p>
-            </div>
-            <div class="bg-red-50 p-8 rounded-2xl border border-red-100">
-                <div class="text-red-500 text-3xl mb-4">👥</div>
-                <h3 class="font-bold mb-2">تواصل</h3>
-                <p class="text-sm text-gray-600">بناء شبكة علاقات مع طلاب ومحترفين في مجال التقنية من جميع أنحاء العالم.
+        <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-8 text-center">
+
+            <div
+                class="bg-yellow-50 p-10 rounded-3xl border border-yellow-100 shadow-md hover:shadow-xl transition duration-300">
+                <div class="text-yellow-500 text-5xl mb-6">💡</div>
+                <h3 class="font-bold text-xl mb-3">تعلم</h3>
+                <p class="text-base text-gray-600">
+                    اكتساب مهارات جديدة من خلال ورش العمل والجلسات التدريبية المباشرة.
                 </p>
             </div>
-            <div class="bg-blue-50 p-8 rounded-2xl border border-blue-100">
-                <div class="text-blue-500 text-3xl mb-4"> { } </div>
-                <h3 class="font-bold mb-2">تطور</h3>
-                <p class="text-sm text-gray-600">تطبيق ما تعلمته لبناء حلول تقنية حقيقية تخدم المجتمع المحلي والعالمي.
+
+            <div
+                class="bg-red-50 p-10 rounded-3xl border border-red-100 shadow-md hover:shadow-xl transition duration-300">
+                <div class="text-red-500 text-5xl mb-6">👥</div>
+                <h3 class="font-bold text-xl mb-3">تواصل</h3>
+                <p class="text-base text-gray-600">
+                    بناء شبكة علاقات مع طلاب ومحترفين في مجال التقنية من جميع أنحاء العالم.
                 </p>
             </div>
-            <div class="bg-green-50 p-8 rounded-2xl border border-green-100">
-                <div class="text-green-500 text-3xl mb-4">🚀</div>
-                <h3 class="font-bold mb-2">ابتكر</h3>
-                <p class="text-sm text-gray-600">تحويل الأفكار الإبداعية إلى مشاريع ريادية وتقنية ناجحة.</p>
+
+            <div
+                class="bg-blue-50 p-10 rounded-3xl border border-blue-100 shadow-md hover:shadow-xl transition duration-300">
+                <div class="text-blue-500 text-5xl mb-6">{ }</div>
+                <h3 class="font-bold text-xl mb-3">تطور</h3>
+                <p class="text-base text-gray-600">
+                    تطبيق ما تعلمته لبناء حلول تقنية حقيقية تخدم المجتمع المحلي والعالمي.
+                </p>
             </div>
+
+            <div
+                class="bg-green-50 p-10 rounded-3xl border border-green-100 shadow-md hover:shadow-xl transition duration-300">
+                <div class="text-green-500 text-5xl mb-6">🚀</div>
+                <h3 class="font-bold text-xl mb-3">ابتكر</h3>
+                <p class="text-base text-gray-600">
+                    تحويل الأفكار الإبداعية إلى مشاريع ريادية وتقنية ناجحة.
+                </p>
+            </div>
+
         </div>
+
     </section>
 
 
     <!-- ================= GAMES ================= -->
-    <section id = "games" class="py-20 px-6 bg-white">
+    <section id="games" class="py-20 px-6 bg-white">
         <div class="max-w-6xl mx-auto text-center">
 
             <h2 class="text-3xl font-bold mb-12">الألعاب</h2>
@@ -149,24 +200,89 @@
             <div class="grid md:grid-cols-3 gap-10">
 
                 <!-- Game Card -->
-                <div
-                    class="bg-white p-10 rounded-xl shadow-lg border border-gray-100 text-center hover:-translate-y-2 transition-transform">
-                    <img src="../Images/letters-game.png" class="h-20 mx-auto mb-6">
-                    <h3 class="font-bold text-lg">لعبة الحروف</h3>
+                <div class="flip-card">
+                    <div class="flip-card-inner">
+
+                        <!-- Front -->
+                        <div
+                            class="flip-card-front bg-white p-10 rounded-xl shadow-lg border border-gray-100 text-center flex flex-col justify-center">
+                            <img src="/Images/letters-game.png" class="h-20 mx-auto mb-6">
+                            <h3 class="font-bold text-lg">لعبة الحروف</h3>
+                        </div>
+
+                        <!-- Back -->
+                        <div
+                            class="flip-card-back bg-[#0078BF] text-white p-6 rounded-xl shadow-lg flex flex-col justify-center items-center text-center space-y-6">
+                            <p>
+                                شبكة حروف تحتوي على أسئلة مرتبطة بكل حرف. كوّن مسارًا متصلًا بالإجابات الصحيحة للفوز!
+                            </p>
+
+                            <button
+                                class="bg-white text-[#0078BF] font-semibold px-6 py-2 rounded-lg hover:bg-gray-100 transition">
+                                اخترني
+                            </button>
+                        </div>
+
+                    </div>
                 </div>
 
-                <!-- Game Card -->
-                <div
-                    class="bg-white p-10 rounded-xl shadow-lg border border-gray-100 text-center hover:-translate-y-2 transition-transform">
-                    <img src="../Images/image-game.png" class="h-16 mx-auto mb-6">
-                    <h3 class="font-bold text-lg">لعبة الصور</h3>
-                </div>
 
                 <!-- Game Card -->
-                <div
-                    class="bg-white p-10 rounded-xl shadow-lg border border-gray-100 text-center hover:-translate-y-2 transition-transform">
-                    <img src="../Images/family-feud.png" class="h-16 mx-auto mb-6">
-                    <h3 class="font-bold text-lg">لعبة Family Feud</h3>
+                <div class="flip-card">
+                    <div class="flip-card-inner">
+
+                        <!-- Front -->
+                        <div
+                            class="flip-card-front bg-white p-10 rounded-xl shadow-lg border border-gray-100 text-center flex flex-col justify-center">
+                            <img src="/Images/image-game.png" class="h-16 mx-auto mb-6">
+                            <h3 class="font-bold text-lg">لعبة الصور</h3>
+                        </div>
+
+                        <!-- Back -->
+                        <div
+                            class="flip-card-back bg-[#0078BF] text-white p-6 rounded-xl shadow-lg flex flex-col justify-center items-center text-center space-y-6">
+                            <p>
+                                تظهر عدة صور وعلى اللاعبين تخمين الكلمة أو الجملة التي تمثلها. أسرع إجابة صحيحة تكسب
+                                نقطة!
+                            </p>
+
+                            <button
+                                class="bg-white text-[#0078BF] font-semibold px-6 py-2 rounded-lg hover:bg-gray-100 transition">
+                                اخترني
+                            </button>
+                        </div>
+
+                    </div>
+                </div>
+
+
+                <!-- Game Card -->
+                <div class="flip-card">
+                    <div class="flip-card-inner">
+
+                        <!-- Front -->
+                        <div
+                            class="flip-card-front bg-white p-10 rounded-xl shadow-lg border border-gray-100 text-center flex flex-col justify-center">
+                            <img src="/Images/family-feud.png" class="h-16 mx-auto mb-6">
+                            <h3 class="font-bold text-lg">لعبة Family Feud</h3>
+                        </div>
+
+                        <!-- Back -->
+                        <div
+                            class="flip-card-back bg-[#0078BF] text-white p-6 rounded-xl shadow-lg flex flex-col justify-center items-center text-center space-y-6">
+                            <p>
+                                لعبة استبيانية ممتعة تعتمد على تخمين الإجابات الأكثر شيوعًا بين الناس. كلما كانت إجابتك
+                                أكثر انتشارًا بين المشاركين، حصلت على نقاط أعلى!
+                            </p>
+
+                            <button
+                                class="bg-white text-[#0078BF] font-semibold px-6 py-2 rounded-lg hover:bg-gray-100 transition">
+                                اخترني
+                            </button>
+
+                        </div>
+
+                    </div>
                 </div>
 
             </div>
@@ -192,7 +308,7 @@
             <div>
                 <h4 class="font-bold mb-4">روابط سريعة</h4>
                 <ul class="space-y-2 text-sm">
-                    <li><a href="#main">الرئيسية</a></li>
+                    <li><a href="#hero">الرئيسية</a></li>
                     <li><a href="#about">من نحن</a></li>
                     <li><a href="#goals">أهدافنا</a></li>
                     <li><a href="#games">الألعاب</a></li>
@@ -203,10 +319,12 @@
             <div>
                 <h4 class="font-bold mb-4">تواصل معنا</h4>
                 <div class="flex gap-6 text-xl">
-                    <a href="https://x.com/GDGUOJ/with_replies" class="hover:scale-110 hover:text-white transition duration-300">
+                    <a href="https://linktr.ee/gdsc_uj?utm_source=linktree_profile_share&ltsid=d7e3dc46-128e-42e3-ae37-41c4b5a65285"
+                        target="_blank" class="hover:scale-110 hover:text-white transition duration-300">
                         <i class="fa-brands fa-x-twitter"></i>
                     </a>
-                    <a href="https://www.linkedin.com/company/google-developer-student-club-uj/posts/?feedView=all" class="hover:scale-110 hover:text-blue-400 transition duration-300">
+                    <a href="https://linktr.ee/gdsc_uj?utm_source=linktree_profile_share&ltsid=d7e3dc46-128e-42e3-ae37-41c4b5a65285"
+                        target="_blank" class="hover:scale-110 hover:text-blue-400 transition duration-300">
                         <i class="fa-brands fa-linkedin"></i>
                     </a>
                 </div>

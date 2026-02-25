@@ -1,5 +1,5 @@
 body{
-  font-family: 'Poppins', sans-serif;
+  font-family: 'Poppins', sans-serif !important;
   font-size: 18px;
   margin: 0;
 }
@@ -7,21 +7,25 @@ body{
 .decorations{
   height: 60px;
   width: 100%;
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  background-image: url(google-themed.png);
+  position: static;
+  display: flex;
+  justify-content: space-between;
+  margin-top: 65px;
+  background-image: url(../Images/google-themed.png);
   background-size: 30% 100px;
   background-repeat: repeat-x;
   background-position: 0 -35px;
 }
 
+button{
+  border:2px solid #414042;
+}
+
 .buttons{
   height: 95px;
   width: 100%;
-  position: fixed;
-  bottom: 95px;
-  left: 0;
+  position: static;
+  margin-top: 70px;
   display: flex;
   justify-content: center;
   align-items: flex-end;
@@ -70,7 +74,8 @@ body{
   width:100px;
   text-align: center;
   margin: 0 auto;
-  margin-bottom: 20px;
+  margin-bottom: 30px;
+  margin-top: 10px;
 }
 
 .google-logo{
@@ -94,6 +99,7 @@ body{
 .header{
   text-align: center;
   font-size: 25px;
+  font-weight: 700;
 }
 
 .blue{color:#007ac0;}
@@ -108,6 +114,7 @@ body{
   font-size: 55px;
   position: relative;
   bottom: 25px;
+  font-weight: 700;
 }
 
 .divider{
@@ -131,6 +138,7 @@ body{
 .game-stat{
   color: grey;
   margin-top:0;
+  font-weight: 600;
 }
 
 .info{
@@ -139,7 +147,7 @@ body{
 
 .stat{
   color: gray;
-  font-weight: bold;
+  font-weight: 600;
 }
 
 .center-block{

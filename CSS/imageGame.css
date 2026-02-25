@@ -1,0 +1,535 @@
+:root {
+  --blue:        #007AC0;
+  --blue-hover:  #005f96;
+  --blue-light:  #e8f4fc;
+
+  --yellow:      #FFC10E;
+  --yellow-hover:#d4a00b;
+
+  --green:       #2CB35D;
+  --green-hover: #1f8a46;
+  --green-light: #e8f9ee;
+
+  --red:         #EE4032;
+
+  --dark:        #414042;
+  --light-gray:  #E6E7E7;
+  --bg:          #f5f6f7;
+}
+
+
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+
+body {
+  font-family: 'Nunito', sans-serif;
+  background: var(--bg);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-bottom: 100px;
+}
+
+
+/* TOP BAR */
+.topbar {
+  width: 100%;
+  background: #fff;
+  border-bottom: 1.5px solid var(--light-gray);
+  padding: 14px 32px 14px;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  box-shadow: 0 1px 6px rgba(0,0,0,.05);
+}
+
+.topbar-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.timer-label {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--dark);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Active team badge shown in top-right */
+.active-team-badge {
+  font-size: 1rem;
+  font-weight: 800;
+  padding: 4px 14px;
+  border-radius: 20px;
+  background: var(--blue-light);
+  color: var(--blue);
+  transition: background 0.3s, color 0.3s;
+}
+
+.active-team-badge.team-b-turn {
+  background: var(--green-light);
+  color: var(--green);
+}
+
+.bar-track {
+  width: 100%;
+  height: 8px;
+  background: var(--light-gray);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.bar-fill {
+  height: 100%;
+  width: 100%;
+  background: var(--yellow);
+  border-radius: 4px;
+  transition: width 1s linear, background 0.4s ease;
+}
+
+/* Red timer warning — JS adds this class when timeLeft <= 3 */
+.bar-fill.danger {
+  background: var(--red);
+}
+
+.content {
+  width: 100%;
+  max-width: 760px;
+  padding: 40px 20px 50px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+}
+
+
+.question-card {
+  width: 100%;
+  background: #fff;
+  border: 1.5px solid var(--light-gray);
+  border-radius: 16px;
+  padding: 52px 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 40px;
+  min-height: 245px;
+  box-shadow: 0 1px 8px rgba(0,0,0,.05);
+  transition: border-color 0.3s, background 0.3s;
+}
+
+.question-card.flash-correct {
+  animation: aCorrect .55s ease forwards;
+}
+
+.question-card.flash-wrong {
+  animation: aWrong .4s ease;
+}
+
+@keyframes aCorrect {
+  0%   { background: #fff; }
+  40%  { background: #e8f9ee; border-color: var(--green); }
+  100% { background: #fff; }
+}
+
+@keyframes aWrong {
+  0%, 100% { background: #fff; }
+  40%      { background: #fdecea; border-color: var(--red); }
+}
+
+/* "Time's up" state — shown when timer runs out before answer */
+.question-card.times-up {
+  animation: aTimesUp .5s ease forwards;
+}
+
+@keyframes aTimesUp {
+  0%   { background: #fff; }
+  40%  { background: #fff3cd; border-color: var(--yellow); }
+  100% { background: #fff; }
+}
+
+.pic {
+  font-size: 8rem;
+  line-height: 1;
+  user-select: none;
+}
+
+.plus {
+  font-size: 3rem;
+  font-weight: 900;
+  color: var(--dark);
+  user-select: none;
+}
+
+
+/* INPUT ROW */
+.input-row {
+  width: 100%;
+  display: flex;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1.5px solid var(--light-gray);
+  background: #fff;
+  box-shadow: 0 1px 6px rgba(0,0,0,.04);
+  transition: border-color .2s;
+}
+
+.input-row:focus-within {
+  border-color: var(--blue);
+}
+
+/* Green border when Team B is active */
+.input-row.team-b-active:focus-within {
+  border-color: var(--green);
+}
+
+.input-row.wrong-border {
+  border-color: var(--red) !important;
+}
+
+#answer {
+  flex: 1;
+  border: none;
+  outline: none;
+  padding: 15px 20px;
+  font-size: 1rem;
+  font-family: 'Nunito', sans-serif;
+  font-weight: 600;
+  color: var(--dark);
+  background: transparent;
+}
+
+#answer::placeholder {
+  color: #b0bec5;
+  font-weight: 400;
+}
+
+/* Hint button — matches active team color */
+.hint-btn {
+  background: var(--yellow);
+  border: none;
+  color: #fff;
+  padding: 0 22px;
+  font-size: .9rem;
+  font-family: 'Nunito', sans-serif;
+  font-weight: 800;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  white-space: nowrap;
+  transition: background .18s, opacity .18s;
+}
+
+.hint-btn:hover {
+  background: var(--yellow-hover);
+}
+
+.hint-btn.used {
+  opacity: .5;
+  cursor: default;
+  pointer-events: none;
+}
+
+
+/* FEEDBACK LINE */
+.feedback {
+  font-size: .95rem;
+  font-weight: 800;
+  min-height: 22px;
+  align-self: flex-start;
+  color: transparent;
+  transition: color .15s;
+}
+
+.feedback.wrong   { color: var(--red); }
+.feedback.correct { color: var(--green); }
+.feedback.skipped { color: var(--yellow); }
+
+
+/* SUBMIT BUTTON */
+.submit-btn {
+  background: var(--blue);
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  padding: 15px 72px;
+  font-size: 1.15rem;
+  font-family: 'Nunito', sans-serif;
+  font-weight: 900;
+  cursor: pointer;
+  box-shadow: 0 3px 14px rgba(0,122,192,.28);
+  transition: background .2s, transform .12s, box-shadow .2s, opacity .3s;
+}
+
+.submit-btn:hover {
+  background: var(--blue-hover);
+  transform: translateY(-1px);
+}
+
+/* Team B variant — JS adds this class when activeTeam === 'b' */
+.submit-btn.green-btn {
+  background: var(--green);
+  box-shadow: 0 3px 14px rgba(44,179,93,.28);
+}
+
+.submit-btn.green-btn:hover {
+  background: var(--green-hover);
+}
+
+.submit-btn.fading {
+  opacity: .4;
+  pointer-events: none;
+}
+/* ── TEAM SCORE BARS ── */
+.teams-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px 30px; 
+  background: #fff;
+  border-top: 1px solid var(--light-gray);
+  z-index: 30;
+}
+
+.team-card {
+  display: flex;
+  align-items: stretch;
+  border-radius: 8px;
+  overflow: hidden;
+  font-size: 18px;
+  font-weight: 700;
+  transition: all 0.3s ease;
+    width: 240px;  
+  height: 50px;  
+  
+  /* المظهر الافتراضي (الخامل) */
+  background: var(--bg); 
+  border: 2px solid transparent; 
+  opacity: 0.8;
+}
+
+/* تنسيق المحتوى الداخلي لضمان عدم الالتصاق */
+.t-name {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 5.5;           
+  padding: 0 15px;     
+  white-space: nowrap;
+}
+
+.t-score {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: 1;              
+  padding: 0 10px;
+  font-size: 1.2rem;
+  font-weight: 700;
+}
+
+.t-divider {
+  width: 2px;
+  background: currentColor;
+  opacity: 0.3;
+  align-self: stretch;
+}
+
+/* ألوان الفريق A وهو خامل */
+.team-card.team-a {
+  border-color: var(--blue);
+}
+.team-card.team-a .t-name, 
+.team-card.team-a .t-score {
+  color: var(--blue);
+}
+
+/* ألوان الفريق B وهو خامل */
+.team-card.team-b {
+  border-color: var(--green);
+}
+.team-card.team-b .t-name, 
+.team-card.team-b .t-score {
+  color: var(--green);
+}
+
+/* حالة الفريق النشط (Active) */
+.team-card.team-a.active {
+  background: var(--blue);
+  border-color: var(--blue);
+  opacity: 1;
+}
+.team-card.team-b.active {
+  background: var(--green);
+  border-color: var(--green);
+  opacity: 1;
+}
+
+.team-card.active .t-name, 
+.team-card.active .t-score {
+  color: #fff;
+}
+
+.team-card.active {
+  transform: translateY(-5px) scale(1.05); /* يرتفع ويكبر قليلاً */
+  box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+}
+
+/*HINT MODAL */
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, .35);
+  backdrop-filter: blur(3px);
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .22s;
+}
+
+.overlay.open {
+  opacity: 1;
+  pointer-events: all;
+}
+
+.modal {
+  background: #fff;
+  border-radius: 20px;
+  width: 90%;
+  max-width: 490px;
+  overflow: hidden;
+  box-shadow: 0 16px 44px rgba(0,0,0,.16);
+  transform: scale(.88) translateY(14px);
+  transition: transform .28s cubic-bezier(.34, 1.56, .64, 1);
+}
+
+.overlay.open .modal {
+  transform: scale(1) translateY(0);
+}
+
+.modal-head {
+  padding: 10px 24px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  justify-content: center;
+  background-image: url('../../images/Head.png');
+  background-size: cover;
+}
+
+.modal-title {
+  font-size: 1.85rem;
+  font-weight: 900;
+  color: #fff;
+  text-shadow: 0 2px 6px rgba(0,0,0,.15);
+}
+
+.modal-body { padding: 26px 26px 14px; }
+
+.hint-box {
+  border: 1.5px solid var(--light-gray);
+  border-radius: 12px;
+  padding: 22px 20px;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--dark);
+  line-height: 1.7;
+  background: var(--bg);
+  text-align: center;
+}
+
+.modal-foot {
+  padding: 10px 26px 22px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.got-it-btn {
+  background: var(--yellow);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  padding: 11px 34px;
+  font-size: .98rem;
+  font-family: 'Nunito', sans-serif;
+  font-weight: 800;
+  cursor: pointer;
+  transition: background .18s;
+}
+.got-it-btn:hover { background: var(--yellow-hover); }
+
+
+/*POINTS TOAST */
+.toast {
+  position: fixed;
+  bottom: 110px;
+  left: 50%;
+  transform: translateX(-50%) translateY(18px);
+  background: #fff;
+  border: 2px solid var(--green);
+  color: var(--green);
+  font-weight: 900;
+  font-size: 1.2rem;
+  font-family: 'Nunito', sans-serif;
+  padding: 9px 28px;
+  border-radius: 50px;
+  box-shadow: 0 6px 20px rgba(0,0,0,.1);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .3s, transform .3s;
+  z-index: 50;
+}
+
+.toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+
+/*CONFETTI */
+.confetti-wrap {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 200;
+  overflow: hidden;
+}
+
+.cp {
+  position: absolute;
+  width: 10px;
+  height: 14px;
+  top: -20px;
+  border-radius: 2px;
+  animation: confettiFall linear forwards;
+}
+
+@keyframes confettiFall {
+  to { transform: translateY(110vh) rotate(720deg); opacity: 0; }
+}
+
+@media (max-width: 520px) {
+  .pic            { font-size: 5rem; }
+  .plus           { font-size: 2.2rem; }
+  .question-card  { padding: 30px 14px; gap: 16px; min-height: 180px; }
+  .submit-btn     { padding: 14px 40px; font-size: 1rem; }
+  .topbar         { padding: 12px 16px 0; }
+  .team-score     { font-size: 1.3rem; }
+}
