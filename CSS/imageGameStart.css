@@ -1,0 +1,137 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: 'Poppins', sans-serif;
+}
+
+body {
+  background-color: #ffffff;
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Main Frame */
+.frame {
+  width: 100%;
+  min-height: 100vh;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Center Panel */
+.panel {
+  width: 100%;
+  text-align: center;
+  position: relative;
+  padding-top: 60px;
+}
+
+/* Corner Decorations */
+.corner {
+  position: fixed;
+  width: 200px;
+  pointer-events: none;
+  z-index: 100;
+}
+
+.corner-left {
+  top: 0;
+  left: 0;
+}
+
+.corner-right {
+  bottom:0;
+  right:0;
+  transform-origin:bottom right;
+}
+
+/* GDG Icon */
+.gdg-icon {
+  width: 70px;
+  margin-bottom: 15px;
+}
+
+/* Title */
+.title {
+  font-size: 42px;
+  font-weight: 800;
+  color: #222;
+  margin-bottom: 10px;
+}
+
+/* Subtitle */
+.subtitle {
+  font-size: 18px;
+  color: #777;
+  margin-bottom: 60px;
+}
+
+/* Images Row */
+.images-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 25px;
+  margin-bottom: 70px;
+}
+
+/* Game Images */
+.game-image {
+  width: 160px;
+  height: 160px;
+  border-radius: 20px;
+  box-shadow: 0 6px 15px rgba(0,0,0,0.1);
+}
+
+/* Symbols (+ = ?) */
+.symbol {
+  font-size: 60px;
+  font-weight: 700;
+  color: #111;
+}
+
+/* Start Button */
+.play-btn {
+  background: linear-gradient(135deg, #4a8df6, #3b73d9);
+  color: white;
+  font-size: 18px;
+  font-weight: 600;
+  padding: 15px 50px;
+  border: none;
+  border-radius: 40px;
+  cursor: pointer;
+  box-shadow: 0 8px 20px rgba(66,133,244,0.35);
+  transition: 0.3s ease;
+  margin-bottom: 2px;
+  margin-top: 20px;
+}
+
+.play-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 25px rgba(66,133,244,0.45);
+}
+
+.buttons-group {
+  display: flex;
+  flex-direction: column; 
+  align-items: center;    
+  gap: 25px;             
+}
+
+/* Return Home */
+.home-link {
+  background: none;
+  border: none;
+  color: #4285F4;
+  font-size: 20px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.home-link:hover {
+  text-decoration: underline;
+}
