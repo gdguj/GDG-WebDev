@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <title>لعبة الاستبيان</title>
+    <link rel="stylesheet" href="../CSS/survey-game.css">
+</head>
+<body>
+
+    <!-- Header -->
+    <header class="page-header">
+        <img src="../Images/Top Strip.png" alt="Header Image">
+    </header>
+    <!-- Popup عند تغير الفريق -->
+<div id="teamPopup" class="popup-overlay">
+    <div class="popup-content">
+        <h2>الآن دور الفريق <span id="currentTeamPopup">A</span></h2>
+    </div>
+</div>
+
+    <!-- Main container -->
+    <div class="container">
+
+        <!-- Top Bar: Scores and Timer -->
+        <div class="top-bar">
+            <div class="score-box team-a">
+                <p>الفريق أ</p>
+                <span id="scoreA">0</span>
+            </div>
+
+            <div class="timer-box">
+                <p>الوقت</p>
+                <span id="timer">45</span>
+            </div>
+
+            <div class="score-box team-b">
+                <p>الفريق ب</p>
+                <span id="scoreB">0</span>
+            </div>
+        </div>
+
+        <!-- Round Title -->
+        <h1 class="round-title">الجولة 1</h1>
+
+        <!-- Question -->
+        <div class="question-box" id="question">
+            جاري تحميل السؤال...
+        </div>
+
+        <!-- مربع الفريق الحالي -->
+<div class="team-box" id="currentTeamBox">الفريق أ</div>
+        <!-- Answers Grid -->
+        <div class="answers-grid" id="answers"></div>
+
+        <!-- Input Section -->
+        <div class="input-section">
+            <input type="text" id="answerInput" placeholder="اكتب إجابتك هنا...">
+            <button onclick="submitAnswer()">إرسال</button>
+        </div>
+
+        <!-- Strikes -->
+        <div id="strikes" class="strikes"></div>
+
+    </div>
+<!-- Popup نهاية الجولة -->
+<div id="resultPopup" class="popup-overlay">
+    <div class="popup-content">
+        <h2 id="resultTitle">انتهت الجولة</h2>
+        <p id="resultMessage"></p>
+        <button onclick="closeResultPopup()">إغلاق</button>
+    </div>
+</div>
+    <script src="../JS/survey-game.js"></script>
+</body>
+</html>
