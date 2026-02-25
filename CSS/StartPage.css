@@ -1,0 +1,109 @@
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+}
+
+html,body{
+  height:100%;
+}
+
+body{
+  background:#DCDCDC;
+  display:grid;
+  place-items:center;
+  font-family:'Poppins',sans-serif;
+  overflow:hidden;
+}
+
+.frame{
+  width:1440px;
+  height:1024px;
+}
+
+.panel{
+  width:100%;
+  height:100%;
+  background:#FFFFFF;
+  position:relative;
+  overflow:hidden;
+  border-radius:6px;
+  box-shadow:0 20px 55px rgba(0,0,0,0.18);
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+}
+
+.corner{
+  position:absolute;
+  transform:scale(0.30);
+  transform-origin:top left;
+}
+
+.corner-left{
+  top:0;
+  left:0;
+}
+
+.corner-right{
+  bottom:0;
+  right:0;
+  transform:scale(0.35);
+  transform-origin:bottom right;
+}
+
+.gdg-icon{
+  margin-top:120px;
+  width:300px;
+  height:auto;
+}
+
+.title{
+  margin-top:20px;
+  font-size:60px;
+  font-weight:800;
+  color:#111111;
+  text-align:center;
+}
+
+.play-btn{
+  margin-top:140px;
+  width:520px;
+  height:78px;
+  border-radius:8px;
+  border:1px solid rgba(0,0,0,0.35);
+  background:#4285F4;
+  color:#ffffff;
+  font-size:44px;
+  font-weight:800;
+  cursor:pointer;
+  box-shadow:0 18px 36px rgba(66,133,244,0.28);
+  transition:0.2s ease;
+}
+
+.play-btn:hover{
+  transform:translateY(-2px);
+  box-shadow:0 22px 44px rgba(66,133,244,0.34);
+}
+
+.home-btn{
+  position:absolute;
+  left:120px;
+  bottom:115px;
+  width:240px;
+  height:56px;
+  border-radius:8px;
+  border:1px solid rgba(0,0,0,0.35);
+  background:#E6E6E6;
+  color:#6B6B6B;
+  font-size:22px;
+  font-weight:600;
+  cursor:pointer;
+  box-shadow:0 10px 18px rgba(0,0,0,0.18);
+  transition:0.2s ease;
+}
+
+.home-btn:hover{
+  transform:translateY(-2px);
+  box-shadow:0 14px 22px rgba(0,0,0,0.20);
+}

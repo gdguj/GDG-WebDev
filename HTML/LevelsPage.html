@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Choose Difficulty</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="../CSS/LevelsPage.css" />
+  <script defer src="../JS/LevelsPage.js"></script>
+</head>
+
+<body>
+  <main class="frame">
+    <div class="panel">
+      <img src="../images/Top Strip.png" class="strip">
+
+      <h1 class="title">Choose Difficulty</h1>
+
+      <section class="cards">
+        <button class="difficulty-card easy" type="button" data-difficulty="easy">
+          <div class="card-top">Easy</div>
+          <div class="card-body">
+            <img class="icon" src="../images/EasyIcon.png" alt="">
+          </div>
+        </button>
+
+        <button class="difficulty-card medium" type="button" data-difficulty="medium">
+          <div class="card-top">Medium</div>
+          <div class="card-body">
+            <img class="icon" src="../images/MediumIcon.png" alt="">
+          </div>
+        </button>
+
+        <button class="difficulty-card hard" type="button" data-difficulty="hard">
+          <div class="card-top">Hard</div>
+          <div class="card-body">
+            <img class="icon" src="../images/HardIcon.png" alt="">
+          </div>
+        </button>
+      </section>
+
+      <button class="start-btn" id="startBtn" disabled>Start Game</button>
+    </div>
+  </main>
+</body>
+</html>

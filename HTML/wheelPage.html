@@ -1,0 +1,57 @@
+<!--
+  This page shows a spinning wheel to randomly determine which team starts the round.
+  It has two screens: the spin screen (with the wheel and spin button),
+  and the result screen (showing which team won).
+  The winner is detected by checking which team is physically under the needle arrowhead
+  using elementFromPoint() in the JS file.
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Who Starts the Round?</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&family=Nunito+Sans:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../CSS/wheelStyle.css">
+</head>
+
+<body>
+
+  <img class="corner corner-top-left" src="../Images/Corner-Left.png"  alt="">
+  <img class="corner corner-bottom-right" src= "../images/Corner-Right.png" alt="">
+
+  <div class="screen active" id="spinScreen">
+    <h1>Who will start the round?</h1>
+
+    <div class="wheel-container">
+      <div class="wheel" id="wheel">
+        <div class="wheel-half top">
+          <span>Team A</span>
+        </div>
+        <div class="wheel-half bottom">
+          <span>Team B</span>
+        </div>
+      </div>
+
+      <div class="needle">
+        <div class="needle-line"></div>
+        <div class="needle-dot"></div>
+      </div>
+    </div>
+
+    <button class="btn" id="spinBtn" onclick="spinWheel()">
+      Spin the wheel !
+    </button>
+  </div>
+
+
+  <div class="screen" id="resultScreen">
+    <h1>who will start the round?</h1>
+    <div class="result-text" id="resultText"></div>
+    <button class="btn" onclick="backToGame()">Back to game</button>
+  </div>
+
+  <script src="../JS/wheelScript.js"></script>
+</body>
+</html>

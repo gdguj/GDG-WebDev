@@ -9,11 +9,34 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <title>Game Results</title>
  <link rel="stylesheet" href="../CSS/game-results.css">
 </head>
 
 <body>
+
+   <!-- ================= NAVBAR ================= -->
+    <nav class="bg-white shadow-sm">
+        <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+
+            <!-- Logo -->
+            <img src="../Images/colorful-logo.png" alt="logo" class="h-10">
+
+            <!-- Links -->
+            <div class="hidden md:flex items-center gap-8 font-semibold text-gray-600">
+                <a href="main page.html" class="hover:text-[#0078BF]">الرئيسية</a>
+                <a href="main page.html#about" class="hover:text-[#0078BF]">من نحن</a>
+                <a href="main page.html#goals" class="hover:text-[#0078BF]">أهدافنا</a>
+                <a href="main page.html#games" class="hover:text-[#0078BF]">الألعاب</a>
+            </div>
+
+        </div>
+    </nav>
+
   <main class="page">
     <section class="card">
 
@@ -62,7 +85,7 @@
         <!-- RIGHT SIDE -->
         <div class="right">
           <div class="mini-map">
-            <img src="minimap.png" alt="Final board" />
+            <img src="../images/minimap.png" alt="Final board" />
           </div>
 
           <div class="score-pill">

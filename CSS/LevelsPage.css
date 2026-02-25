@@ -1,0 +1,147 @@
+*{
+  margin:0;
+  padding:0;
+  box-sizing:border-box;
+}
+
+html, body{
+  height:100%;
+}
+
+body{
+  background:#DCDCDC;
+  display:grid;
+  place-items:center;
+  font-family:'Poppins', sans-serif;
+  overflow:hidden;
+}
+
+.frame{
+  width:1440px;
+  height:1024px;
+}
+
+.panel{
+  width:100%;
+  height:100%;
+  border-radius:6px;
+  overflow:hidden;
+  box-shadow:0 20px 55px rgba(0,0,0,0.18);
+  background:
+    #FFFFFF;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+}
+
+.title{
+  font-family: 'Poppins', sans-serif;
+  font-size: 60px;
+  font-weight: 800;
+  color: #1A1A1A;
+  text-align: center;
+  margin-top: 90px;
+  margin-bottom: 90px;
+}
+.cards{
+  display:flex;
+  gap:60px;
+  margin-bottom:90px;
+}
+
+.difficulty-card{
+  width:260px;
+  height:210px;
+  border-radius:10px;
+  background:#fff;
+  border:2px solid #eee;
+  overflow:hidden;
+  cursor:pointer;
+  box-shadow:0 14px 28px rgba(0,0,0,0.14);
+  transition:0.2s ease;
+}
+
+.difficulty-card:hover{
+  transform:translateY(-8px);
+  box-shadow:0 22px 40px rgba(0,0,0,0.18);
+}
+
+.card-top{
+  height:52px;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  color:#fff;
+  font-size:20px;
+  font-weight:700;
+}
+
+.card-body{
+  height:calc(210px - 52px);
+  display:flex;
+  justify-content:center;
+  align-items:center;
+}
+
+.icon{
+  width:80px;
+  height:80px;
+  object-fit:contain;
+}
+
+.easy{
+  border-color:rgba(52,168,83,0.4);
+  box-shadow:0 14px 28px rgba(52,168,83,0.18);
+}
+
+.easy .card-top{
+  background:#34A853;
+}
+
+.medium{
+  border-color:rgba(251,188,5,0.4);
+  box-shadow:0 14px 28px rgba(251,188,5,0.18);
+}
+
+.medium .card-top{
+  background:#FBBC05;
+}
+
+.hard{
+  border-color:rgba(234,67,53,0.4);
+  box-shadow:0 14px 28px rgba(234,67,53,0.18);
+}
+
+.hard .card-top{
+  background:#EA4335;
+}
+
+.start-btn{
+  width:420px;
+  height:64px;
+  border:none;
+  border-radius:8px;
+  background:#2F6FEC;
+  color:#fff;
+  font-size:24px;
+  font-weight:700;
+  cursor:pointer;
+  box-shadow:0 18px 36px rgba(47,111,236,0.30);
+  transition:0.2s ease;
+}
+
+.start-btn:hover{
+  transform:translateY(-2px);
+  box-shadow:0 22px 44px rgba(47,111,236,0.34);
+}
+
+.start-btn:disabled{
+  opacity:0.5;
+  cursor:not-allowed;
+  transform:none;
+}
+.strip{
+  width:100%;
+  height:100px;
+  object-fit:cover;
+}

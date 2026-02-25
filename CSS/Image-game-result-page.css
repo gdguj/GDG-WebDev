@@ -1,0 +1,157 @@
+body{
+  font-family: 'Poppins', sans-serif !important;
+  font-size: 18px;
+  margin: 0;
+}
+
+.decorations{
+  height: 60px;
+  width: 100%;
+  position: static;
+  display: flex;
+  justify-content: space-between;
+  margin-top: 65px;
+  background-image: url(../Images/google-themed.png);
+  background-size: 30% 100px;
+  background-repeat: repeat-x;
+  background-position: 0 -35px;
+}
+
+button{
+  border:2px solid #414042;
+}
+
+.buttons{
+  height: 95px;
+  width: 100%;
+  position: static;
+  margin-top: 70px;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  transition: opacity 0.15s;
+}
+
+.playAgain-button:hover ,.backHome-button:hover{
+  opacity: 0.95;
+}
+.playAgain-button:active{
+  background-color: #3979e0;
+}
+
+.backHome-button:active{
+  background-color: rgb(242, 242, 242);
+}
+
+.backHome-div , .playAgain-div{
+  margin: auto;
+  margin-top: 40px;
+}
+
+.playAgain-button , .backHome-button{
+  width: 450px;
+  height:70px;
+  font-size:28px;
+  font-weight:800;
+  border-radius:14px;
+  cursor: pointer;
+}
+
+.playAgain-button{
+  background-color: #3b82f6;
+  color: white;
+  margin-right: 100px;
+  border: none;
+}
+
+.backHome-button{
+  background-color: white;
+  color: #414042;
+  margin-left: 35px;
+}
+
+.logo{
+  width:100px;
+  text-align: center;
+  margin: 0 auto;
+  margin-bottom: 30px;
+  margin-top: 10px;
+}
+
+.google-logo{
+  object-fit: contain;
+  width: 100%;
+}
+
+.result-div{
+  width: 600px;
+  margin: auto;
+}
+
+.header-block{
+  width: 370px;
+  text-align: center;
+  margin: 0 auto;
+  position: relative;
+  bottom: 50px;
+}
+
+.header{
+  text-align: center;
+  font-size: 25px;
+  font-weight: 700;
+}
+
+.blue{color:#007ac0;}
+.red{color:#ee4032;}
+.yellow{color: #ffc10e;}
+.green{color: #2cb35d;}
+
+.result-message{
+  width: 430px;
+  text-align: center;
+  margin: 0 auto;
+  font-size: 55px;
+  position: relative;
+  bottom: 25px;
+  font-weight: 700;
+}
+
+.divider{
+  width: 100%;
+  margin:20px 0;
+  bottom: 35px;
+  position: relative;
+}
+
+.score{
+  width: 300px;
+  text-align: center;
+  margin: 0 auto;
+  font-weight: bold;
+  bottom: 30px;
+  position: relative;
+  font-size: 23px;
+  padding-right:20px ;
+}
+
+.game-stat{
+  color: grey;
+  margin-top:0;
+  font-weight: 600;
+}
+
+.info{
+  margin-right: 4px;
+}
+
+.stat{
+  color: gray;
+  font-weight: 600;
+}
+
+.center-block{
+  width: 600px;
+  margin: 0 auto;
+  text-align: center;
+}

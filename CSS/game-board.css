@@ -1,0 +1,511 @@
+:root{
+  --blue:#4285F4;
+  --green:#34A853;
+  --red:#EA4335;
+  --yellow:#FBBC05;
+  --white:#ffffff;
+  --gray:#717171;
+  --light-gray:#e0e0e0;
+  --black:#000000;
+  --light-blue:#90caf9;
+}
+html,body {
+  margin: 0;
+  padding: 0;
+  top: 0;
+  background-color: var(--white);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  width: 100vw;
+  font-family: 'Poppins', sans-serif;
+}
+
+#game-container {
+  display: flex;
+  justify-content: space-between;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  width: 100vw;
+  max-width: 900px;
+}
+
+#navbar {
+  display: flex;
+  position: fixed;
+  margin-bottom: 5rem;
+  top: 0;
+  left: 0;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 28px;
+  background: var(--white);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  height: 72px;
+  flex-shrink: 0;
+  width: 96vw;
+}
+
+.nav-timer {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  color: var(--gray);
+  font-size: 14px;
+  flex: 1;
+}
+.timer-header {
+  display: flex;
+  gap: 8px;
+}
+
+.nav-label {
+  font-weight: 500;
+  color: var(--gray);
+  font-size: 1.5rem;
+}
+
+.hourglass {
+  font-size: 16px;
+}
+
+.timer-track {
+  width: 100%;
+  height: 10px;
+  background: var(--light-gray);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.timer-fill {
+  height: 100%;
+  width: 70%;  /* نتحكم فيها بعدين في JS */
+  background: var(--yellow);
+  border-radius: 6px;
+  transition: width 1s linear;
+}
+
+.nav-playing {
+  color: var(--black);
+  font-weight: 500;
+  font-size: 1.5rem;
+  font-weight: 700;
+  align-self:flex-start ;
+  margin-top: 15px;
+}
+
+.nav-playing span {
+  color: var(--blue);
+  font-weight: normal;
+}
+
+
+canvas {
+  margin-top: 2rem;
+  border-right: 10px solid var(--green);
+  border-left: 10px solid var(--green);
+  border-bottom: 10px solid var(--blue);
+  border-top: 10px solid var(--blue);
+}
+/* ================================================
+   هنا خلينا الواجهة حقت السؤال مخفية في البداية
+   ================================================ */
+.hidden {
+  display: none !important;
+}
+
+/* ================================================
+   هنا الواجهة حقت السؤال 
+   ================================================ */
+#question-screen {
+  background: var(--white);
+  border-radius: 16px;
+  padding: 40px 50px;
+  width: 520px;
+  height: 420px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.13);
+  text-align: center;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  margin-top: 2rem;
+}
+
+.q-letter {
+  font-size: 56px;
+  font-weight: bold;
+  color: var(--blue);
+  line-height: 1;
+}
+
+.q-text {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--black);
+  line-height: 1.6;
+}
+
+.answer-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  justify-content: center;
+}
+
+.answer-input {
+  flex: 1;
+  max-width: 280px;
+  padding: 10px 14px;
+  border: 1.5px solid #ddd;
+  border-radius: 8px;
+  font-size: 15px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.answer-input:focus        { border-color: var(--blue); }
+.answer-input:disabled     { background: #f5f5f5; color: var(--gray); }
+.answer-input.wrong        { border-color: var(--red); }
+
+
+.check-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--green);
+  color: var(--white);
+  font-size: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.submit-btn {
+  background: var(--blue);
+  color: var(--white);
+  border: 1.5px solid var(--black);
+  padding: 12px 48px;
+  border-radius: 8px;
+  font-size: 30px;
+  font-weight: 200;
+  cursor: pointer;
+  margin-top: 3rem;
+  transition: background 0.2s, transform 0.1s;
+}
+.submit-btn:hover    { background: var(--blue); }
+.submit-btn:active   { transform: scale(0.97); }
+.submit-btn:disabled { background: var(--light-blue); cursor: not-allowed; }
+
+/* ================================================
+  الانميشن حق النقاط اللي تطلع لما تجاوب صح
+   ================================================ */
+.points-popup {
+  position: absolute;
+  bottom: -5px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: var(--green);
+  font-weight: bold;
+  font-size: 18px;
+  opacity: 0;
+  transition: opacity 0.4s ease, bottom 0.5s ease;
+  white-space: nowrap;
+}
+
+.points-popup.show {
+  opacity: 1;
+  bottom: -30px;
+}
+
+/* ================================================
+   Loading Spinner 
+   ================================================ */
+.spinner {
+  width: 30px;
+  height: 30px;
+  border: 3px solid var(--light-gray);
+  border-top-color: var(--blue);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+#score-bar {
+  display: flex;
+  flex-direction: row;
+  position: fixed;
+  bottom: 0;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 28px;
+  background: var(--white);
+  border-top: 1px solid var(--light-gray);
+  width: 96vw;
+  
+}
+
+.team-pill {
+  display: flex;
+  align-items: stretch;
+  border-radius: 5px;
+  overflow: hidden;
+  font-size: 20px;
+  font-weight: 700;
+  min-width: 180px;
+}
+
+.team-pill-name {
+  padding: 10px 18px;
+  color: var(--white);
+}
+
+.team-pill-divider {
+  width: 2px;
+  background: var(--white);
+  flex-shrink: 0;
+}
+
+.team-pill-num {
+  padding: 10px 16px;
+  color: var(--white);
+}
+
+.team-pill.blue  { background: var(--blue); }
+.team-pill.green { background: var(--green); }
+
+
+
+/* ================================================
+   RESPONSIVE — TABLET  (≤ 768px)
+   ================================================ */
+@media (max-width: 768px) {
+
+  #navbar {
+    height: auto;
+    min-height: 60px;
+    padding: 8px 16px;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .nav-label {
+    font-size: 1.1rem;
+  }
+
+  .nav-playing {
+    font-size: 1.1rem;
+    margin-top: 0;
+    margin-left: 12px;
+    align-self: center;
+  }
+
+  canvas {
+    width: 90vw !important;
+    height: 90vw !important;
+    border-width: 6px;
+    margin-top: 1.2rem;
+  }
+
+  #question-screen {
+    width: 90vw;
+    height: auto;
+    padding: 28px 24px;
+    gap: 14px;
+    margin-top: 1rem;
+  }
+
+  .q-letter {
+    font-size: 42px;
+  }
+
+  .q-text {
+    font-size: 17px;
+  }
+
+  .submit-btn {
+    font-size: 22px;
+    padding: 10px 36px;
+    margin-top: 1.5rem;
+  }
+
+  #score-bar {
+    padding: 8px 16px;
+  }
+
+  .team-pill {
+    font-size: 16px;
+    min-width: 140px;
+  }
+
+  .team-pill-name {
+    padding: 8px 12px;
+  }
+
+  .team-pill-num {
+    padding: 8px 10px;
+  }
+}
+
+
+/* ================================================
+   RESPONSIVE — MOBILE  (≤ 480px)
+   ================================================ */
+@media (max-width: 480px) {
+
+  #navbar {
+    padding: 8px 12px;
+    height: auto;
+    min-height: 56px;
+    gap: 4px;
+  }
+
+  .nav-timer {
+    flex: 1;
+    min-width: 0; 
+  }
+
+  .nav-label {
+    font-size: 0.95rem;
+  }
+
+  .hourglass svg {
+    width: 18px;
+    height: 18px;
+  }
+
+  .timer-track {
+    height: 7px;
+  }
+
+  .nav-playing {
+    font-size: 0.95rem;
+    margin-left: 8px;
+    margin-top: 0;
+    white-space: nowrap;
+  }
+
+  canvas {
+    width: 95vw !important;
+    height: 95vw !important;
+    border-width: 5px;
+    margin-top: 1rem;
+  }
+
+  #question-screen {
+    width: 95vw;
+    height: auto;
+    padding: 20px 16px;
+    gap: 12px;
+    border-radius: 12px;
+    margin-top: 0.5rem;
+  }
+
+  .q-letter {
+    font-size: 34px;
+  }
+
+  .q-text {
+    font-size: 15px;
+    line-height: 1.5;
+  }
+
+  .answer-input {
+    font-size: 14px;
+    padding: 9px 10px;
+  }
+
+  .check-icon {
+    width: 30px;
+    height: 30px;
+  }
+
+  .submit-btn {
+    font-size: 18px;
+    padding: 10px 28px;
+    margin-top: 1rem;
+  }
+
+  #score-bar {
+    padding: 6px 10px;
+    gap: 8px;
+  }
+
+  .team-pill {
+    font-size: 13px;
+    min-width: 0;
+    flex: 1;
+  }
+
+  .team-pill-name {
+    padding: 7px 8px;
+    font-size: 13px;
+    /* نقصر الاسم إذا كان طويل */
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 80px;
+  }
+
+  .team-pill-num {
+    padding: 7px 8px;
+    font-size: 13px;
+  }
+}
+
+
+/* ================================================
+   RESPONSIVE — SMALL MOBILE  (≤ 360px)
+   ================================================ */
+@media (max-width: 360px) {
+
+  .nav-label {
+    font-size: 0.82rem;
+  }
+
+  .nav-playing {
+    font-size: 0.82rem;
+  }
+
+  #question-screen {
+    padding: 16px 12px;
+  }
+
+  .q-letter {
+    font-size: 28px;
+  }
+
+  .q-text {
+    font-size: 13px;
+  }
+
+  .submit-btn {
+    font-size: 15px;
+    padding: 8px 20px;
+  }
+
+  .team-pill {
+    font-size: 11px;
+  }
+
+  .team-pill-name {
+    max-width: 60px;
+    padding: 6px 6px;
+  }
+
+  .team-pill-num {
+    padding: 6px 6px;
+    font-size: 11px;
+  }
+}
+
+
