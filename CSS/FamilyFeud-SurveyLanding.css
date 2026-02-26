@@ -1,0 +1,234 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    background-color: white;
+    font-family: 'Segoe UI', 'Inter', sans-serif;
+}
+
+
+.strip-top {
+    width: 100%;
+    display: block;
+}
+
+
+.strip-bottom {
+    width: 100%;
+    display: block;
+}
+
+
+.page-wrapper {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+
+.content-area {
+    flex: 1;
+    width: 100%;
+    max-width: 1400px;
+    margin: 20px auto;
+    padding: 30px;
+    display: flex;
+    align-items: center;
+    min-height: 600px;
+}
+
+.google-title {
+    font-size: 2.8rem;
+    font-weight: 800;
+}
+
+.google-title .g { color: #4285F4; }
+.google-title .a { color: #EA4335; }
+.google-title .m { color: #34A853; }
+.google-title .e { color: #F9AB00; }
+.google-title .i { color: #EA4335; }
+.i1 { color: #4285F4; }
+.n1 { color: #EA4335; }
+.s1 { color: #34A853; }
+.t1 { color: #F9AB00; }
+.r1 { color: #4285F4; }
+.u1 { color: #EA4335; }
+.c1 { color: #34A853; }
+.t2 { color: #F9AB00; }
+.i2 { color: #4285F4; }
+.o1 { color: #EA4335; }
+.n2 { color: #34A853; }
+.s2 { color: #F9AB00; }
+.colon {
+    color: #4285F4;
+}
+
+.character-container {
+    display: flex;
+    align-items: flex-end;
+    gap: 50px;
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* الشخصية - حجم كبير */
+.character {
+    width: 350px;
+    height: auto;
+    display: block;
+    filter: drop-shadow(0 15px 25px rgba(0,0,0,0.15));
+}
+
+/* مربع الكلام - حجم كبير */
+.speech-bubble {
+    position: relative;
+    background: white;
+    border-radius: 40px 40px 40px 15px;
+    padding: 40px 45px;
+    box-shadow: 0 25px 40px rgba(0, 0, 0, 0.15);
+    border: 4px solid #34A853;
+    max-width: 700px;
+    width: 100%;
+    margin-bottom: 30px;
+}
+
+
+.speech-bubble::before {
+    content: '';
+    position: absolute;
+    bottom: 35px;
+    left: -25px;
+    width: 0;
+    height: 0;
+    border-top: 20px solid transparent;
+    border-bottom: 20px solid transparent;
+    border-right: 28px solid #34A853;
+    z-index: 1;
+}
+
+
+.speech-bubble::after {
+    content: '';
+    position: absolute;
+    bottom: 36px;
+    left: -18px;
+    width: 0;
+    height: 0;
+    border-top: 18px solid transparent;
+    border-bottom: 18px solid transparent;
+    border-right: 24px solid white;
+    z-index: 2;
+}
+
+
+.speech-bubble h2 {
+    color: #1a3b5d;
+    font-size: 2.8rem;
+    margin-bottom: 25px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+}
+
+
+.speech-bubble p {
+    color: #2c3e50;
+    font-size: 1.5rem;
+    line-height: 1.6;
+    margin-bottom: 25px;
+}
+
+
+.rules-list {
+    list-style: none;
+    margin-top: 25px;
+}
+
+.rules-list li {
+    margin-bottom: 20px;
+    font-size: 1.4rem;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.rule-icon {
+    background: #E8F0FE;
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 1.5rem;
+    color: #4285F4;
+    flex-shrink: 0;
+}
+
+.highlight {
+    background: #4286f434;
+    padding: 5px 15px;
+    border-radius: 30px;
+    font-weight: 700;
+    color: #4285F4;
+    font-size: 1.4rem;
+}
+
+.steal-badge {
+    background: #EA4335;
+    color: white;
+    padding: 5px 18px;
+    border-radius: 40px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-left: 12px;
+    display: inline-block;
+}
+
+
+@media (max-width: 1000px) {
+    .character {
+        width: 280px;
+    }
+    
+    .speech-bubble {
+        padding: 30px 35px;
+    }
+    
+    .speech-bubble h2 {
+        font-size: 2.2rem;
+    }
+    
+    .rules-list li {
+        font-size: 1.2rem;
+    }
+}
+
+
+@media (max-width: 700px) {
+    .character-container {
+        flex-direction: column;
+        align-items: center;
+        gap: 30px;
+    }
+    
+    .character {
+        width: 220px;
+    }
+    
+    .speech-bubble::before,
+    .speech-bubble::after {
+        display: none;
+    }
+    
+    .content-area {
+        padding: 15px;
+    }
+}

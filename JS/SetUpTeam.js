@@ -8,29 +8,53 @@ function addMembers(team) {
   if (count < 1) count = 1;
 
   for (let i = 0; i < count; i++) {
-    memberCounts[team]++;
-    const num = memberCounts[team];
+    const currentCount = list.children.length + 1; // 👈 نحسب الفعلي
     const li = document.createElement('li');
     li.className = 'member-item';
-    li.dataset.id = num;
+
     li.innerHTML = `
-      <div class="avatar">U${num}</div>
-      <input class="member-name" type="text" value="User${num}" title="Click to rename">
+      <div class="avatar">U${currentCount}</div>
+      <input class="member-name" type="text" value="User${currentCount}" title="Click to rename">
       <button class="btn-remove" onclick="removeMember(this, '${team}')">Remove</button>
     `;
+
     list.appendChild(li);
   }
+
   clearError();
 }
 
 // ── Remove a member ──
 function removeMember(btn, team) {
   const li = btn.closest('.member-item');
+  const list = document.getElementById(`list-${team}`);
+
   li.style.transition = 'opacity 0.2s, transform 0.2s';
   li.style.opacity = '0';
   li.style.transform = 'translateX(20px)';
-  setTimeout(() => li.remove(), 200);
-  clearError();
+
+  setTimeout(() => {
+    li.remove();
+    renumberMembers(team);   
+    clearError();
+  }, 200);
+}
+function renumberMembers(team) {
+  const list = document.getElementById(`list-${team}`);
+  const items = list.querySelectorAll('.member-item');
+
+  items.forEach((item, index) => {
+    const number = index + 1;
+
+    // تحديث الـ avatar
+    item.querySelector('.avatar').textContent = `U${number}`;
+
+    // تحديث اسم المستخدم بعد الحذف
+    const input = item.querySelector('.member-name');
+    if (input.value.startsWith("User")) {
+      input.value = `User${number}`;
+    }
+  });
 }
 
 // ── Get team data ──
@@ -46,6 +70,8 @@ function handleNext() {
   const green = getTeamData('green');
   const blue  = getTeamData('blue');
   const errors = [];
+
+  
 
   if (green.members.length < 1) errors.push('Green Team needs at least 1 member');
   if (blue.members.length  < 1) errors.push('Blue Team needs at least 1 member');
@@ -85,16 +111,19 @@ function clearError() {
 
 function addMembersDirectly(team, names) {
   const list = document.getElementById(`list-${team}`);
+
   names.forEach(name => {
-    memberCounts[team]++;
-    const num = memberCounts[team];
+    const currentCount = list.children.length + 1;
+
     const li = document.createElement('li');
     li.className = 'member-item';
+
     li.innerHTML = `
-      <div class="avatar">U${num}</div>
+      <div class="avatar">U${currentCount}</div>
       <input class="member-name" type="text" value="${name}" title="Click to rename">
       <button class="btn-remove" onclick="removeMember(this, '${team}')">Remove</button>
     `;
+
     list.appendChild(li);
   });
 }
