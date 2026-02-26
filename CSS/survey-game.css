@@ -85,7 +85,7 @@ body {
 /* ================================== */
 /* شبكة البطاقات */
 .answers-grid {
-    display: grid;
+    display: grid; 
     grid-template-columns: repeat(2, 1fr);
     gap: 25px; /* مسافة أكبر بين البطاقات */
     margin-bottom: 25px;
@@ -140,20 +140,20 @@ body {
 }
 
 input {
-    padding: 10px;
-    width: 250px;
-    border-radius: 6px;
+    padding: 10px !important;
+    width: 250px !important;
+    border-radius: 6px !important;
     border: 1px solid #ccc;
 }
 
 button {
-    padding: 10px 20px;
-    border: none;
-    border-radius: 6px;
-    background: #2563eb;
-    color: white;
-    cursor: pointer;
-    margin-left: 5px;
+    padding: 10px 20px !important;
+    border: none !important;
+    border-radius: 6px !important;
+    background: #2563eb !important;
+    color: white !important;
+    cursor: pointer !important;
+    margin-left: 5px !important;
 }
 
 button:hover {
