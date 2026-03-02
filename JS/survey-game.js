@@ -1,19 +1,62 @@
 // ================================
-const game = {
-    question: "اذكر شيئًا يستخدم في المطبخ",
-    answers: [
-        { text: "سكين", points: 30, revealed: false },
-        { text: "ملعقة", points: 25, revealed: false },
-        { text: "قدر", points: 20, revealed: false },
-        { text: "طبق", points: 18, revealed: false },
-        { text: "شوكة", points: 15, revealed: false },
-        { text: "كوب", points: 12, revealed: false },
-        { text: "مقلاة", points: 10, revealed: false },
-        { text: "خلاط", points: 8, revealed: false },
-        { text: "فرن", points: 6, revealed: false },
-        { text: "ثلاجة", points: 4, revealed: false }
-    ]
+let game = {
+    question: "جاري تحميل السؤال...",
+    answers: []
 };
+
+// ================================
+// استدعاء API - جلب السؤال من Backend
+// ================================
+async function loadQuestion() {
+    try {
+        const url = `http://localhost:5000/api/ai/family-feud?t=${Date.now()}`;
+        console.log('⤴️ fetching question from', url);
+        const response = await fetch(url, { cache: 'no-store' });
+
+        console.log('↩️ response status', response.status);
+        if (!response.ok) {
+            throw new Error(`خطأ في الاتصال: ${response.status}`);
+        }
+
+        const data = await response.json();
+        if (data.fallback) {
+            console.warn("⚠️ يتم استخدام بيانات احتياطية ثابتة (Quota قد انتهى)");
+        }
+        
+        // تحديث البيانات من Backend
+        game.question = data.question;
+        game.answers = data.answers.map(ans => ({
+            text: ans.answer,  // تحويل answer إلى text
+            points: ans.points,
+            revealed: false
+        }));
+        
+        console.log('✅ تم تحميل السؤال:', game);
+        
+        // إعادة تعيين متغيرات الجولة
+        currentTeam = "أ";
+        strikes = 0;
+        timeLeft = 45;
+        stealMode = false;
+        originalTeam = null;
+        
+        // تحديث الواجهة
+        questionEl.textContent = game.question;
+        strikesEl.textContent = "";
+        inputEl.value = "";
+        document.getElementById("currentTeamBox").textContent = "الفريق أ";
+        renderAnswers();
+        inputEl.focus();
+        
+    } catch (error) {
+        console.error('❌ خطأ في تحميل السؤال:', error);
+        game.question = "خطأ في تحميل السؤال - تأكد من أن البيئة تعمل";
+        questionEl.textContent = game.question;
+    }
+}
+
+// تحميل السؤال عند فتح الصفحة
+window.addEventListener('load', loadQuestion);
 
 // ================================
 // متغيرات اللعبة
@@ -37,8 +80,6 @@ const inputEl = document.getElementById("answerInput");
 const scoreAEl = document.getElementById("scoreA");
 const scoreBEl = document.getElementById("scoreB");
 const timerEl = document.getElementById("timer");
-
-questionEl.textContent = game.question;
 
 // ================================
 // عرض الإجابات
@@ -69,27 +110,46 @@ function renderAnswers() {
     });
 }
 
-renderAnswers();
-
 // ================================
 // إرسال الإجابة
 // ================================
 function submitAnswer() {
     const value = inputEl.value.trim().toLowerCase();
-    const found = game.answers.find(
-        ans => ans.text.toLowerCase() === value && !ans.revealed
-    );
+    console.log("🔍 user input:", value);
+    console.log("🔍 current answers:", game.answers.map(a => a.text));
+    const normalize = str => {
+        if (!str) return "";
+        return String(str)
+            .toLowerCase()
+            // remove tashkeel (diacritics) and tatweel
+            .replace(/[\u064B-\u0652\u0640]/g, "")
+            // remove punctuation and non-Arabic letters/numbers
+            .replace(/[^\u0600-\u06FF0-9\s]/g, "")
+            // collapse whitespace
+            .replace(/\s+/g, " ")
+            // remove common prefix ال
+            .replace(/^ال\s?/, "")
+            .trim();
+    };
+
+    const found = game.answers.find(ans => {
+        const answerText = normalize(ans.text);
+        const userText = normalize(value);
+        if (ans.revealed) return false;
+        // مطابقة دقيقة فقط - يجب أن تكون الإجابة متطابقة تماماً
+        return answerText === userText;
+    });
 
     if (found) {
+        console.log("✅ matched answer:", found.text, "points:", found.points);
         found.revealed = true;
         renderAnswers();
 
         // لو في وضع السرقة
         if (stealMode) {
-            const totalPoints = game.answers.reduce(
-                (sum, ans) => sum + ans.points,
-                0
-            );
+            const totalPoints = game.answers
+                .filter(ans => !ans.revealed)
+                .reduce((sum, ans) => sum + ans.points, 0);
 
             if (currentTeam === "أ") {
                 scoreA += totalPoints;
@@ -169,14 +229,27 @@ function activateStealMode() {
 // إنهاء الجولة (بدون إيقاف التايمر)
 // ================================
 function endRound() {
+    console.log('--- endRound called. Scores:', { A: scoreA, B: scoreB });
     stealMode = false;
     strikes = 0;
     strikesEl.textContent = "";
 
-    // إعادة تعيين الإجابات
+    // إغلاق أي popup ظاهر
+    try { closeResultPopup(); } catch (e) { }
+
+    // عرض رسالة تحميل قصيرة للمستخدم
+    questionEl.textContent = "جارٍ تحميل السؤال...";
+
+    // إعادة تعيين الإجابات محلياً ثم اعادة العرض بصيغة مخفية
     game.answers.forEach(ans => ans.revealed = false);
     renderAnswers();
+
+    // حمل سؤال جديد من API بعد فترة بسيطة لتتيح إغلاق الـ popup والانتقال
+    setTimeout(() => {
+        loadQuestion();
+    }, 1000); // بعد ثانية واحدة من انتهاء الجولة
 }
+
 
 // ================================
 // Popup احترافي

@@ -10,6 +10,15 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+// Disable caching on API responses to avoid 304 Not Modified issues
+app.use('/api', (req, res, next) => {
+	res.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+	res.set('Pragma', 'no-cache');
+	res.set('Expires', '0');
+	res.set('Surrogate-Control', 'no-store');
+	next();
+});
+
 // Routes
 app.use("/api/ai", aiRoutes);
 

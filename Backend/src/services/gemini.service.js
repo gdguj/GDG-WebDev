@@ -29,7 +29,21 @@ Rules:
 async function generateFamilyFeudRawJSON() {
   const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
   const result = await model.generateContent(PROMPT);
-  return result.response.text().trim();
+  let text = result.response.text().trim();
+  
+
+  const jsonMatch = text.match(/```(?:json)?\s*([\s\S]*?)\s*```/);
+  if (jsonMatch) {
+    text = jsonMatch[1].trim();
+  }
+  
+  
+  const jsonObjectMatch = text.match(/\{[\s\S]*\}/);
+  if (jsonObjectMatch) {
+    text = jsonObjectMatch[0];
+  }
+  
+  return text;
 }
 
 module.exports = { generateFamilyFeudRawJSON };
