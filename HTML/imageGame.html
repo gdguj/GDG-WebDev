@@ -13,6 +13,7 @@
   <link rel="stylesheet" href="../../CSS/imageGame.css"/>
 </head>
 <body>
+  
 
    <!-- ================= NAVBAR ================= -->
   <nav class="bg-white shadow-sm ">
@@ -32,30 +33,27 @@
         </div>
     </nav>
 
-  <div class="topbar">
-    <div class="topbar-row">
-      <div class="timer-label">Time Remaining &nbsp;⏳</div>
-      <div class="active-team-badge" id="active-team-badge">🔵 Team A's Turn</div>
-    </div>
-
-    <div class="bar-track">
-      <div class="bar-fill" id="bar"></div>
-    </div>
+    <div class="topbar">
+  <div class="topbar-row">
+    <div class="timer-label">Time Remaining &nbsp;⏳</div>
+    <div class="active-team-badge" id="active-team-badge">🔵 Team A's Turn</div>
   </div>
+  <div class="bar-track">
+    <div class="bar-fill" id="bar"></div>
+  </div>
+</div>
 
   <div class="content">
-    <!-- 🔮 AI INTEGRATION: pic1 & pic2 will become <img> tags when AI is connected -->
     <div class="question-card" id="qcard">
-      <span class="pic" id="pic1">☕</span>
+      <img class="pic" id="pic1" src="" alt="clue 1"/>
       <span class="plus">+</span>
-      <span class="pic" id="pic2">📜</span>
+      <img class="pic" id="pic2" src="" alt="clue 2"/>
     </div>
 
     <div class="input-row" id="input-row">
       <input id="answer" type="text" placeholder="type your answer..." autocomplete="off"/>
       <button class="hint-btn" id="hint-btn" onclick="openHint()">
-        💡 Use Hint (<span id="hcount">0</span>/3)
-      </button>
+    💡 Use Hint (1)</button>
     </div>
 
     <div class="feedback" id="feedback"></div>
@@ -79,23 +77,20 @@
   </div>
 </div>
 
-  </div>
-
-  <div class="overlay" id="overlay" onclick="closeHint(event)">
-    <div class="modal">
-      <div class="modal-head">
-        <span style="font-size:2rem">💡</span>
-        <span class="modal-title">Hint!</span>
-      </div>
-      <div class="modal-body">
-        <!--  AI INTEGRATION: hint text will come from AI question object (q.hint) -->
-        <div class="hint-box" id="hint-text">...</div>
-      </div>
-      <div class="modal-foot">
-        <button class="got-it-btn" onclick="closeHint()">Got it</button>
-      </div>
+<div class="overlay" id="overlay" onclick="closeHint(event)">
+  <div class="modal">
+    <div class="modal-head">
+      <span style="font-size:2rem">💡</span>
+      <span class="modal-title">Hint!</span>
+    </div>
+    <div class="modal-body">
+      <div class="hint-box" id="hint-text">...</div>
+    </div>
+    <div class="modal-foot">
+      <button class="got-it-btn" onclick="closeHint()">Got it</button>
     </div>
   </div>
+</div>
 
   <div class="toast" id="toast"></div>
   <div class="confetti-wrap" id="cwrap"></div>

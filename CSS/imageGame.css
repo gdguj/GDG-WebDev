@@ -1,3 +1,4 @@
+
 :root {
   --blue:        #007AC0;
   --blue-hover:  #005f96;
@@ -158,11 +159,12 @@ body {
   100% { background: #fff; }
 }
 
-.pic {
-  font-size: 8rem;
-  line-height: 1;
-  user-select: none;
-}
+
+
+.pic { width: 290px; height: 190px; object-fit: contain; }
+
+
+
 
 .plus {
   font-size: 3rem;
