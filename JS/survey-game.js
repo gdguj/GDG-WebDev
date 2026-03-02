@@ -1,78 +1,48 @@
-// ================================
-let game = {
-    question: "جاري تحميل السؤال...",
-    answers: []
+/**
+ * ════════════════════════════════════════════════════════════════════════════════
+ * FAMILY FEUD GAME - PROPER GAME LOGIC
+ * ════════════════════════════════════════════════════════════════════════════════
+ * 
+ * Game Rules:
+ * - Two teams: Team 1 (أ) and Team 2 (ب)
+ * - One question per round with exactly 10 answers
+ * - Team 1 starts answering
+ * - If Team 1 gives 3 wrong answers, they're done → Team 2 attempts to STEAL
+ * - Team 2 continues answering the SAME question (no new question generated)
+ * - If Team 2 guesses a correct answer during steal, they take ALL remaining points
+ * - Round ends when: all answers revealed OR one team steals the points
+ * - NEW question only when explicitly starting a new round
+ */
+
+// ════════════════════════════════════════════════════════════════════════════════
+// GAME STATE VARIABLES
+// ════════════════════════════════════════════════════════════════════════════════
+
+let gameState = {
+  question: null,
+  answers: [], // [{answer, points, revealed}]
+  currentTeam: "team1", // team1 or team2
+  wrongAttempts: 0, // 0-3
+  roundScore: 0, // accumulated points in current round
+  isStealMode: false, // true when team2 is attempting to steal
+  originalTeam: null // which team started (team1 usually)
 };
 
-// ================================
-// استدعاء API - جلب السؤال من Backend
-// ================================
-async function loadQuestion() {
-    try {
-        const url = `http://localhost:5000/api/ai/family-feud?t=${Date.now()}`;
-        console.log('⤴️ fetching question from', url);
-        const response = await fetch(url, { cache: 'no-store' });
+let roundCounter = 0;
+const maxRounds = 2;
+let gameOver = false;
 
-        console.log('↩️ response status', response.status);
-        if (!response.ok) {
-            throw new Error(`خطأ في الاتصال: ${response.status}`);
-        }
+let teamScores = {
+  team1: 0,
+  team2: 0
+};
 
-        const data = await response.json();
-        if (data.fallback) {
-            console.warn("⚠️ يتم استخدام بيانات احتياطية ثابتة (Quota قد انتهى)");
-        }
-        
-        // تحديث البيانات من Backend
-        game.question = data.question;
-        game.answers = data.answers.map(ans => ({
-            text: ans.answer,  // تحويل answer إلى text
-            points: ans.points,
-            revealed: false
-        }));
-        
-        console.log('✅ تم تحميل السؤال:', game);
-        
-        // إعادة تعيين متغيرات الجولة
-        currentTeam = "أ";
-        strikes = 0;
-        timeLeft = 45;
-        stealMode = false;
-        originalTeam = null;
-        
-        // تحديث الواجهة
-        questionEl.textContent = game.question;
-        strikesEl.textContent = "";
-        inputEl.value = "";
-        document.getElementById("currentTeamBox").textContent = "الفريق أ";
-        renderAnswers();
-        inputEl.focus();
-        
-    } catch (error) {
-        console.error('❌ خطأ في تحميل السؤال:', error);
-        game.question = "خطأ في تحميل السؤال - تأكد من أن البيئة تعمل";
-        questionEl.textContent = game.question;
-    }
-}
+const API_BASE = "http://localhost:5000/api/ai";
 
-// تحميل السؤال عند فتح الصفحة
-window.addEventListener('load', loadQuestion);
+// ════════════════════════════════════════════════════════════════════════════════
+// DOM ELEMENTS
+// ════════════════════════════════════════════════════════════════════════════════
 
-// ================================
-// متغيرات اللعبة
-// ================================
-let currentTeam = "أ";
-let scoreA = 0;
-let scoreB = 0;
-let strikes = 0;
-let timeLeft = 45;
-
-let stealMode = false;
-let originalTeam = null;
-
-// ================================
-// عناصر الواجهة
-// ================================
 const questionEl = document.getElementById("question");
 const answersEl = document.getElementById("answers");
 const strikesEl = document.getElementById("strikes");
@@ -80,218 +50,443 @@ const inputEl = document.getElementById("answerInput");
 const scoreAEl = document.getElementById("scoreA");
 const scoreBEl = document.getElementById("scoreB");
 const timerEl = document.getElementById("timer");
+const currentTeamBox = document.getElementById("currentTeamBox");
+const roundScoreEl = document.getElementById("roundScore");
 
-// ================================
-// عرض الإجابات
-// ================================
-function renderAnswers() {
+// ════════════════════════════════════════════════════════════════════════════════
+// INITIALIZATION
+// ════════════════════════════════════════════════════════════════════════════════
+
+let roundActive = false; // used by timer to pause when round over
+
+/**
+ * Start a completely new round with a fresh question
+ */
+async function startNewRound() {
+  if (gameOver) return;
+  // hide start button if visible
+  const btn = document.getElementById("startRoundBtn");
+  if (btn) btn.style.display = "none";
+
+  inputEl.disabled = false;
+
+  try {
+    console.log("🔄 Starting new round...");
+    
+    // Reset all round-specific state
+    gameState.roundScore = 0;
+    gameState.wrongAttempts = 0;
+    gameState.isStealMode = false;
+    gameState.originalTeam = null;
+    gameState.currentTeam = "team1";
+    
+    // Show loading
+    questionEl.textContent = "جاري تحميل السؤال...";
+    inputEl.value = "";
+    strikesEl.textContent = "";
     answersEl.innerHTML = "";
-
-    game.answers.forEach(ans => {
-        const div = document.createElement("div");
-        div.classList.add("answer-card");
-
-        if (ans.revealed) {
-            div.classList.add("revealed");
-
-            const pointsEl = document.createElement("div");
-            pointsEl.classList.add("points");
-            pointsEl.textContent = ans.points;
-
-            const textEl = document.createElement("div");
-            textEl.classList.add("text");
-            textEl.textContent = ans.text;
-
-            div.appendChild(pointsEl);
-            div.appendChild(textEl);
-        }
-
-        answersEl.appendChild(div);
+    
+    // reset timer
+    timeLeft = 45;
+    timerEl.textContent = timeLeft;
+    
+    // Fetch new round from backend
+    const response = await fetch(`${API_BASE}/family-feud/start-round`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" }
     });
+    
+    if (!response.ok) {
+      throw new Error(`Server error: ${response.status}`);
+    }
+    
+    const data = await response.json();
+    
+    // Load round data
+    gameState.question = data.round.question;
+    gameState.answers = data.round.answers;
+    
+    console.log("✅ New round loaded:", gameState);
+    
+    // Update UI
+    updateUI();
+    inputEl.focus();
+    
+    // Enable timer for this round
+    roundActive = true;
+    
+  } catch (error) {
+    console.error("❌ Error starting new round:", error);
+    questionEl.textContent = "خطأ في تحميل السؤال - تأكد من البيئة";
+  }
 }
 
-// ================================
-// إرسال الإجابة
-// ================================
-function submitAnswer() {
-    const value = inputEl.value.trim().toLowerCase();
-    console.log("🔍 user input:", value);
-    console.log("🔍 current answers:", game.answers.map(a => a.text));
-    const normalize = str => {
-        if (!str) return "";
-        return String(str)
-            .toLowerCase()
-            // remove tashkeel (diacritics) and tatweel
-            .replace(/[\u064B-\u0652\u0640]/g, "")
-            // remove punctuation and non-Arabic letters/numbers
-            .replace(/[^\u0600-\u06FF0-9\s]/g, "")
-            // collapse whitespace
-            .replace(/\s+/g, " ")
-            // remove common prefix ال
-            .replace(/^ال\s?/, "")
-            .trim();
-    };
+/**
+ * Load initial round when page loads
+ */
+window.addEventListener("load", startNewRound);
 
-    const found = game.answers.find(ans => {
-        const answerText = normalize(ans.text);
-        const userText = normalize(value);
-        if (ans.revealed) return false;
-        // مطابقة دقيقة فقط - يجب أن تكون الإجابة متطابقة تماماً
-        return answerText === userText;
-    });
+// ════════════════════════════════════════════════════════════════════════════════
+// UI UPDATES
+// ════════════════════════════════════════════════════════════════════════════════
 
-    if (found) {
-        console.log("✅ matched answer:", found.text, "points:", found.points);
-        found.revealed = true;
-        renderAnswers();
+const roundTitleEl = document.querySelector(".round-title");
 
-        // لو في وضع السرقة
-        if (stealMode) {
-            const totalPoints = game.answers
-                .filter(ans => !ans.revealed)
-                .reduce((sum, ans) => sum + ans.points, 0);
+/**
+ * Update all UI elements to reflect current game state
+ */
+function updateUI() {
+  // Update round title
+  roundTitleEl.textContent = `الجولة ${roundCounter + 1}`;
+  
+  // Update question
+  questionEl.textContent = gameState.question || "جاري تحميل السؤال...";
+  
+  // Update scores
+  scoreAEl.textContent = teamScores.team1;
+  scoreBEl.textContent = teamScores.team2;
+  roundScoreEl.textContent = gameState.roundScore;
+  
+  // Update team indicator
+  const teamName = gameState.currentTeam === "team1" ? "الفريق أ" : "الفريق ب";
+  if (gameState.isStealMode) {
+    currentTeamBox.textContent = `${teamName} (محاولة سرقة!)`;
+  } else {
+    currentTeamBox.textContent = teamName;
+  }
+  
+  // Update strikes
+  strikesEl.textContent = "❌".repeat(gameState.wrongAttempts);
+  
+  // Render answer cards
+  renderAnswers();
+}
 
-            if (currentTeam === "أ") {
-                scoreA += totalPoints;
-                scoreAEl.textContent = scoreA;
-            } else {
-                scoreB += totalPoints;
-                scoreBEl.textContent = scoreB;
-            }
-
-            showResultPopup(
-                "🎉 تمت السرقة بنجاح!",
-                `الفريق ${currentTeam} حصل على ${totalPoints} نقطة`
-            );
-
-            endRound();
-            return;
-        }
-
-        // الوضع الطبيعي
-        if (currentTeam === "أ") {
-            scoreA += found.points;
-            scoreAEl.textContent = scoreA;
-        } else {
-            scoreB += found.points;
-            scoreBEl.textContent = scoreB;
-        }
-
-        if (game.answers.every(ans => ans.revealed)) {
-            showResultPopup("🏁 انتهت الجولة", "تم كشف جميع الإجابات");
-            endRound();
-        }
-
-    } else {
-
-        // فشل في السرقة
-        if (stealMode) {
-            showResultPopup(
-                "❌ فشلت السرقة",
-                `الفريق ${originalTeam} يحتفظ بالنقاط`
-            );
-            endRound();
-            return;
-        }
-
-        // خطأ عادي
-        strikes++;
-        strikesEl.textContent = "❌".repeat(strikes);
-
-        if (strikes >= 3) {
-            activateStealMode();
-        }
+/**
+ * Render answer cards with revealed/hidden state
+ */
+function renderAnswers() {
+  answersEl.innerHTML = "";
+  
+  gameState.answers.forEach(ans => {
+    const div = document.createElement("div");
+    div.classList.add("answer-card");
+    
+    if (ans.revealed) {
+      div.classList.add("revealed");
+      
+      const pointsEl = document.createElement("div");
+      pointsEl.classList.add("points");
+      pointsEl.textContent = ans.points;
+      
+      const textEl = document.createElement("div");
+      textEl.classList.add("text");
+      textEl.textContent = ans.answer;
+      
+      div.appendChild(pointsEl);
+      div.appendChild(textEl);
     }
+    
+    answersEl.appendChild(div);
+  });
+}
 
+// ════════════════════════════════════════════════════════════════════════════════
+// ANSWER SUBMISSION LOGIC
+// ════════════════════════════════════════════════════════════════════════════════
+
+/**
+ * Normalize Arabic text for comparison
+ */
+function normalize(str) {
+  if (!str) return "";
+  return String(str)
+    .toLowerCase()
+    .replace(/[\u064B-\u0652\u0640]/g, "") // Remove diacritics
+    .replace(/[هة]/g, "ه")                       // treat taa marbuta same as ha
+    .replace(/[^\u0600-\u06FF0-9\s]/g, "") // Remove non-Arabic
+    .replace(/\s+/g, " ") // Collapse whitespace
+    .replace(/^ال\s?/, "") // Remove "ال" prefix
+    .trim();
+}
+
+/**
+ * Submit user's answer
+ */
+async function submitAnswer() {
+  if (gameOver) return;
+  const userInput = inputEl.value.trim();
+  
+  if (!userInput) {
+    return;
+  }
+  
+  try {
+    console.log("📤 Submitting answer:", userInput);
+    
+    const response = await fetch(`${API_BASE}/family-feud/submit-answer`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ answer: userInput })
+    });
+    
+    if (!response.ok) {
+      let errText;
+      try { errText = await response.text(); } catch {};
+      throw new Error(`Server error: ${response.status} ${errText||""}`);
+    }
+    
+    let result;
+    try {
+      result = await response.json();
+    } catch (e) {
+      throw new Error("Invalid JSON from server");
+    }
+    console.log("📥 Server response:", result);
+    
+    if (result.correct) {
+      // ───── CORRECT ANSWER ─────
+      handleCorrectAnswer(result);
+    } else if (result.stealFailed) {
+      handleStealFailure(result);
+    } else {
+      // ───── WRONG ANSWER ─────
+      handleWrongAnswer(result);
+    }
+    
+    // Clear input
     inputEl.value = "";
     inputEl.focus();
+    
+  } catch (error) {
+    console.error("❌ Error submitting answer:", error);
+    // if B was stealing, treat as failed steal
+    if (gameState.isStealMode && gameState.currentTeam !== gameState.originalTeam) {
+      handleStealFailure({ originalTeam: gameState.originalTeam, roundScore: gameState.roundScore });
+    } else {
+      // normal error popup only for non-steal scenarios
+      showResultPopup("⚠️ خطأ", "حدث خطأ - يرجى المحاولة مرة أخرى");
+    }
+    // ensure input disabled to prevent repeat
+    inputEl.disabled = true;
+  }
 }
 
-// ================================
-// تفعيل السرقة
-// ================================
-function activateStealMode() {
-    stealMode = true;
-    originalTeam = currentTeam;
-
-    currentTeam = currentTeam === "أ" ? "ب" : "أ";
-
-    strikes = 0;
-    strikesEl.textContent = "";
-
-    document.getElementById("currentTeamBox").textContent =
-        currentTeam === "أ"
-            ? "الفريق أ (محاولة سرقة!)"
-            : "الفريق ب (محاولة سرقة!)";
+/**
+ * Handle correct answer submission
+ */
+function handleCorrectAnswer(result) {
+  // Update local state with latest from server
+  gameState.roundScore = result.roundScore;
+  
+  // Mark the revealed answer in our local state
+  const revealedAns = gameState.answers.find(
+    a => normalize(a.answer) === normalize(result.answer) && !a.revealed
+  );
+  if (revealedAns) {
+    revealedAns.revealed = true;
+  }
+  
+  // Mark ALL other unrevealed as revealed (in steal scenario)
+  if (gameState.isStealMode && gameState.currentTeam !== gameState.originalTeam) {
+    gameState.answers.forEach(a => a.revealed = true);
+  }
+  
+  console.log("✅ Correct answer! Round Score:", gameState.roundScore);
+  updateUI();
+  
+  // Check if round should end
+  const allRevealed = gameState.answers.every(a => a.revealed);
+  if (allRevealed) {
+    handleRoundEnd("انتهت الجولة - تم كشف جميع الإجابات");
+  } else if (gameState.isStealMode && gameState.currentTeam !== gameState.originalTeam) {
+    handleStealSuccess();
+  }
 }
 
-// ================================
-// إنهاء الجولة (بدون إيقاف التايمر)
-// ================================
-function endRound() {
-    console.log('--- endRound called. Scores:', { A: scoreA, B: scoreB });
-    stealMode = false;
-    strikes = 0;
-    strikesEl.textContent = "";
+/**
+ * Handle wrong answer submission
+ */
+function handleWrongAnswer(result) {
+  gameState.wrongAttempts = result.wrongAttempts;
+  
+  console.log(`❌ Wrong answer! Attempts: ${gameState.wrongAttempts}/3`);
+  updateUI();
+  
+  // Check if steal mode should activate
+  if (result.stealModeActivated && !gameState.isStealMode) {
+    gameState.isStealMode = true;
+    gameState.originalTeam = gameState.currentTeam;
+    gameState.currentTeam = gameState.currentTeam === "team1" ? "team2" : "team1";
+    gameState.wrongAttempts = 0;
+    
+    // give stealing team a fresh timer
+    timeLeft = 45;
+    timerEl.textContent = timeLeft;
+    
+    console.log("🔄 Steal mode activated! Switching to:", gameState.currentTeam);
+    
+    const teamA = gameState.originalTeam === "team1" ? "أ" : "ب";
+    const teamB = gameState.currentTeam === "team1" ? "أ" : "ب";
+    const msg = `انتهى دور الفريق ${teamA}! الآن دور الفريق ${teamB} (محاولة سرقة). الزمن أعيد إلى 45 ثانية.`;
+    
+    showResultPopup("📢 تنبيه", msg);
+    updateUI();
+  }
+}
 
-    // إغلاق أي popup ظاهر
-    try { closeResultPopup(); } catch (e) { }
+/**
+ * Handle successful steal
+ */
+function handleStealSuccess() {
+  const points = gameState.roundScore;
+  const teamKey = gameState.currentTeam;
+  
+  console.log(`🎉 Steal successful! Team ${teamKey === "team1" ? "أ" : "ب"} scores:`, points);
+  updateUI();
+  
+  const teamName = gameState.currentTeam === "team1" ? "الفريق أ" : "الفريق ب";
+  showResultPopup(
+    "🎉 تمت السرقة بنجاح!",
+    `${teamName} حصل على ${points} نقطة`
+  );
+  
+  setTimeout(() => {
+    closeResultPopup();
+    handleRoundEnd(`${teamName} سرق النقاط`, teamKey);
+  }, 2000);
+}
 
-    // عرض رسالة تحميل قصيرة للمستخدم
-    questionEl.textContent = "جارٍ تحميل السؤال...";
+function handleStealFailure(result) {
+  // stealing team failed, original team keeps roundScore
+  const originalKey = result.originalTeam;
+  const teamName = originalKey === "team1" ? "الفريق أ" : "الفريق ب";
 
-    // إعادة تعيين الإجابات محلياً ثم اعادة العرض بصيغة مخفية
-    game.answers.forEach(ans => ans.revealed = false);
-    renderAnswers();
+  console.log(`❌ Steal failed, ${teamName} keeps ${result.roundScore} points`);
+  
+  // go straight to round end with message (no separate popup here to avoid double popup)
+  handleRoundEnd(`❌ فشلت السرقة - ${teamName} يحتفظ بالنقاط`, originalKey);
+}
 
-    // حمل سؤال جديد من API بعد فترة بسيطة لتتيح إغلاق الـ popup والانتقال
+/**
+ * Handle round end (all answers revealed)
+ */
+function handleRoundEnd(message, winnerTeamKey) {
+  // increment rounds completed
+  roundCounter++;
+
+  // reveal all answers on board
+  gameState.answers.forEach(a => a.revealed = true);
+  updateUI();
+
+  const points = gameState.roundScore;
+  const teamKey = winnerTeamKey || gameState.currentTeam;
+  
+  teamScores[teamKey] += points;
+  
+  console.log(`🏁 Round ${roundCounter} ended! Team ${teamKey === "team1" ? "أ" : "ب"} scores:`, points);
+  
+  showResultPopup("🏁 انتهت الجولة", message || "لا توجد إجابات متبقية");
+
+  // disable input to prevent further guesses
+  inputEl.disabled = true;
+  roundActive = false; // stop timer
+
+  if (roundCounter >= maxRounds) {
     setTimeout(() => {
-        loadQuestion();
-    }, 1000); // بعد ثانية واحدة من انتهاء الجولة
+      closeResultPopup();
+      finishGame();
+    }, 2000);
+  } else {
+    // show start button instead of auto starting
+    document.getElementById("startRoundBtn").style.display = "inline-block";
+  }
 }
 
+// ════════════════════════════════════════════════════════════════════════════════
+// POPUP MANAGEMENT
+// ════════════════════════════════════════════════════════════════════════════════
 
-// ================================
-// Popup احترافي
-// ================================
+function finishGame() {
+  gameOver = true;
+  const btn = document.getElementById("startRoundBtn");
+  if (btn) btn.style.display = "none";
+  const winner = teamScores.team1 > teamScores.team2 ? "الفريق أ" :
+                 teamScores.team2 > teamScores.team1 ? "الفريق ب" : "تعادل";
+  const message = winner === "تعادل"
+    ? "انتهت اللعبة بتعادل!"
+    : `الفائز هو ${winner}`;
+  
+  showResultPopup("🎮 انتهت اللعبة", message);
+  
+  // Reset game after showing winner
+  setTimeout(() => {
+    closeResultPopup();
+    roundCounter = 0;
+    teamScores.team1 = 0;
+    teamScores.team2 = 0;
+    gameOver = false;
+    startNewRound();
+  }, 4000);
+}
+
 function showResultPopup(title, message) {
-    document.getElementById("resultTitle").textContent = title;
-    document.getElementById("resultMessage").textContent = message;
-    document.getElementById("resultPopup").style.display = "flex";
+  document.getElementById("resultTitle").textContent = title;
+  document.getElementById("resultMessage").textContent = message;
+  document.getElementById("resultPopup").style.display = "flex";
 }
 
 function closeResultPopup() {
-    document.getElementById("resultPopup").style.display = "none";
+  document.getElementById("resultPopup").style.display = "none";
 }
 
-// ================================
-// التايمر (لا يتوقف أبداً)
-// ================================
-let timer = setInterval(() => {
+// ════════════════════════════════════════════════════════════════════════════════
+// EVENT LISTENERS
+// ════════════════════════════════════════════════════════════════════════════════
 
-    timeLeft--;
-    timerEl.textContent = timeLeft;
+// Submit answer on button click
+document.querySelector(".input-section button").addEventListener("click", submitAnswer);
 
-    if (timeLeft <= 0) {
-
-        if (!stealMode) {
-            activateStealMode();
-        } else {
-            showResultPopup("⏰ انتهى الوقت!", "انتهت الجولة");
-            endRound();
-        }
-
-        timeLeft = 45;
-        timerEl.textContent = timeLeft;
-    }
-
-}, 1000);
-
-// ================================
-// Enter = Submit
-// ================================
+// Submit answer on Enter key
 inputEl.addEventListener("keypress", function (event) {
-    if (event.key === "Enter") {
-        submitAnswer();
-    }
+  if (event.key === "Enter") {
+    submitAnswer();
+  }
 });
+
+// ════════════════════════════════════════════════════════════════════════════════
+// TIMER (Keep 45-second rounds, resets for each question)
+// ════════════════════════════════════════════════════════════════════════════════
+
+let timeLeft = 45;
+
+setInterval(() => {
+  if (!roundActive) return; // stop when round has ended
+  timeLeft--;
+  timerEl.textContent = timeLeft;
+  
+  if (timeLeft <= 0) {
+    // Time's up for this round
+    roundActive = false; // stop timer immediately to prevent duplicate triggers
+    
+    // If not in steal mode, activate steal mode
+    if (!gameState.isStealMode) {
+      const msg = "⏰ انتهى الوقت! نهاية دور الفريق";
+      showResultPopup("⏰ انتهى الوقت!", msg);
+      
+      gameState.isStealMode = true;
+      gameState.originalTeam = gameState.currentTeam;
+      gameState.currentTeam = gameState.currentTeam === "team1" ? "team2" : "team1";
+      gameState.wrongAttempts = 0;
+      
+      setTimeout(() => {
+        closeResultPopup();
+        updateUI();
+      }, 1500);
+    } else {
+      // Steal attempt timed out – treat as failed steal (handleRoundEnd will show popup)
+      const originalKey = gameState.originalTeam;
+      handleStealFailure({ originalTeam: originalKey, roundScore: gameState.roundScore });
+    }
+  }
+}, 1000);

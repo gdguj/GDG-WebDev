@@ -23,6 +23,42 @@ const gameSessionSchema = new mongoose.Schema({
     default: null
   },
 
+  // ─── Family Feud Round State ───────────────────────────────────────────────
+  familyFeudRound: {
+    currentQuestion: {
+      question: { type: String },
+      answers: [
+        {
+          answer: { type: String },
+          points: { type: Number },
+          revealed: { type: Boolean, default: false }
+        }
+      ]
+    },
+    currentTeam: {
+      type: String,
+      enum: ['team1', 'team2'],
+      default: 'team1'
+    },
+    wrongAttempts: {
+      type: Number,
+      default: 0
+    },
+    roundScore: {
+      type: Number,
+      default: 0
+    },
+    isStealMode: {
+      type: Boolean,
+      default: false
+    },
+    originalTeam: {
+      type: String,
+      enum: ['team1', 'team2'],
+      default: null
+    }
+  },
+
   // ─── Stats (added when the game finishes) ───────────────────────────────────
 
   // Word Grid stats

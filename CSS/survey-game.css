@@ -242,3 +242,22 @@ button:hover {
     font-size: 24px;
     margin-bottom: 15px;
 }
+
+.round-points-box {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 20px;
+    font-size: 18px;
+    color: #333;
+    font-weight: bold;
+}
+
+.round-points-box p {
+    margin: 0;
+}
+
+.round-points-box span {
+    color: #16a34a;
+    font-weight: bold;
+}

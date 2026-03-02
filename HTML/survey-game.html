@@ -72,6 +72,12 @@
 
         <!-- مربع الفريق الحالي -->
 <div class="team-box" id="currentTeamBox">الفريق أ</div>
+        
+        <!-- Current Round Points -->
+        <div class="round-points-box">
+            <p>نقاط الجولة الحالية: <span id="roundScore">0</span></p>
+        </div>
+        
         <!-- Answers Grid -->
         <div class="answers-grid" id="answers"></div>
 
@@ -83,6 +89,11 @@
 
         <!-- Strikes -->
         <div id="strikes" class="strikes"></div>
+
+        <!-- new round button -->
+        <div class="mt-4">
+            <button id="startRoundBtn" class="btn" style="display:none;" onclick="startNewRound()">بدء جولة جديدة</button>
+        </div>
 
     </div>
 <!-- Popup نهاية الجولة -->
