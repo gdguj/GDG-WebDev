@@ -6,7 +6,7 @@
  * Game Rules:
  * - Two teams: Team 1 (أ) and Team 2 (ب)
  * - One question per round with exactly 10 answers
- * - Team 1 starts answering
+ * - Teams alternate who starts answering; round 1 begins with الفريق أ, round 2 with الفريق ب, etc.
  * - If Team 1 gives 3 wrong answers, they're done → Team 2 attempts to STEAL
  * - Team 2 continues answering the SAME question (no new question generated)
  * - If Team 2 guesses a correct answer during steal, they take ALL remaining points
@@ -29,7 +29,8 @@ let gameState = {
 };
 
 let roundCounter = 0;
-const maxRounds = 2;
+// Change this value when you want more rounds (e.g. 3 rounds as the user expects)
+const maxRounds = 3;
 let gameOver = false;
 
 let teamScores = {
@@ -78,7 +79,9 @@ async function startNewRound() {
     gameState.wrongAttempts = 0;
     gameState.isStealMode = false;
     gameState.originalTeam = null;
-    gameState.currentTeam = "team1";
+    // alternate which team starts each round so that the first round begins with فريق أ and
+    // the next round starts with فريق ب, etc.  Use roundCounter's parity to decide.
+    gameState.currentTeam = (roundCounter % 2 === 0 ? "team1" : "team2");
     
     // Show loading
     questionEl.textContent = "جاري تحميل السؤال...";
@@ -409,16 +412,22 @@ function handleRoundEnd(message, winnerTeamKey) {
 
 function finishGame() {
   gameOver = true;
+
   const btn = document.getElementById("startRoundBtn");
   if (btn) btn.style.display = "none";
-  const winner = teamScores.team1 > teamScores.team2 ? "الفريق أ" :
-                 teamScores.team2 > teamScores.team1 ? "الفريق ب" : "تعادل";
-  const message = winner === "تعادل"
-    ? "انتهت اللعبة بتعادل!"
-    : `الفائز هو ${winner}`;
-  
+
+  const winner =
+    teamScores.team1 > teamScores.team2 ? "الفريق أ" :
+    teamScores.team2 > teamScores.team1 ? "الفريق ب" :
+    "تعادل";
+
+  const message =
+    winner === "تعادل"
+      ? "انتهت اللعبة بتعادل!"
+      : `الفائز هو ${winner}`;
+
   showResultPopup("🎮 انتهت اللعبة", message);
-  
+
   // Reset game after showing winner
   setTimeout(() => {
     closeResultPopup();
@@ -438,6 +447,10 @@ function showResultPopup(title, message) {
 
 function closeResultPopup() {
   document.getElementById("resultPopup").style.display = "none";
+
+  if (roundCounter >= maxRounds && !gameOver) {
+    finishGame();
+  }
 }
 
 // ════════════════════════════════════════════════════════════════════════════════
