@@ -21,7 +21,7 @@ Return JSON ONLY with this exact schema:
 
 Rules:
 - Arabic only for question and answers.
-- 5 to 8 answers (not more, not less).
+- Exactly 10 answers (no more, no less).
 - Answers must be easy to understand and true.
 - Points must be integers from 1 to 100.
 - Do not include any extra text, markdown, or code fences. JSON only.
