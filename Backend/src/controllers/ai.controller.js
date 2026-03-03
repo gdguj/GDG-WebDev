@@ -178,6 +178,7 @@ async function startFamilyFeudRound(req, res, next) {
         attempts++;
       }
 
+  
       // if after retries we still have a duplicate, fall back to default
       if (usedQuestions.some(u => normalize(u.question) === normalize(questionData.question))) {
         throw new Error("Gemini returned duplicate question after retries");
@@ -189,20 +190,23 @@ async function startFamilyFeudRound(req, res, next) {
 
       console.log("✅ تم توليد سؤال جديد من Gemini");
 
-    } catch (geminiError) {
-      console.error("⚠️ خطأ من Gemini API أو سؤال مكرر:", geminiError.message);
-
-      // سحب سؤال افتراضي غير مستخدم إن أمكن
-      questionData = randomFallback(usedQuestions);
-      isFallback = true;
-    }
+  } catch (geminiError) {
+  console.error("⚠️ FULL ERROR:", geminiError.message); // ADD THIS LINE HERE
+  console.error("⚠️ خطأ من Gemini API أو سؤال مكرر:", geminiError.message);
+  
+  questionData = randomFallback(usedQuestions);
+  isFallback = true;
+}
 
     // بعد اختيار السؤال (سواء من Gemini أو fallback)، احفظه في القائمة
-    usedQuestions.push({
-      question: questionData.question,
-      answers: questionData.answers
-    });
-    saveUsedQuestions(usedQuestions);
+   // ✅ Only push if not already in the list
+const alreadySaved = usedQuestions.some(u => normalize(u.question) === normalize(questionData.question));
+if (!alreadySaved) {
+  usedQuestions.push({ question: questionData.question, answers: questionData.answers });
+  saveUsedQuestions(usedQuestions);
+}
+
+
 
     // تهيئة حالة اللعبة الجديدة
     const roundState = {
