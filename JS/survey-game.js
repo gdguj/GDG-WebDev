@@ -30,7 +30,7 @@ let gameState = {
 
 let roundCounter = 0;
 // Change this value when you want more rounds (e.g. 3 rounds as the user expects)
-const maxRounds = 3;
+const maxRounds = 2;
 let gameOver = false;
 
 let teamScores = {
@@ -108,6 +108,9 @@ async function startNewRound() {
     // Load round data
     gameState.question = data.round.question;
     gameState.answers = data.round.answers;
+
+    // Fetch new round from local JSON
+
     
     console.log("✅ New round loaded:", gameState);
     
@@ -123,6 +126,7 @@ async function startNewRound() {
     questionEl.textContent = "خطأ في تحميل السؤال - تأكد من البيئة";
   }
 }
+
 
 /**
  * Load initial round when page loads

@@ -18,7 +18,7 @@ app.use(express.static(frontendPath));   // HTML files
 app.use(express.static(cssPath));         // CSS files
 app.use(express.static(jsPath));          // JS files
 app.use(express.static(imagesPath));      // Images
-
+app.use("/Data", express.static("Data"));
 // ================================
 // تحديد الصفحة الافتراضية
 // ================================
