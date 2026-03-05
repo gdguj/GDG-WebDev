@@ -1,4 +1,3 @@
-const { nanoid } = require("nanoid");
 const Session = require("../models/Session.model");
 
 function startsWithLetter(answer, letter) {
@@ -34,6 +33,7 @@ function generateCells(rows, cols) {
 }
 
 exports.createSession = async (difficulty, greenName, blueName, TURN_SECONDS) => {
+  const { nanoid } = await import("nanoid");
   const { rows, cols } = getGridSize(difficulty);
   return await Session.create({
     sessionId: nanoid(8),
