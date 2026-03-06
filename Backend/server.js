@@ -18,6 +18,11 @@ app.use(express.static(frontendPath));   // HTML files
 app.use(express.static(cssPath));         // CSS files
 app.use(express.static(jsPath));          // JS files
 app.use(express.static(imagesPath));      // Images
+
+// Also expose assets under explicit folder prefixes used by HTML pages.
+app.use("/CSS", express.static(cssPath));
+app.use("/JS", express.static(jsPath));
+app.use("/Images", express.static(imagesPath));
 app.use("/Data", express.static("Data"));
 // ================================
 // تحديد الصفحة الافتراضية
@@ -31,7 +36,6 @@ app.get("/", (req, res) => {
 // ================================
 app.listen(PORT, () => {
   console.log(`🚀 Server running on http://localhost:${PORT}`);
-  console.log(`📄 Frontend served from: ${frontendPath}`);
   console.log(`🎮 Survey Game: http://localhost:${PORT}/survey-game.html`);
   console.log(`🖼️  Image Game: http://localhost:${PORT}/imageGame.html`);
 });
