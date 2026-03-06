@@ -326,6 +326,8 @@ function handleRoundEnd(message, winnerTeamKey) {
   const teamKey = winnerTeamKey || gameState.currentTeam;
 
   teamScores[teamKey] += points;
+  scoreAEl.textContent = teamScores.team1;
+  scoreBEl.textContent = teamScores.team2;
 
   showResultPopup("🏁 انتهت الجولة", message);
 
@@ -334,14 +336,16 @@ function handleRoundEnd(message, winnerTeamKey) {
 
   roundCounter++;
 
+  // Always show button, never auto-advance
+  const btn = document.getElementById("startRoundBtn");
   if (roundCounter >= maxRounds) {
-    setTimeout(() => {
-      closeResultPopup();
-      finishGame();
-    }, 2000);
+    btn.textContent = "عرض النتيجة النهائية";
+    btn.onclick = finishGame;
   } else {
-    document.getElementById("startRoundBtn").style.display = "inline-block";
+    btn.textContent = "بدء جولة جديدة";
+    btn.onclick = startNewRound;
   }
+  btn.style.display = "inline-block";
 }
 
 function finishGame() {
@@ -352,16 +356,24 @@ function finishGame() {
     teamScores.team2 > teamScores.team1 ? "الفريق ب" :
     "تعادل";
 
-  showResultPopup("🎮 انتهت اللعبة", winner === "تعادل" ? "تعادل!" : `الفائز هو ${winner}`);
+  const finalMessage = winner === "تعادل" 
+    ? `تعادل!\nالفريق أ: ${teamScores.team1}\nالفريق ب: ${teamScores.team2}`
+    : `الفائز هو ${winner}!\nالفريق أ: ${teamScores.team1}\nالفريق ب: ${teamScores.team2}`;
 
-  setTimeout(() => {
+  showResultPopup("🎮 انتهت اللعبة", finalMessage);
+
+  // Show restart button instead of auto-restart
+  const btn = document.getElementById("startRoundBtn");
+  btn.textContent = "بدء لعبة جديدة";
+  btn.onclick = () => {
     closeResultPopup();
     roundCounter = 0;
     teamScores.team1 = 0;
     teamScores.team2 = 0;
     gameOver = false;
     startNewRound();
-  }, 4000);
+  };
+  btn.style.display = "inline-block";
 }
 
 function showResultPopup(title, message) {
