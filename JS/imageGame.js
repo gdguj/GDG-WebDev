@@ -226,7 +226,6 @@ const DOM = {
   feedback:    document.getElementById('feedback'),
   submitBtn:   document.getElementById('submit-btn'),
   showAnswerBtn: document.getElementById('show-answer-btn'),
-  nextBtn:     document.getElementById('next-btn'),
   toast:       document.getElementById('toast'),
   cwrap:       document.getElementById('cwrap'),
   scoreA:      document.getElementById('score-a'),
@@ -289,8 +288,7 @@ function loadQuestion() {
   DOM.submitBtn.classList.remove('fading');
   DOM.submitBtn.style.display = 'block';
   DOM.submitBtn.disabled = false;
-  DOM.showAnswerBtn.style.display = 'none';
-  DOM.nextBtn.style.display = 'none';
+  DOM.showAnswerBtn.style.display = 'block';
   DOM.answer.disabled = false;
   DOM.answer.focus();
   STATE.hintUsed = false;
@@ -336,14 +334,15 @@ function handleTimesUp() {
 
   STATE.answered = true;
   DOM.feedback.className = 'feedback skipped';
-  DOM.feedback.textContent = "⏰ Time's up — no points!";
+  DOM.feedback.textContent = "⏰ Time's up!";
   DOM.qcard.classList.add('times-up');
   DOM.submitBtn.style.display = 'none';
   DOM.hintBtn.style.display = 'none';
   DOM.answer.disabled = true;
   
-  // Show the "Show Answer" button
-  DOM.showAnswerBtn.style.display = 'block';
+  // Show Answer button stays visible with Show Answer text + option to next round
+  DOM.showAnswerBtn.textContent = 'Show Answer';
+  DOM.showAnswerBtn.onclick = showAnswer;
   
   setTimeout(() => {
     DOM.qcard.classList.remove('times-up');
@@ -386,7 +385,7 @@ function check() {
   }
 }
 
-// صح: أضف نقاط + انتقل
+// صح: أضف نقاط
 function handleCorrect(points) {
   STATE.answered = true;
   STATE.scores[STATE.activeTeam] += points;
@@ -404,15 +403,16 @@ function handleCorrect(points) {
   showToast(`+${points} Points`);
   spawnConfetti();
 
-  // Show "Show Answer" button (even though correct, user can see the answer)
-  DOM.showAnswerBtn.style.display = 'block';
+  // Show Answer button visible + Next button appears after brief delay
+  DOM.showAnswerBtn.textContent = 'Next Round';
+  DOM.showAnswerBtn.onclick = nextRound;
 
   setTimeout(() => {
     DOM.qcard.classList.remove('flash-correct');
   }, 900);
 }
 
-// غلط: بدون نقاط + مسح الحقل للمحاولة التالية
+// غلط: بدون نقاط + إمكانية المحاولة مجددا أو التخلي
 function handleWrong() {
   DOM.feedback.className   = 'feedback wrong';
   DOM.feedback.textContent = '✗ Wrong! Try again';
@@ -437,15 +437,21 @@ DOM.answer.addEventListener('keydown', e => {
 
 /* SECTION 8 — SHOW ANSWER & NEXT ROUND */
 function showAnswer() {
+  STATE.answered = true;
+  DOM.answer.disabled = true;
+  DOM.submitBtn.disabled = true;
+  DOM.submitBtn.style.display = 'none';
+  clearInterval(STATE.timer);
+  
   const q = STATE.shuffled[STATE.qi];
   const answerText = q.answers.join(' / ');
   
   DOM.feedback.className = 'feedback correct';
   DOM.feedback.textContent = `الإجابة الصحيحة: ${answerText}`;
   
-  // Hide show answer button, show next button
-  DOM.showAnswerBtn.style.display = 'none';
-  DOM.nextBtn.style.display = 'block';
+  // Change button to "Next Round"
+  DOM.showAnswerBtn.textContent = 'Next Round';
+  DOM.showAnswerBtn.onclick = nextRound;
 }
 
 function nextRound() {
@@ -460,7 +466,6 @@ function showGameOver() {
   DOM.answer.disabled = true;
   DOM.submitBtn.style.display = 'none';
   DOM.showAnswerBtn.style.display = 'none';
-  DOM.nextBtn.style.display = 'none';
   
   const winner = STATE.scores.a > STATE.scores.b ? 'Team A' : 
                  STATE.scores.b > STATE.scores.a ? 'Team B' : 'Tie';
