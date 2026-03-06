@@ -13,6 +13,7 @@ const frontendPath = path.join(__dirname, "../HTML");
 const cssPath = path.join(__dirname, "../CSS");
 const jsPath = path.join(__dirname, "../JS");
 const imagesPath = path.join(__dirname, "../Images");
+const dataPath = path.join(__dirname, "Data");
 
 app.use(express.static(frontendPath));   // HTML files
 app.use(express.static(cssPath));         // CSS files
@@ -23,7 +24,7 @@ app.use(express.static(imagesPath));      // Images
 app.use("/CSS", express.static(cssPath));
 app.use("/JS", express.static(jsPath));
 app.use("/Images", express.static(imagesPath));
-app.use("/Data", express.static("Data"));
+app.use("/Data", express.static(dataPath));
 // ================================
 // تحديد الصفحة الافتراضية
 // ================================

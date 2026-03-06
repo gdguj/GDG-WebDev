@@ -43,17 +43,33 @@ const roundTitleEl = document.querySelector(".round-title");
 // JSON QUESTIONS
 // -------------------------------
 let questionsData = [];
+let remainingQuestionIndexes = [];
 
 // تحميل الأسئلة من JSON
 async function loadQuestions() {
-  const res = await fetch("../Backend/Data/family_feud_questions.json");
+  const res = await fetch("/Data/family_feud_questions.json", { cache: "no-store" });
+  if (!res.ok) {
+    throw new Error(`Failed to load questions JSON: ${res.status}`);
+  }
+
   questionsData = await res.json();
+  if (!Array.isArray(questionsData) || questionsData.length === 0) {
+    throw new Error("Questions JSON is empty or invalid.");
+  }
+
+  // Keep a rotating pool so rounds do not repeat questions until all are used.
+  remainingQuestionIndexes = questionsData.map((_, index) => index);
 }
 
 // اختيار سؤال عشوائي
 function getRandomQuestion() {
-  const index = Math.floor(Math.random() * questionsData.length);
-  return questionsData[index];
+  if (remainingQuestionIndexes.length === 0) {
+    remainingQuestionIndexes = questionsData.map((_, index) => index);
+  }
+
+  const pickPosition = Math.floor(Math.random() * remainingQuestionIndexes.length);
+  const [pickedIndex] = remainingQuestionIndexes.splice(pickPosition, 1);
+  return questionsData[pickedIndex];
 }
 
 // -------------------------------
