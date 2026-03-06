@@ -25,14 +25,14 @@ const QUESTIONS = [
     p1: "../images/imageGamePics/pic3-2.png",
     p2: "../images/imageGamePics/pic3-1.png",
     answers: ["سردين"],
-    hint:"سمك صغير ",
+    hint:" في البحر ",
     pts: 4
   },
   {
     p1: "../images/imageGamePics/pic4-1.png",
     p2: "../images/imageGamePics/pic4-2.png",
     answers: ["بطريق"],
-    hint:"حيوان يعيش في القطب الجنوبي",
+    hint:"حيوان ",
     pts: 4
   },
   {
@@ -46,35 +46,35 @@ const QUESTIONS = [
     p1: "../Images/imageGamePics/pic6-2.png",
     p2: "../images/imageGamePics/pic6-1.png",
     answers: ["برعصي"],
-    hint:"حيوان زاحف",
+    hint:" زاحف",
     pts: 4
   },
   {
     p1: "../Images/imageGamePics/pic7-1.png",
     p2: "../images/imageGamePics/pic7-2.png",
     answers: ["ام القرى","أم القرى"],
-    hint:"مدينة في السعودية",
+    hint:"مكه",
     pts: 4
   },
   {
     p1: "../images/imageGamePics/pic8-2.png",
     p2: "../images/imageGamePics/pic8-1.png",
     answers: ["طبرجل"],
-    hint:"معروفة بالشعب الي يمشي",
+    hint:"مدينة سعوديه",
     pts: 4
   },
   {
     p1: "../images/imageGamePics/pic9.png",
     p2: "../images/imageGamePics/pic9.png",
     answers: ["بيكان"],
-    hint:"نوع من المكسرات",
+    hint:" مكسرات",
     pts: 4
   },
   {
     p1: "../images/imageGamePics/pic10-2.png",
     p2: "../images/imageGamePics/pic10-1.png",
     answers: ["حكماء"],
-    hint:"عقول كبيرة",
+    hint:"نصيحة",
     pts: 4
   },
   {
@@ -88,7 +88,7 @@ const QUESTIONS = [
     p1: "../images/imageGamePics/pic12-2.png",
     p2: "../images/imageGamePics/pic12-1.png",
     answers: ["بروتين"],
-    hint:"تقوية العضلات",
+    hint:" عضلات",
     pts: 4
   },
   {
@@ -102,7 +102,7 @@ const QUESTIONS = [
     p1: "../images/imageGamePics/pic14-2.png",
     p2: "../images/imageGamePics/pic14-1.png",
     answers: ["ليمون"],
-    hint:"فاكهة حامضة",
+    hint:"فاكهة ",
     pts: 4
   },
   {
@@ -116,14 +116,14 @@ const QUESTIONS = [
     p1: "../images/imageGamePics/pic16-2.png",
     p2: "../images/imageGamePics/pic16-1.png",
     answers: ["طعمية"],
-    hint:"أكلة مصرية شعبية",
+    hint:"أكلة مصرية ",
     pts: 4
   },
    {
     p1: "../images/imageGamePics/pic17-2.png",
     p2: "../images/imageGamePics/pic17-1.png",
     answers: ["شاورما"],
-    hint:"",
+    hint:"ثوم",
     pts: 4
   },
   {
@@ -138,7 +138,7 @@ const QUESTIONS = [
     p1: "../images/imageGamePics/pic19-2.png",
     p2: "../images/imageGamePics/pic19-1.png",
     answers: ["جامعة الاميرات","جامعة الاميرة نورة"],
-    hint:"تغليف",
+    hint:"مقر تعليمي",
     pts: 4
   },
   {
@@ -173,7 +173,7 @@ const QUESTIONS = [
     p1: "../images/imageGamePics/pic24-2.png",
     p2: "../images/imageGamePics/pic24-1.png",
     answers: ["ابها"],
-    hint:"مدينة في السعودية",
+    hint:"مدينة",
     pts: 4
   },
     {
@@ -187,7 +187,7 @@ const QUESTIONS = [
     p1: "../images/imageGamePics/pic26-2.png",
     p2: "../images/imageGamePics/pic26-1.png",
     answers: ["انانس"],
-    hint:"فاكهة استوائية",
+    hint:"فاكهة",
     pts: 4
   },
   {
@@ -209,7 +209,7 @@ const STATE = {
   activeTeam: 'a',             // الفريق النشط حالياً
   qi:         0,               // رقم السؤال الحالي
   shuffled:   [],              // الأسئلة بعد الخلط
-  hintsUsed: false,
+  hintUsed: false,
   timeLeft: GAME_TIME,
   timer: null,
   answered: false,
@@ -225,6 +225,8 @@ const DOM = {
   answer:      document.getElementById('answer'),
   feedback:    document.getElementById('feedback'),
   submitBtn:   document.getElementById('submit-btn'),
+  showAnswerBtn: document.getElementById('show-answer-btn'),
+  nextBtn:     document.getElementById('next-btn'),
   toast:       document.getElementById('toast'),
   cwrap:       document.getElementById('cwrap'),
   scoreA:      document.getElementById('score-a'),
@@ -285,11 +287,17 @@ function loadQuestion() {
   DOM.feedback.textContent = '';
   DOM.inputRow.classList.remove('wrong-border');
   DOM.submitBtn.classList.remove('fading');
+  DOM.submitBtn.style.display = 'block';
+  DOM.submitBtn.disabled = false;
+  DOM.showAnswerBtn.style.display = 'none';
+  DOM.nextBtn.style.display = 'none';
+  DOM.answer.disabled = false;
   DOM.answer.focus();
-  STATE.hintsUsed = false;
-DOM.hintBtn.classList.remove('used');
-STATE.answered = false;
-resetTimer();
+  STATE.hintUsed = false;
+  DOM.hintBtn.classList.remove('used');
+  DOM.hintBtn.style.display = 'inline-block';
+  STATE.answered = false;
+  resetTimer();
 }
 
 
@@ -330,13 +338,15 @@ function handleTimesUp() {
   DOM.feedback.className = 'feedback skipped';
   DOM.feedback.textContent = "⏰ Time's up — no points!";
   DOM.qcard.classList.add('times-up');
-  DOM.submitBtn.classList.add('fading');
-
+  DOM.submitBtn.style.display = 'none';
+  DOM.hintBtn.style.display = 'none';
+  DOM.answer.disabled = true;
+  
+  // Show the "Show Answer" button
+  DOM.showAnswerBtn.style.display = 'block';
+  
   setTimeout(() => {
     DOM.qcard.classList.remove('times-up');
-    STATE.qi++;
-    switchTeam();
-    loadQuestion();
   }, 1000);
 }
 
@@ -358,8 +368,11 @@ function closeHint(event) {
 }
 
 
-/* SECTION 7 — ANSWER CHECKING */
+/* SECTION 7 —ANSWER CHECKING */
 function check() {
+  // Only prevent check if answer is already submitted/confirmed
+  if (STATE.answered) return;
+  
   const input = DOM.answer.value.trim().toLowerCase();
   if (!input) return;
 
@@ -375,6 +388,7 @@ function check() {
 
 // صح: أضف نقاط + انتقل
 function handleCorrect(points) {
+  STATE.answered = true;
   STATE.scores[STATE.activeTeam] += points;
   DOM.scoreA.textContent = STATE.scores.a;
   DOM.scoreB.textContent = STATE.scores.b;
@@ -382,34 +396,38 @@ function handleCorrect(points) {
   DOM.feedback.className   = 'feedback correct';
   DOM.feedback.textContent = '✓ Correct!';
   DOM.qcard.classList.add('flash-correct');
-  DOM.submitBtn.classList.add('fading');
+  DOM.submitBtn.style.display = 'none';
+  DOM.hintBtn.style.display = 'none';
+  DOM.answer.disabled = true;
+  clearInterval(STATE.timer);
 
   showToast(`+${points} Points`);
   spawnConfetti();
 
+  // Show "Show Answer" button (even though correct, user can see the answer)
+  DOM.showAnswerBtn.style.display = 'block';
+
   setTimeout(() => {
     DOM.qcard.classList.remove('flash-correct');
-    STATE.qi++;
-    switchTeam();
-    loadQuestion();
   }, 900);
 }
 
-// غلط: بدون نقاط + انتقل
+// غلط: بدون نقاط + مسح الحقل للمحاولة التالية
 function handleWrong() {
   DOM.feedback.className   = 'feedback wrong';
-  DOM.feedback.textContent = '✗ Wrong!';
+  DOM.feedback.textContent = '✗ Wrong! Try again';
   DOM.inputRow.classList.add('wrong-border');
   DOM.qcard.classList.add('flash-wrong');
-  DOM.submitBtn.classList.add('fading');
+  
+  // Clear input for next attempt
+  DOM.answer.value = '';
+  DOM.answer.focus();
 
   setTimeout(() => {
     DOM.qcard.classList.remove('flash-wrong');
     DOM.inputRow.classList.remove('wrong-border');
-    STATE.qi++;
-    switchTeam();
-    loadQuestion();
-  }, 900);
+    DOM.feedback.textContent = '';
+  }, 600);
 }
 
 DOM.answer.addEventListener('keydown', e => {
@@ -417,13 +435,44 @@ DOM.answer.addEventListener('keydown', e => {
 });
 
 
-/* SECTION 8 — GAME OVER */
+/* SECTION 8 — SHOW ANSWER & NEXT ROUND */
+function showAnswer() {
+  const q = STATE.shuffled[STATE.qi];
+  const answerText = q.answers.join(' / ');
+  
+  DOM.feedback.className = 'feedback correct';
+  DOM.feedback.textContent = `الإجابة الصحيحة: ${answerText}`;
+  
+  // Hide show answer button, show next button
+  DOM.showAnswerBtn.style.display = 'none';
+  DOM.nextBtn.style.display = 'block';
+}
+
+function nextRound() {
+  STATE.qi++;
+  switchTeam();
+  loadQuestion();
+}
+
+/* SECTION 9 — GAME OVER */
 function showGameOver() {
+  clearInterval(STATE.timer);
+  DOM.answer.disabled = true;
+  DOM.submitBtn.style.display = 'none';
+  DOM.showAnswerBtn.style.display = 'none';
+  DOM.nextBtn.style.display = 'none';
+  
+  const winner = STATE.scores.a > STATE.scores.b ? 'Team A' : 
+                 STATE.scores.b > STATE.scores.a ? 'Team B' : 'Tie';
+  
+  DOM.feedback.className = 'feedback correct';
+  DOM.feedback.textContent = `🎮 Game Over! ${winner === 'Tie' ? 'It\'s a Tie!' : winner + ' Wins!'} (A: ${STATE.scores.a}, B: ${STATE.scores.b})`;
+  
   console.log('Game Over — Scores:', STATE.scores);
 }
 
 
-/* SECTION 9 — VISUAL EFFECTS */
+/* SECTION 10 — VISUAL EFFECTS */
 function showToast(message) {
   DOM.toast.textContent = message;
   DOM.toast.classList.add('show');
@@ -446,7 +495,7 @@ function spawnConfetti() {
 }
 
 
-/* SECTION 10 — UTILS */
+/* SECTION 11 — UTILS */
 function shuffle(arr) {
   const a = [...arr];
   for (let i = a.length - 1; i > 0; i--) {
