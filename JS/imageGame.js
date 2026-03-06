@@ -340,7 +340,8 @@ function handleTimesUp() {
   DOM.hintBtn.style.display = 'none';
   DOM.answer.disabled = true;
   
-  // Show Answer button stays visible with Show Answer text + option to next round
+  // Show Answer button: "Show Answer" when time's up
+  DOM.showAnswerBtn.style.display = 'block';
   DOM.showAnswerBtn.textContent = 'Show Answer';
   DOM.showAnswerBtn.onclick = showAnswer;
   
@@ -403,7 +404,8 @@ function handleCorrect(points) {
   showToast(`+${points} Points`);
   spawnConfetti();
 
-  // Show Answer button visible + Next button appears after brief delay
+  // Show Answer button: "Next Round" for correct answers
+  DOM.showAnswerBtn.style.display = 'block';
   DOM.showAnswerBtn.textContent = 'Next Round';
   DOM.showAnswerBtn.onclick = nextRound;
 
@@ -422,6 +424,11 @@ function handleWrong() {
   // Clear input for next attempt
   DOM.answer.value = '';
   DOM.answer.focus();
+  
+  // Show Answer button: "Show Answer" for wrong answers
+  DOM.showAnswerBtn.style.display = 'block';
+  DOM.showAnswerBtn.textContent = 'Show Answer';
+  DOM.showAnswerBtn.onclick = showAnswer;
 
   setTimeout(() => {
     DOM.qcard.classList.remove('flash-wrong');
