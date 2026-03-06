@@ -33,5 +33,5 @@ app.listen(PORT, () => {
   console.log(`🚀 Server running on http://localhost:${PORT}`);
   console.log(`📄 Frontend served from: ${frontendPath}`);
   console.log(`🎮 Survey Game: http://localhost:${PORT}/survey-game.html`);
-  console.log(`🖼️  Image Game: http://localhost:${PORT}/imageGameLanding.html`);
+  console.log(`🖼️  Image Game: http://localhost:${PORT}/imageGame.html`);
 });
