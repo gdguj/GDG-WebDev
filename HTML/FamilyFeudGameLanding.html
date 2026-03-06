@@ -3,24 +3,20 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Image Guessing Game Final Page</title>
-
-  <!--fonts-->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <title>Letters Cell Game</title>
 
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-  <link rel="stylesheet" href="../CSS/Image-game-result-page.css">
 
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../CSS/LetterCellGameLanding.css">
 </head>
 
 <body>
 
-      <!-- ================= NAVBAR ================= -->
-    <nav lang="ar" dir="rtl" class="bg-white shadow-sm">
+   <!-- ================= NAVBAR ================= -->
+    <nav class="bg-white shadow-sm">
         <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
 
             <!-- Logo -->
@@ -36,57 +32,25 @@
 
         </div>
     </nav>
+  
+  <div class="frame">
+    <div class="panel">
+
+      <img src="../Images/Corner-Left.png" class="corner corner-left" alt="">
+      <img src="../Images/Corner-Right.png" class="corner corner-right" alt="">
+
+      <img src="../Images/GDGIcon.png" class="gdg-icon" alt="">
 
 
+      <h1 class="title">Family Fued <span style="color:#4285F4">G</span><span style="color:#EA4335">a</span><span style="color:#FBBC05">m</span><span style="color:#34A853">e</span></h1>
+      <a href="TeamSetUp.html"><button class="play-btn" id="playBtn">Start the Game</button></a>
+      <a href="main page.html"><button class="home-btn" id="homeBtn">Return Home</button></a>
 
-
-  <!--result container-->
-  <div class="result-div">
-    <div class="logo">
-      <img src="../Images/google-logo.png" class="google-logo">
     </div>
-
-    <div class="header-block">
-      <h1 class="header">
-      Image Guessing 
-      <span class="blue">G</span><span class="red">a</span><span class="yellow">m</span><span class="green">e</span>
-      </h1>
-    </div>
-
-    <div class="center-block">
-      <h2 class="result-message js-result-message"></h2>
-      <hr class="divider" />
-      <p class="score">Score: <span class="js-score"></span> points</p>
-    </div>
-
-    <h3 class="game-stat"><span class="info">ⓘ</span> Game Statistics</h3>
-    <p class="stat">correct words: <span class="js-correct"></span></p>
-    <p class="stat">Fastest Answer: <span class="js-time"></span>s</p>
   </div>
 
-    <!--buttons container-->
-  <div class="buttons">
-    <div class="playAgain-div">
-      <a href="imageGameStart.html">
-        <button class="playAgain-button">
-        Play Again
-        </button>
-      </a>
-
-    </div>
-
-    <div class="backHome-div">
-      <a href="main page.html">
-        <button class="backHome-button" >
-        Back to Home
-        </button>
-     </a>
-    </div>
-  </div>
-  <div class="decorations"></div>
-
-   <!-- ================= FOOTER ================= -->
-    <footer lang="ar" dir="rtl" class="bg-[#403F41] text-gray-300 py-12 px-6">
+     <!-- ================= FOOTER ================= -->
+    <footer class="bg-[#403F41] text-gray-300 py-12 px-6">
         <div class="max-w-6xl mx-auto grid md:grid-cols-3 gap-10">
 
             <!-- About -->
@@ -134,7 +98,6 @@
     </footer>
     <!-- End -->
 
-  <script src="../JS/image-game-result-page.js"></script>
-  
+  <script src="../JS/LetterCellGameLanding.js"></script>
 </body>
 </html>
