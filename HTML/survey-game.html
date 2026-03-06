@@ -4,11 +4,11 @@
     <meta charset="UTF-8">
     <title>لعبة الاستبيان</title>
 
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
-    <link rel="stylesheet" href="../css/survey-game.css">
+    <link rel="stylesheet" href="../CSS/survey-game.css">
 </head>
 <body>
 
@@ -34,12 +34,13 @@
     <header class="page-header">
         <img src="../Images/Top Strip.png" alt="Header Image">
     </header>
+
     <!-- Popup عند تغير الفريق -->
-<div id="teamPopup" class="popup-overlay">
-    <div class="popup-content">
-        <h2>الآن دور الفريق <span id="currentTeamPopup">A</span></h2>
+    <div id="teamPopup" class="popup-overlay">
+        <div class="popup-content">
+            <h2>الآن دور الفريق <span id="currentTeamPopup">A</span></h2>
+        </div>
     </div>
-</div>
 
     <!-- Main container -->
     <div class="container">
@@ -71,7 +72,7 @@
         </div>
 
         <!-- مربع الفريق الحالي -->
-<div class="team-box" id="currentTeamBox">الفريق أ</div>
+        <div class="team-box" id="currentTeamBox">الفريق أ</div>
         
         <!-- Current Round Points -->
         <div class="round-points-box">
@@ -96,23 +97,23 @@
         </div>
 
     </div>
-<!-- Popup نهاية الجولة -->
-<div id="resultPopup" class="popup-overlay">
-    <div class="popup-content">
-        <h2 id="resultTitle">انتهت الجولة</h2>
-        <p id="resultMessage"></p>
-        <button onclick="closeResultPopup()">إغلاق</button>
+
+    <!-- Popup نهاية الجولة -->
+    <div id="resultPopup" class="popup-overlay">
+        <div class="popup-content">
+            <h2 id="resultTitle">انتهت الجولة</h2>
+            <p id="resultMessage"></p>
+            <button onclick="closeResultPopup()">إغلاق</button>
+        </div>
     </div>
-</div>
 
-
- <!-- ================= FOOTER ================= -->
+    <!-- ================= FOOTER ================= -->
     <footer class="bg-[#403F41] text-gray-300 py-12 px-6">
         <div class="max-w-6xl mx-auto grid md:grid-cols-3 gap-10">
 
             <!-- About -->
             <div>
-                <img src="../images/white-logo.png" class="w-65 h-auto mb-4 object-contain">
+                <img src="../Images/white-logo.png" class="w-65 h-auto mb-4 object-contain" alt="white logo">
                 <p class="text-sm leading-6">
                     مجتمع عالمي مدعوم من Google Developers يهدف إلى تمكين الطلاب من خلال المعرفة التقنية وبناء
                     الحلول.
@@ -155,6 +156,6 @@
     </footer>
     <!-- End -->
 
-    <script src="../js/survey-game-local.js"></script>
+    <script src="../JS/survey-game.js"></script>
 </body>
 </html>
