@@ -122,8 +122,8 @@ const QUESTIONS = [
    {
     p1: "../images/imageGamePics/pic17-2.png",
     p2: "../images/imageGamePics/pic17-1.png",
-    answers: ["شاورما"],
-    hint:"ثوم",
+    answers: ["بستان"],
+    hint:"ورد",
     pts: 4
   },
   {
