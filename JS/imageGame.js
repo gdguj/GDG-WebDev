@@ -115,8 +115,8 @@ const QUESTIONS = [
   {
     p1: "../images/imageGamePics/pic16-2.png",
     p2: "../images/imageGamePics/pic16-1.png",
-    answers: ["طعمية"],
-    hint:"أكلة مصرية ",
+    answers: ["استنفار"],
+    hint:"حالة طوارئ",
     pts: 4
   },
    {
