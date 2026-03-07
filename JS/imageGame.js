@@ -186,7 +186,7 @@ const QUESTIONS = [
   {
     p1: "../images/imageGamePics/pic26-2.png",
     p2: "../images/imageGamePics/pic26-1.png",
-    answers: ["انانس"],
+    answers: ["اناناس"],
     hint:"فاكهة",
     pts: 4
   },
