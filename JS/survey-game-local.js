@@ -25,6 +25,12 @@ let teamScores = {
   team2: 0
 };
 
+let roundHistory = [];
+
+function getTeamLabel(teamKey) {
+  return teamKey === "team1" ? "الفريق أ" : "الفريق ب";
+}
+
 function getStarterTeamFromNavigation() {
   const params = new URLSearchParams(window.location.search);
   const fromQuery = params.get("starter");
@@ -356,6 +362,27 @@ function handleRoundEnd(message, winnerTeamKey) {
   scoreAEl.textContent = teamScores.team1;
   scoreBEl.textContent = teamScores.team2;
 
+  const stealAttempted = Boolean(gameState.originalTeam);
+  const stealByTeam = stealAttempted
+    ? (gameState.originalTeam === "team1" ? "team2" : "team1")
+    : null;
+  const stealSuccessful = stealAttempted && stealByTeam === teamKey;
+
+  roundHistory.push({
+    round: roundCounter + 1,
+    question: gameState.question,
+    winnerTeam: teamKey,
+    winnerTeamLabel: getTeamLabel(teamKey),
+    pointsAwarded: points,
+    endReason: message,
+    stealAttempted,
+    stealByTeam,
+    stealByTeamLabel: stealByTeam ? getTeamLabel(stealByTeam) : null,
+    stolenFromTeam: stealAttempted ? gameState.originalTeam : null,
+    stolenFromTeamLabel: stealAttempted ? getTeamLabel(gameState.originalTeam) : null,
+    stealSuccessful
+  });
+
   showResultPopup("🏁 انتهت الجولة", message);
 
   inputEl.disabled = true;
@@ -378,29 +405,23 @@ function handleRoundEnd(message, winnerTeamKey) {
 function finishGame() {
   gameOver = true;
 
-  const winner =
-    teamScores.team1 > teamScores.team2 ? "الفريق أ" :
-    teamScores.team2 > teamScores.team1 ? "الفريق ب" :
-    "تعادل";
+  const winnerTeamKey =
+    teamScores.team1 > teamScores.team2 ? "team1" :
+    teamScores.team2 > teamScores.team1 ? "team2" :
+    "draw";
 
-  const finalMessage = winner === "تعادل" 
-    ? `تعادل!\nالفريق أ: ${teamScores.team1}\nالفريق ب: ${teamScores.team2}`
-    : `الفائز هو ${winner}!\nالفريق أ: ${teamScores.team1}\nالفريق ب: ${teamScores.team2}`;
-
-  showResultPopup("🎮 انتهت اللعبة", finalMessage);
-
-  // Show restart button instead of auto-restart
-  const btn = document.getElementById("startRoundBtn");
-  btn.textContent = "بدء لعبة جديدة";
-  btn.onclick = () => {
-    closeResultPopup();
-    roundCounter = 0;
-    teamScores.team1 = 0;
-    teamScores.team2 = 0;
-    gameOver = false;
-    startNewRound();
+  const finalResultPayload = {
+    winnerTeam: winnerTeamKey,
+    winnerLabel: winnerTeamKey === "draw" ? "تعادل" : getTeamLabel(winnerTeamKey),
+    scoreTeam1: teamScores.team1,
+    scoreTeam2: teamScores.team2,
+    roundsPlayed: roundCounter,
+    rounds: roundHistory,
+    generatedAt: new Date().toISOString()
   };
-  btn.style.display = "inline-block";
+
+  sessionStorage.setItem("familyFeudFinalResult", JSON.stringify(finalResultPayload));
+  window.location.href = "survey-results.html";
 }
 
 function showResultPopup(title, message) {
