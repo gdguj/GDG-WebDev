@@ -203,6 +203,18 @@ const QUESTIONS = [
 const GAME_TIME = 120;
 const POINTS_PER_ANSWER = 2;
 
+function readTeamName(key, fallback) {
+  const raw = localStorage.getItem(key);
+  if (!raw) return fallback;
+  const normalized = raw.trim().replace(/\s+/g, ' ');
+  return normalized || fallback;
+}
+
+const TEAM_NAMES = {
+  a: readTeamName('imageGameTeamNameA', 'Team A'),
+  b: readTeamName('imageGameTeamNameB', 'Team B')
+};
+
 
 /* SECTION 2 — STATE */
 const STATE = {
@@ -232,6 +244,10 @@ const DOM = {
   cwrap:       document.getElementById('cwrap'),
   scoreA:      document.getElementById('score-a'),
   scoreB:      document.getElementById('score-b'),
+  teamAName:   document.getElementById('team-a-name'),
+  teamBName:   document.getElementById('team-b-name'),
+  skipTeamA:   document.getElementById('skip-team-a'),
+  skipTeamB:   document.getElementById('skip-team-b'),
   teamACard:   document.getElementById('team-a-card'),
   teamBCard:   document.getElementById('team-b-card'),
   activeBadge: document.getElementById('active-team-badge'),
@@ -246,6 +262,10 @@ skipOverlay: document.getElementById('skip-overlay'),
 /* SECTION 4 — INIT */
 function init() {
   STATE.shuffled = shuffle([...QUESTIONS]);
+  DOM.teamAName.textContent = TEAM_NAMES.a;
+  DOM.teamBName.textContent = TEAM_NAMES.b;
+  DOM.skipTeamA.textContent = TEAM_NAMES.a;
+  DOM.skipTeamB.textContent = TEAM_NAMES.b;
   DOM.activeBadge.textContent = 'Both Teams Can Answer';
   DOM.teamACard.classList.remove('active');
   DOM.teamBCard.classList.remove('active');
@@ -452,7 +472,7 @@ function applySkipChoice(teamChoice) {
     STATE.correctCount += 1;
     DOM.scoreA.textContent = STATE.scores.a;
     DOM.scoreB.textContent = STATE.scores.b;
-    showToast(`${teamChoice === 'a' ? 'Team A' : 'Team B'} +${POINTS_PER_ANSWER}`);
+    showToast(`${TEAM_NAMES[teamChoice]} +${POINTS_PER_ANSWER}`);
     spawnConfetti();
   }
 
@@ -496,14 +516,18 @@ function showGameOver() {
   DOM.submitBtn.style.display = 'none';
   DOM.showAnswerBtn.style.display = 'none';
   
-  const winner = STATE.scores.a > STATE.scores.b ? 'Team A' :
-                 STATE.scores.b > STATE.scores.a ? 'Team B' : 'Tie';
+  const winnerKey = STATE.scores.a > STATE.scores.b ? 'a' :
+                    STATE.scores.b > STATE.scores.a ? 'b' : 'tie';
+  const winnerName = winnerKey === 'tie' ? 'Tie' : TEAM_NAMES[winnerKey];
 
   const resultPayload = {
-    winner,
+    winner: winnerName,
+    winnerKey,
+    teamNameA: TEAM_NAMES.a,
+    teamNameB: TEAM_NAMES.b,
     scoreA: STATE.scores.a,
     scoreB: STATE.scores.b,
-    winnerScore: winner === 'Team A' ? STATE.scores.a : winner === 'Team B' ? STATE.scores.b : STATE.scores.a,
+    winnerScore: winnerKey === 'a' ? STATE.scores.a : winnerKey === 'b' ? STATE.scores.b : STATE.scores.a,
     correct: STATE.correctCount,
     totalWords: STATE.shuffled.length,
     pointsPerAnswer: POINTS_PER_ANSWER

@@ -68,13 +68,13 @@
 
   <div class="teams-bar">
   <div class="team-card team-a" id="team-a-card">
-    <span class="t-name">Team A</span>
+    <span class="t-name" id="team-a-name">Team A</span>
     <span class="t-divider"></span>
     <span class="t-score" id="score-a">0</span>
   </div>
 
   <div class="team-card team-b" id="team-b-card">
-    <span class="t-name">Team B</span>
+    <span class="t-name" id="team-b-name">Team B</span>
     <span class="t-divider"></span>
     <span class="t-score" id="score-b">0</span>
   </div>
@@ -103,8 +103,8 @@
     </div>
     <div class="modal-body">
       <div class="skip-options">
-        <button class="skip-choice team-a-choice" onclick="applySkipChoice('a')">Team A</button>
-        <button class="skip-choice team-b-choice" onclick="applySkipChoice('b')">Team B</button>
+        <button class="skip-choice team-a-choice" id="skip-team-a" onclick="applySkipChoice('a')">Team A</button>
+        <button class="skip-choice team-b-choice" id="skip-team-b" onclick="applySkipChoice('b')">Team B</button>
         <button class="skip-choice none-choice" onclick="applySkipChoice('none')">None</button>
       </div>
       <p class="skip-note">كل إجابة صحيحة = 2 نقاط</p>

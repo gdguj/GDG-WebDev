@@ -40,8 +40,8 @@
       <img src="../images/Corner-Right.png" class="corner corner-right" alt="">
 
       <img src="../images/GDGIcon.png" class="gdg-icon" alt="">
-      <h1 class="title">حاول تخمن <span style="color:#4285F4">ال</span><span style="color:#EA4335">كل</span><span style="color:#FBBC05">م</span><span style="color:#34A853">ة</span></h1>
-      <p class="subtitle">ادمج الصور. خمن الكلمة</p>
+      <h1 class="title"> Guess the <span style="color:#4285F4">W</span><span style="color:#EA4335">o</span><span style="color:#FBBC05">r</span><span style="color:#34A853">d</span></h1>
+      <p class="subtitle">Combine the images. Guess the word</p>
 
       <div class="images-row">
         <img src="../images/guessImage.png" class="game-image">
@@ -51,9 +51,20 @@
         <div class="symbol">?</div>
     </div>
 
+        <div class="team-setup" aria-label="Team setup">
+            <div class="team-field">
+                <label for="landingTeamA">Team 1 Name</label>
+                <input id="landingTeamA" type="text" maxlength="20" placeholder="Write first team name" />
+            </div>
+            <div class="team-field">
+                <label for="landingTeamB">Team 2 Name</label>
+                <input id="landingTeamB" type="text" maxlength="20" placeholder="Write second team name" />
+            </div>
+        </div>
+
     <div class="buttons-group">
-      <a href="imageGame.html"><button class="play-btn">العب</button></a>
-      <a href="main page.html"><button class="home-link">العودة إلى الرئيسية</button></a>
+            <button class="play-btn" id="imageGameStartBtn">Play</button>
+      <a href="main page.html"><button class="home-link">Back to Home</button></a>
     </div>
 
     </div>
@@ -107,5 +118,6 @@
         </div>
     </footer>
     <!-- End -->
+    <script src="../JS/imageGameLanding.js"></script>
 </body>
 </html>
