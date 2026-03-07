@@ -10,21 +10,24 @@ body {
   background-color: #ffffff; /* نفس لون imageGameLanding الأصلي */
   min-height: 100vh;
   display: block;
+  overflow-x: hidden;
 }
 
 /* Main Frame */
 .frame {
   width: 100%;
-  min-height: 100vh;
+  min-height: calc(100vh - 78px);
   position: relative;
   overflow: hidden;
+  display: flex;
+  align-items: center;
 }
 
 /* Center Panel - الحفاظ على المسافات الأصلية */
 .panel {
   width: 100%;
   text-align: center;
-  padding-top: 60px; /* المسافة الأصلية للهيدر */
+  padding: 24px 20px 18px;
   max-width: 1100px;
   margin: 0 auto;
 }
@@ -32,8 +35,8 @@ body {
 /* Corner Decorations - تم أخذها من ملف LetterCellGameLanding كما هي */
 .corner {
   position: absolute;
-  transform: scale(0.30); /* الحجم المطلوب من LetterCell */
-  transform-origin: top left;
+  width: clamp(130px, 17vw, 220px);
+  height: auto;
   pointer-events: none;
   z-index: 1;
 }
@@ -46,31 +49,41 @@ body {
 .corner-right {
   bottom: 0;
   right: 0;
-  transform: scale(0.35); /* الحجم المطلوب من LetterCell */
-  transform-origin: bottom right;
+  width: clamp(170px, 22vw, 300px);
+}
+
+@media (max-width: 768px) {
+  .corner {
+    width: clamp(95px, 22vw, 140px);
+  }
+
+  .corner-right {
+    width: clamp(115px, 26vw, 180px);
+  }
 }
 
 /* GDG Icon - الحجم الأصلي في imageGameLanding */
 .gdg-icon {
-  width: 110px;
+  width: 90px;
   margin-bottom: 15px;
   display: block;
-  margin: 0 auto 15px;
+  margin: 0 auto 10px;
 }
 
 /* Title - الحجم الضخم المطلوب 60px */
 .title {
-  font-size: 60px; 
+  font-size: clamp(38px, 5.2vw, 58px);
   font-weight: 800;
   color: #111;
-  margin-bottom: 10px;
+  margin-bottom: 8px;
+  line-height: 1.08;
 }
 
 /* Subtitle - حجم متناسق مع العنوان الضخم */
 .subtitle {
-  font-size: 22px;
+  font-size: clamp(18px, 2vw, 22px);
   color: #777;
-  margin-bottom: 60px;
+  margin-bottom: 30px;
 }
 
 /* Images Row - بدون تغيير */
@@ -78,21 +91,21 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 25px;
-  margin-bottom: 70px;
+  gap: 18px;
+  margin-bottom: 28px;
 }
 
 /* Game Images - بدون تغيير */
 .game-image {
-  width: 160px;
-  height: 160px;
-  border-radius: 20px;
+  width: clamp(108px, 11.5vw, 142px);
+  height: clamp(108px, 11.5vw, 142px);
+  border-radius: 16px;
   box-shadow: 0 6px 15px rgba(0,0,0,0.1);
 }
 
 /* Symbols - تكبير بسيط ليناسب العنوان */
 .symbol {
-  font-size: 70px;
+  font-size: clamp(42px, 4.3vw, 62px);
   font-weight: 700;
   color: #111;
 }
@@ -103,14 +116,14 @@ body {
   color: white;
   font-size: 18px;
   font-weight: 600;
-  padding: 15px 50px;
+  padding: 13px 44px;
   border: none;
   border-radius: 40px;
   cursor: pointer;
   box-shadow: 0 8px 20px rgba(66,133,244,0.35);
   transition: 0.3s ease;
   margin-bottom: 2px;
-  margin-top: 20px;
+  margin-top: 4px;
 }
 
 .play-btn:hover {
@@ -122,7 +135,7 @@ body {
   display: flex;
   flex-direction: column; 
   align-items: center;    
-  gap: 25px;             
+  gap: 16px;
 }
 
 /* Return Home - لم يتم لمس التصميم الأصلي نهائياً */
@@ -130,7 +143,7 @@ body {
   background: none;
   border: none;
   color: #4285F4;
-  font-size: 20px;
+  font-size: 18px;
   font-weight: 500;
   cursor: pointer;
   transition: 0.3s;
@@ -139,4 +152,47 @@ body {
 
 .home-link:hover {
   text-decoration: underline;
+}
+
+@media (max-width: 768px) {
+  .frame {
+    min-height: calc(100vh - 72px);
+  }
+
+  .panel {
+    padding: 18px 14px 14px;
+  }
+
+  .images-row {
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+
+  .play-btn {
+    font-size: 17px;
+    padding: 12px 34px;
+  }
+
+  .home-link {
+    font-size: 17px;
+  }
+}
+
+@media (max-height: 820px) {
+  .gdg-icon {
+    width: 74px;
+    margin-bottom: 8px;
+  }
+
+  .subtitle {
+    margin-bottom: 20px;
+  }
+
+  .images-row {
+    margin-bottom: 18px;
+  }
+
+  .buttons-group {
+    gap: 12px;
+  }
 }
