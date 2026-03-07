@@ -10,6 +10,18 @@ const EASE = 'cubic-bezier(0.22, 1, 0.36, 1)';
 
 let spinning = false;
 let currentRotation = 0;
+let selectedStarterTeam = null;
+
+function normalizeTeamToKey(teamLabel) {
+  if (teamLabel === 'Team A') return 'team1';
+  if (teamLabel === 'Team B') return 'team2';
+  return null;
+}
+
+function getNextPagePath() {
+  const params = new URLSearchParams(window.location.search);
+  return params.get('next') || 'survey-game.html';
+}
 
 function spinWheel() {
   if (spinning) return;
@@ -50,6 +62,11 @@ function spinWheel() {
       if (span) winner = span.textContent.trim();
     }
 
+    selectedStarterTeam = normalizeTeamToKey(winner);
+    if (selectedStarterTeam) {
+      sessionStorage.setItem('familyFeudStarterTeam', selectedStarterTeam);
+    }
+
     document.getElementById('resultText').textContent = `It's ${winner}'s turn!`;
     document.getElementById('spinScreen').classList.remove('active');
     document.getElementById('resultScreen').classList.add('active');
@@ -59,6 +76,12 @@ function spinWheel() {
 }
 
 function backToGame() {
+  if (selectedStarterTeam) {
+    const nextPath = getNextPagePath();
+    window.location.href = `${nextPath}?starter=${selectedStarterTeam}`;
+    return;
+  }
+
   document.getElementById('resultScreen').classList.remove('active');
   document.getElementById('spinScreen').classList.add('active');
   document.getElementById('spinBtn').disabled = false;

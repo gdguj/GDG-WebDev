@@ -25,6 +25,33 @@ let teamScores = {
   team2: 0
 };
 
+function getStarterTeamFromNavigation() {
+  const params = new URLSearchParams(window.location.search);
+  const fromQuery = params.get("starter");
+  if (fromQuery === "team1" || fromQuery === "team2") {
+    sessionStorage.removeItem("familyFeudStarterTeam");
+    return fromQuery;
+  }
+
+  const fromSession = sessionStorage.getItem("familyFeudStarterTeam");
+  if (fromSession === "team1" || fromSession === "team2") {
+    sessionStorage.removeItem("familyFeudStarterTeam");
+    return fromSession;
+  }
+
+  return null;
+}
+
+const initialStarterTeam = getStarterTeamFromNavigation() || "team1";
+
+function getRoundStarterTeam(roundIndex) {
+  if (roundIndex % 2 === 0) {
+    return initialStarterTeam;
+  }
+
+  return initialStarterTeam === "team1" ? "team2" : "team1";
+}
+
 // -------------------------------
 // DOM ELEMENTS
 // -------------------------------
@@ -95,8 +122,8 @@ async function startNewRound() {
   gameState.isStealMode = false;
   gameState.originalTeam = null;
 
-  // Alternate starting team
-  gameState.currentTeam = (roundCounter % 2 === 0 ? "team1" : "team2");
+  // Use wheel winner in round 1, then alternate each round.
+  gameState.currentTeam = getRoundStarterTeam(roundCounter);
 
   // UI reset
   questionEl.textContent = "جاري تحميل السؤال...";
