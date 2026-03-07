@@ -166,7 +166,7 @@ const QUESTIONS = [
     p1: "../images/imageGamePics/pic23-2.png",
     p2: "../images/imageGamePics/pic23-1.png",
     answers: ["صومال"],
-    hint:"دولة في أفريقيا",
+    hint:"دولة ",
     pts: 4
   },
   {
@@ -180,7 +180,7 @@ const QUESTIONS = [
     p1: "../images/imageGamePics/pic25-2.png",
     p2: "../images/imageGamePics/pic25-1.png",
     answers: ["زورق"],
-    hint:"وسيلة نقل مائية",
+    hint:"بحر",
     pts: 4
   },
   {
