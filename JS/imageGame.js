@@ -94,8 +94,8 @@ const QUESTIONS = [
   {
     p1: "../images/imageGamePics/pic13-2.png",
     p2: "../images/imageGamePics/pic13-1.png",
-    answers: ["تويكس"],
-    hint:"شوكولاته",
+    answers: ["المثل الاسباني"],
+    hint:"",
     pts: 4
   },
   {
