@@ -2,16 +2,16 @@
   {
     "question": "كلمة أو جملة دايم تسمعها في قروبات الواتساب العائلية؟",
     "answers": [
-      { "answer": "تم", "points": 95 },
+      { "answer": "طيب", "points": 95 },
       { "answer": "صباح الخير", "points": 88 },
       { "answer": "أبشر", "points": 82 },
       { "answer": "منورين", "points": 75 },
       { "answer": "الله يحييكم", "points": 70 },
-      { "answer": "متى الاجتماع؟", "points": 65 },
+      { "answer": "متى جايين", "points": 65 },
       { "answer": "مبروك", "points": 60 },
       { "answer": "رسالة محولة", "points": 55 },
       { "answer": "دعاء", "points": 45 },
-      { "answer": "وينكم؟", "points": 30 }
+      { "answer": "وينكم", "points": 30 }
     ]
   },
   {
@@ -22,7 +22,7 @@
       { "answer": "محامي", "points": 80 },
       { "answer": "موظف بنك", "points": 75 },
       { "answer": "تقني كمبيوتر", "points": 70 },
-      { "answer": "مهندس ديكور", "points": 62 },
+      { "answer": "مهندس ", "points": 62 },
       { "answer": "خياط", "points": 55 },
       { "answer": "حلاق", "points": 40 },
       { "answer": "وكيل سفر", "points": 30 },
@@ -44,21 +44,7 @@
       { "answer": "خاتم", "points": 20 }
     ]
   },
-  {
-    "question": "شيء تشيله معك في الشنطة للاحتياط وما تستخدمه؟",
-    "answers": [
-      { "answer": "مظلة", "points": 92 },
-      { "answer": "بندول", "points": 85 },
-      { "answer": "شاحن متنقل", "points": 80 },
-      { "answer": "خيط وإبرة", "points": 75 },
-      { "answer": "مناديل مبللة", "points": 68 },
-      { "answer": "سماعة سلك", "points": 60 },
-      { "answer": "عطر", "points": 52 },
-      { "answer": "قلم", "points": 45 },
-      { "answer": "جاكيت", "points": 30 },
-      { "answer": "كتاب", "points": 20 }
-    ]
-  },
+ 
   {
     "question": "أكثر شيء يوتر الواحد وهو يسوق؟",
     "answers": [
@@ -71,22 +57,7 @@
       { "answer": "طفل يبكي", "points": 55 },
       { "answer": "زحمة مفاجئة", "points": 48 },
       { "answer": "صوت غريب", "points": 35 },
-      { "answer": "جوال يرن", "points": 25 }
-    ]
-  },
-  {
-    "question": "ريحة تحب تشمها مع إنها مو عطر؟",
-    "answers": [
-      { "answer": "بنزين", "points": 93 },
-      { "answer": "تراب المطر", "points": 90 },
-      { "answer": "قهوة", "points": 85 },
-      { "answer": "بخور", "points": 80 },
-      { "answer": "خبز", "points": 72 },
-      { "answer": "ورق جديد", "points": 65 },
-      { "answer": "صابون", "points": 55 },
-      { "answer": "عشب", "points": 40 },
-      { "answer": "بوية", "points": 30 },
-      { "answer": "عود كبريت", "points": 20 }
+      { "answer": "جوال ", "points": 25 }
     ]
   }
 ]
