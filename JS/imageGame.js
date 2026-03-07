@@ -201,18 +201,20 @@ const QUESTIONS = [
 
 
 const GAME_TIME = 120;
+const POINTS_PER_ANSWER = 2;
 
 
 /* SECTION 2 — STATE */
 const STATE = {
   scores:     { a: 0, b: 0 }, // نقاط كل فريق
-  activeTeam: 'a',             // الفريق النشط حالياً
   qi:         0,               // رقم السؤال الحالي
   shuffled:   [],              // الأسئلة بعد الخلط
   hintUsed: false,
   timeLeft: GAME_TIME,
   timer: null,
   answered: false,
+  correctCount: 0,
+  pendingResolve: null,
 };
 
 
@@ -237,13 +239,16 @@ const DOM = {
 hintBtn: document.getElementById('hint-btn'),
 overlay: document.getElementById('overlay'),
 hintText: document.getElementById('hint-text'),
+skipOverlay: document.getElementById('skip-overlay'),
 };
 
 
 /* SECTION 4 — INIT */
 function init() {
   STATE.shuffled = shuffle([...QUESTIONS]);
-  setActiveTeam('a');
+  DOM.activeBadge.textContent = 'Both Teams Can Answer';
+  DOM.teamACard.classList.remove('active');
+  DOM.teamBCard.classList.remove('active');
   loadQuestion();
 }
 
@@ -251,21 +256,7 @@ init();
 
 
 /* SECTION 5 — TEAM MANAGEMENT */
-// يغيّر الفريق النشط ويحدّث الـ UI
-function setActiveTeam(team) {
-  STATE.activeTeam = team;
-  const isA = team === 'a';
-  DOM.submitBtn.classList.toggle('green-btn', !isA);
-  DOM.teamACard.classList.toggle('active', isA);
-  DOM.teamBCard.classList.toggle('active', !isA);
-  DOM.activeBadge.textContent = isA ? "🔵 Team A's Turn" : "🟢 Team B's Turn";
-  DOM.activeBadge.classList.toggle('team-b-turn', !isA);
-  DOM.inputRow.classList.toggle('team-b-active', !isA);
-}
-
-function switchTeam() {
-  setActiveTeam(STATE.activeTeam === 'a' ? 'b' : 'a');
-}
+// This mode is non-turn-based. Any team can answer every round.
 
 
 /* SECTION 6 — LOAD QUESTION */
@@ -380,18 +371,15 @@ function check() {
   const isRight = q.answers.some(a => a.toLowerCase() === input);
 
   if (isRight) {
-    handleCorrect(q.pts);
+    handleCorrect();
   } else {
     handleWrong();
   }
 }
 
 // صح: أضف نقاط
-function handleCorrect(points) {
+function handleCorrect() {
   STATE.answered = true;
-  STATE.scores[STATE.activeTeam] += points;
-  DOM.scoreA.textContent = STATE.scores.a;
-  DOM.scoreB.textContent = STATE.scores.b;
 
   DOM.feedback.className   = 'feedback correct';
   DOM.feedback.textContent = '✓ Correct!';
@@ -401,13 +389,8 @@ function handleCorrect(points) {
   DOM.answer.disabled = true;
   clearInterval(STATE.timer);
 
-  showToast(`+${points} Points`);
-  spawnConfetti();
-
-  // Show Answer button: "Next Round" for correct answers
-  DOM.showAnswerBtn.style.display = 'block';
-  DOM.showAnswerBtn.textContent = 'Next Round';
-  DOM.showAnswerBtn.onclick = nextRound;
+  STATE.pendingResolve = 'correct';
+  openWhoAnsweredChooser('مين جاوب الإجابة الصحيحة؟');
 
   setTimeout(() => {
     DOM.qcard.classList.remove('flash-correct');
@@ -444,26 +427,65 @@ DOM.answer.addEventListener('keydown', e => {
 
 /* SECTION 8 — SHOW ANSWER & NEXT ROUND */
 function showAnswer() {
+  STATE.pendingResolve = 'skip';
+  openWhoAnsweredChooser('مين الي جاوب؟');
+}
+
+function openWhoAnsweredChooser(titleText) {
+  const titleEl = document.getElementById('skip-question-title');
+  if (titleEl) {
+    titleEl.textContent = titleText;
+  }
+  DOM.skipOverlay.classList.add('open');
+}
+
+function closeSkipChooser(event) {
+  if (event && event.target !== DOM.skipOverlay) return;
+  DOM.skipOverlay.classList.remove('open');
+}
+
+function applySkipChoice(teamChoice) {
+  DOM.skipOverlay.classList.remove('open');
+
+  if (teamChoice === 'a' || teamChoice === 'b') {
+    STATE.scores[teamChoice] += POINTS_PER_ANSWER;
+    STATE.correctCount += 1;
+    DOM.scoreA.textContent = STATE.scores.a;
+    DOM.scoreB.textContent = STATE.scores.b;
+    showToast(`${teamChoice === 'a' ? 'Team A' : 'Team B'} +${POINTS_PER_ANSWER}`);
+    spawnConfetti();
+  }
+
+  if (STATE.pendingResolve === 'correct') {
+    DOM.showAnswerBtn.style.display = 'block';
+    DOM.showAnswerBtn.textContent = 'Next Round';
+    DOM.showAnswerBtn.onclick = nextRound;
+  } else {
+    revealCurrentAnswer();
+  }
+
+  STATE.pendingResolve = null;
+}
+
+function revealCurrentAnswer() {
   STATE.answered = true;
   DOM.answer.disabled = true;
   DOM.submitBtn.disabled = true;
   DOM.submitBtn.style.display = 'none';
   clearInterval(STATE.timer);
-  
+
   const q = STATE.shuffled[STATE.qi];
   const answerText = q.answers.join(' / ');
-  
+
   DOM.feedback.className = 'feedback correct';
   DOM.feedback.textContent = `الإجابة الصحيحة: ${answerText}`;
-  
-  // Change button to "Next Round"
+
   DOM.showAnswerBtn.textContent = 'Next Round';
   DOM.showAnswerBtn.onclick = nextRound;
 }
 
 function nextRound() {
   STATE.qi++;
-  switchTeam();
   loadQuestion();
 }
 
@@ -474,13 +496,21 @@ function showGameOver() {
   DOM.submitBtn.style.display = 'none';
   DOM.showAnswerBtn.style.display = 'none';
   
-  const winner = STATE.scores.a > STATE.scores.b ? 'Team A' : 
+  const winner = STATE.scores.a > STATE.scores.b ? 'Team A' :
                  STATE.scores.b > STATE.scores.a ? 'Team B' : 'Tie';
-  
-  DOM.feedback.className = 'feedback correct';
-  DOM.feedback.textContent = `🎮 Game Over! ${winner === 'Tie' ? 'It\'s a Tie!' : winner + ' Wins!'} (A: ${STATE.scores.a}, B: ${STATE.scores.b})`;
-  
-  console.log('Game Over — Scores:', STATE.scores);
+
+  const resultPayload = {
+    winner,
+    scoreA: STATE.scores.a,
+    scoreB: STATE.scores.b,
+    winnerScore: winner === 'Team A' ? STATE.scores.a : winner === 'Team B' ? STATE.scores.b : STATE.scores.a,
+    correct: STATE.correctCount,
+    totalWords: STATE.shuffled.length,
+    pointsPerAnswer: POINTS_PER_ANSWER
+  };
+
+  sessionStorage.setItem('imageGameResult', JSON.stringify(resultPayload));
+  window.location.href = 'Image-game-result-page.html';
 }
 
 

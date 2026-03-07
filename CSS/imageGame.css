@@ -534,3 +534,46 @@ body {
   .topbar         { padding: 12px 16px 0; }
   .team-score     { font-size: 1.3rem; }
 }
+
+.skip-modal {
+  max-width: 420px;
+}
+
+.skip-options {
+  display: grid;
+  gap: 10px;
+}
+
+.skip-choice {
+  border: none;
+  border-radius: 12px;
+  padding: 12px;
+  font-size: 1rem;
+  font-weight: 800;
+  color: #fff;
+  cursor: pointer;
+  transition: transform 0.15s ease;
+}
+
+.skip-choice:hover {
+  transform: translateY(-1px);
+}
+
+.team-a-choice {
+  background: var(--blue);
+}
+
+.team-b-choice {
+  background: var(--green);
+}
+
+.none-choice {
+  background: var(--dark);
+}
+
+.skip-note {
+  margin-top: 12px;
+  font-size: 0.92rem;
+  color: #475569;
+  text-align: center;
+}

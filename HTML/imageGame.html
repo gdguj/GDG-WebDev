@@ -95,6 +95,23 @@
   </div>
 </div>
 
+<div class="overlay" id="skip-overlay" onclick="closeSkipChooser(event)">
+  <div class="modal skip-modal">
+    <div class="modal-head">
+      <span style="font-size:2rem">❓</span>
+      <span class="modal-title" id="skip-question-title">مين الي جاوب؟</span>
+    </div>
+    <div class="modal-body">
+      <div class="skip-options">
+        <button class="skip-choice team-a-choice" onclick="applySkipChoice('a')">Team A</button>
+        <button class="skip-choice team-b-choice" onclick="applySkipChoice('b')">Team B</button>
+        <button class="skip-choice none-choice" onclick="applySkipChoice('none')">None</button>
+      </div>
+      <p class="skip-note">كل إجابة صحيحة = 2 نقاط</p>
+    </div>
+  </div>
+</div>
+
   <div class="toast" id="toast"></div>
   <div class="confetti-wrap" id="cwrap"></div>
 
