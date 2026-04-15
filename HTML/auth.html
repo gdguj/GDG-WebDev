@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GDG Auth - Sign In / Register</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="../CSS/auth.css">
+</head>
+<body>
+  <nav class="top-nav">
+    <div class="nav-inner">
+      <a class="logo-link" href="main page.html">
+        <img src="../Images/colorful-logo.png" alt="GDG Logo" class="logo">
+      </a>
+      <div class="nav-links">
+        <a href="main page.html">الرئيسية</a>
+        <a href="main page.html#about">من نحن</a>
+        <a href="main page.html#games">الألعاب</a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="auth-page">
+    <section class="auth-shell" aria-label="Authentication forms">
+      <div class="auth-header">
+        <h1>أهلًا بعودتك</h1>
+        <p>سجّل الدخول لمتابعة تقدمك أو أنشئ حسابًا جديدًا.</p>
+      </div>
+
+      <div class="auth-toggle" role="tablist" aria-label="Switch between sign in and register">
+        <button id="signInTab" class="tab-btn active" role="tab" aria-selected="true" aria-controls="signInPanel">تسجيل الدخول</button>
+        <button id="registerTab" class="tab-btn" role="tab" aria-selected="false" aria-controls="registerPanel">إنشاء حساب</button>
+      </div>
+
+      <section id="signInPanel" class="auth-panel active" role="tabpanel" aria-labelledby="signInTab">
+        <form id="signInForm" class="auth-form" novalidate>
+          <label for="signInEmail">البريد الإلكتروني</label>
+          <input id="signInEmail" name="email" type="email" placeholder="example@email.com" required>
+
+          <label for="signInPassword">كلمة المرور</label>
+          <div class="password-row">
+            <input id="signInPassword" name="password" type="password" placeholder="أدخل كلمة المرور" minlength="8" required>
+            <button class="toggle-visibility" type="button" data-target="signInPassword" aria-label="Show or hide password">
+              <i class="fa-regular fa-eye"></i>
+            </button>
+          </div>
+
+          <div class="inline-row">
+            <label class="check-wrap">
+              <input type="checkbox" name="rememberMe">
+              <span>تذكرني</span>
+            </label>
+            <a href="#" class="muted-link">هل نسيت كلمة المرور؟</a>
+          </div>
+
+          <button type="submit" class="submit-btn">دخول</button>
+          <p class="form-message" id="signInMessage" aria-live="polite"></p>
+        </form>
+      </section>
+
+      <section id="registerPanel" class="auth-panel" role="tabpanel" aria-labelledby="registerTab" hidden>
+        <form id="registerForm" class="auth-form" novalidate>
+          <label for="registerName">الاسم الكامل</label>
+          <input id="registerName" name="name" type="text" placeholder="اكتب اسمك الكامل" minlength="3" required>
+
+          <label for="registerEmail">البريد الإلكتروني</label>
+          <input id="registerEmail" name="email" type="email" placeholder="example@email.com" required>
+
+          <label for="registerPassword">كلمة المرور</label>
+          <div class="password-row">
+            <input id="registerPassword" name="password" type="password" placeholder="8 أحرف على الأقل" minlength="8" required>
+            <button class="toggle-visibility" type="button" data-target="registerPassword" aria-label="Show or hide password">
+              <i class="fa-regular fa-eye"></i>
+            </button>
+          </div>
+
+          <label for="registerConfirmPassword">تأكيد كلمة المرور</label>
+          <div class="password-row">
+            <input id="registerConfirmPassword" name="confirmPassword" type="password" placeholder="أعد إدخال كلمة المرور" minlength="8" required>
+            <button class="toggle-visibility" type="button" data-target="registerConfirmPassword" aria-label="Show or hide password">
+              <i class="fa-regular fa-eye"></i>
+            </button>
+          </div>
+
+          <button type="submit" class="submit-btn">إنشاء الحساب</button>
+          <p class="form-message" id="registerMessage" aria-live="polite"></p>
+        </form>
+      </section>
+    </section>
+  </main>
+
+  <footer class="page-footer">
+    <div class="footer-inner">
+      <img src="../Images/white-logo.png" alt="GDG white logo" class="footer-logo">
+      <p>مجتمع مطوري Google - جامعة جدة</p>
+    </div>
+  </footer>
+
+  <script src="../JS/auth.js"></script>
+</body>
+</html>
