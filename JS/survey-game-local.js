@@ -1,6 +1,6 @@
 // ===============================
 //  Family Feud – JSON Version
-//  (Same logic as original AI version)
+//  (Same logic as server-driven version)
 // ===============================
 
 // -------------------------------

@@ -37,10 +37,10 @@ const CELL_LABELS = (() => {
 })();
 
 /* ================================================
-   ⚙️ AI INTEGRATION
-   ================================================
-   هذي الدالة هي النقطة الوحيدة اللي تحتاج تعدل عليها
-   لما تربط الـ AI الحقيقي.
+  ⚙️ QUESTION DATA INTEGRATION
+  ================================================
+  هذي الدالة هي النقطة الوحيدة اللي تحتاج تعدل عليها
+  لما تربط مصدر بيانات الأسئلة الحقيقي.
 
    المطلوب من الدالة:
      - تاخذ حرف (مثل "H")
@@ -49,9 +49,9 @@ const CELL_LABELS = (() => {
      - الـ answer يجب أن يبدأ بنفس الحرف
 
    ================================================ */
-async function fetchQuestionFromAI(letter) {
+async function fetchQuestionData(letter) {
 
-  // هذي بيانات و هميه بنحذفها لمن نسوي integration مع AI 
+  // هذي بيانات وهمية بنحذفها لما نربط مصدر بيانات فعلي
   await new Promise(r => setTimeout(r, 1000)); 
 
   const mockQuestions = {
@@ -238,8 +238,8 @@ async function openQuestionScreen(letter) {
   document.getElementById('question-screen').classList.remove('hidden');
 
   try {
-    /* هنا بعد ما نسوي integration مع AI المفروض نرسل له هو الحرف بس حاليا الحرف ينرسل للبيانات الوهميه الموجوده عندنا */
-    const result = await fetchQuestionFromAI(letter);
+    /* هنا بعد الربط الفعلي، الحرف ينرسل لمصدر البيانات بدل البيانات الوهمية */
+    const result = await fetchQuestionData(letter);
     currentQuestion = result;
 
     document.getElementById('loading-spinner').classList.add('hidden');

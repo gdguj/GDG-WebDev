@@ -16,8 +16,3 @@ Thumbs.db
 # Build output 
 dist/ 
 build/ 
-
-# generated Json
-family_feud_current_round.json
-family_feud_round_state.json
-used_questions.json

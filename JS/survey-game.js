@@ -38,7 +38,7 @@ let teamScores = {
   team2: 0
 };
 
-const API_BASE = "http://localhost:5000/api/ai";
+const API_BASE = "http://localhost:5000/api/family-feud";
 
 // ════════════════════════════════════════════════════════════════════════════════
 // DOM ELEMENTS
@@ -94,7 +94,7 @@ async function startNewRound() {
     timerEl.textContent = timeLeft;
     
     // Fetch new round from backend
-    const response = await fetch(`${API_BASE}/family-feud/start-round`, {
+    const response = await fetch(`${API_BASE}/start-round`, {
       method: "POST",
       headers: { "Content-Type": "application/json" }
     });
@@ -231,7 +231,7 @@ async function submitAnswer() {
   try {
     console.log("📤 Submitting answer:", userInput);
     
-    const response = await fetch(`${API_BASE}/family-feud/submit-answer`, {
+    const response = await fetch(`${API_BASE}/submit-answer`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ answer: userInput })
