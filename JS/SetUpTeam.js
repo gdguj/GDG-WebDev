@@ -14,7 +14,7 @@ function addMembers(team) {
 
     li.innerHTML = `
       <div class="avatar">U${currentCount}</div>
-      <input class="member-name" type="text" value="User${currentCount}" title="Click to rename">
+      <input class="member-name" type="text" value="Player${currentCount}" title="Click to rename">
       <button class="btn-remove" onclick="removeMember(this, '${team}')">Remove</button>
     `;
 
@@ -47,12 +47,12 @@ function renumberMembers(team) {
     const number = index + 1;
 
     // تحديث الـ avatar
-    item.querySelector('.avatar').textContent = `U${number}`;
+    item.querySelector('.avatar').textContent = `P${number}`;
 
     // تحديث اسم المستخدم بعد الحذف
     const input = item.querySelector('.member-name');
-    if (input.value.startsWith("User")) {
-      input.value = `User${number}`;
+    if (input.value.startsWith("Player")) {
+      input.value = `Player${number}`;
     }
   });
 }
@@ -105,8 +105,8 @@ function clearError() {
 
 // ── Pre-populate teams on load ──
 (function init() {
-  addMembersDirectly('green', ['User1', 'User2']);
-  addMembersDirectly('blue',  ['User1', 'User2']);
+  addMembersDirectly('green', ['Player1', 'Player2']);
+  addMembersDirectly('blue',  ['Player1', 'Player2']);
 })();
 
 function addMembersDirectly(team, names) {
@@ -119,7 +119,7 @@ function addMembersDirectly(team, names) {
     li.className = 'member-item';
 
     li.innerHTML = `
-      <div class="avatar">U${currentCount}</div>
+      <div class="avatar">P${currentCount}</div>
       <input class="member-name" type="text" value="${name}" title="Click to rename">
       <button class="btn-remove" onclick="removeMember(this, '${team}')">Remove</button>
     `;
