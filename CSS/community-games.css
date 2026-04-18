@@ -1,0 +1,200 @@
+*{
+  box-sizing: border-box;
+}
+
+body{
+  font-family: 'Poppins', sans-serif !important;
+  font-size: 18px;
+  margin: 0;
+  background: linear-gradient(180deg, #ffffff 0%, #fbfbff 100%);
+  color: #2d2d3a;
+}
+
+.decorations{
+  height: 60px;
+  width: 100%;
+  position: static;
+  display: flex;
+  justify-content: space-between;
+  margin-top: 65px;
+  background-image: url(../Images/google-themed.png);
+  background-size: 30% 100px;
+  background-repeat: repeat-x;
+  background-position: 0 -35px;
+}
+
+.header{
+  text-align: center;
+  font-size: 35px;
+  font-weight: 700;
+  margin: 28px 16px 0;
+  color: #3674d8;
+}
+
+.header2{
+  text-align: center;
+  color: #727172;
+  margin: 10px 16px 0;
+}
+
+.community-games-page{
+  width: min(1180px, calc(100% - 32px));
+  margin: 40px auto 0;
+}
+
+.games-grid{
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 24px;
+}
+
+.game-card{
+  border: 1px solid #e7eaf0;
+  border-radius: 22px;
+  background: #ffffff;
+  overflow: hidden;
+  box-shadow: 0 8px 18px rgba(60, 64, 67, 0.08);
+  transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+}
+
+.game-card--interactive{
+  cursor: pointer;
+}
+
+.game-card--interactive:hover,
+.game-card--interactive:focus-visible{
+  transform: translateY(-4px);
+  box-shadow: 0 14px 28px rgba(60, 64, 67, 0.12);
+  border-color: #d7dce5;
+}
+
+.game-card--interactive:focus-visible{
+  outline: 3px solid rgba(66, 133, 244, 0.18);
+  outline-offset: 3px;
+}
+
+.game-card__top{
+  color: #2f3350;
+  padding: 16px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  background: #ffffff;
+  border-bottom: 1px solid #eceff4;
+}
+
+.game-card__type{
+  margin: 0;
+  font-size: 0.98rem;
+  font-weight: 700;
+  color: #2f3350;
+  line-height: 1.4;
+}
+
+.game-card__icon{
+  width: 42px;
+  height: 42px;
+  border-radius: 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 7px;
+  flex-shrink: 0;
+}
+
+.game-card__icon img{
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+}
+
+.game-card__body{
+  padding: 18px;
+}
+
+.game-card__meta{
+  margin: 0 0 18px;
+  color: #6d7083;
+  font-size: 0.98rem;
+}
+
+.game-card__details{
+  display: grid;
+  gap: 12px;
+}
+
+.game-card__detail{
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #4f5369;
+  font-size: 0.96rem;
+}
+
+.game-card__detail i{
+  width: 18px;
+  color: #7b8190;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.game-card__label{
+  font-weight: 700;
+  color: #2f3350;
+}
+
+.game-card--word,
+.game-card--image,
+.game-card--family,
+.game-card--general{
+  background: #ffffff;
+}
+
+.empty-state{
+  min-height: 240px;
+  border: 2px dashed #d8ddee;
+  border-radius: 22px;
+  background: #fafbff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 20px;
+  text-align: center;
+}
+
+.empty-state__text{
+  margin: 0;
+  color: #5f6480;
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.sr-only{
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+@media (max-width: 768px){
+  .community-games-page{
+    width: min(100%, calc(100% - 20px));
+    margin-top: 28px;
+  }
+
+  .games-grid{
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+
+  .header{
+    font-size: 30px;
+  }
+}
