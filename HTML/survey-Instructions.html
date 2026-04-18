@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Family Feud Game</title>
+    <title>تعليمات لعبة الاستبيان</title>
 
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
@@ -12,14 +12,10 @@
 </head>
 <body>
 
-  <!-- ================= NAVBAR ================= -->
   <nav class="bg-white shadow-sm ">
         <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-
-            <!-- Logo -->
             <img src="../Images/colorful-logo.png" alt="logo" class="h-10">
 
-            <!-- Links -->
             <div class="flex items-center gap-8 font-semibold text-gray-600">
                 <a href="main page.html" class="hover:text-[#0078BF]">الرئيسية</a>
                 <a href="main page.html#about" class="hover:text-[#0078BF]">من نحن</a>
@@ -31,53 +27,40 @@
     </nav>
 
     <div class="page-wrapper">
-        <img src="../images/Top Strip.png" class="strip-top" alt="Top Strip">
+        <img src="../Images/Top Strip.png" class="strip-top" alt="Top Strip">
 
-        <!-- المحتوى الرئيسي -->
         <div class="content-area">
             <div class="character-container">
-                <!-- شخصية قوقل -->
                 <img src="../images/google-character-transbarate.png" class="character" alt="Google Character">
 
-                <!-- مربع النص  -->
                 <div class="speech-bubble">
-                    <h2 class="google-title">
-                    <span class="g">G</span>
-                    <span class="a">a</span>
-                    <span class="m">m</span>
-                    <span class="e">e</span>
-                    <span class="space"> </span>
-                    <span class="n1">n</span>
-                    <span class="s1">s</span>
-                    <span class="t1">t</span>
-                    <span class="r1">r</span>
-                    <span class="u1">u</span>
-                    <span class="c1">c</span>
-                    <span class="t2">t</span>
-                    <span class="i2">i</span>
-                    <span class="o1">o</span>
-                    <span class="n2">n</span>
-                    <span class="s2">s</span>
-                    <span class="colon">:</span>
-                    </h2>
-                    
-                    <p>👋 Hey! Here's how to play:</p>
+                    <h2 class="google-title">تعليمات لعبة الاستبيان:</h2>
+
+                    <p>
+                        مستوحاة من برنامج <strong>Family Feud</strong> — يُطرح سؤال استبياني وعليك تخمين
+                        الإجابات الأكثر <span class="highlight">شيوعًا بين الناس</span>، وليس الإجابة الصحيحة علميًا.
+                    </p>
 
                     <ul class="rules-list">
                         <li>
-                            <span class="rule-icon">①</span>
-                            <span><span class="highlight">3-try limit</span> per question</span>
+                            <span class="rule-icon">💡</span>
+                            <span>مثال: <em>"اذكر شيئًا يُستخدم في المطبخ."</em></span>
                         </li>
                         <li>
-                            <span class="rule-icon">⚡</span>
-                            <span>
-                                <strong>Point-stealing mechanic</strong>
-                                <span class="steal-badge">STEAL</span>
-                            </span>
+                            <span class="rule-icon">⭐</span>
+                            <span>كل إجابة لها <span class="highlight">وزن بالنقاط</span> — الأكثر شيوعًا = نقاط أعلى.</span>
+                        </li>
+                        <li>
+                            <span class="rule-icon">❌</span>
+                            <span>بعد <strong>3 أخطاء</strong>، ينتقل الدور للفريق الآخر في محاولة <strong>سرقة النقاط</strong>.</span>
                         </li>
                         <li>
                             <span class="rule-icon">💰</span>
-                            <span>After 3 wrong answers, opponent can <strong>steal all points</strong> with one correct answer</span>
+                            <span>إجابة صحيحة أثناء السرقة = الحصول على <strong>نقاط الجولة كاملة</strong>.</span>
+                        </li>
+                        <li>
+                            <span class="rule-icon">🏆</span>
+                            <span>يفوز الفريق صاحب <strong>أعلى مجموع نقاط</strong> في نهاية الجولات.</span>
                         </li>
                     </ul>
                 </div>
@@ -85,18 +68,15 @@
         </div>
 
         <div class="buttons-group">
-            <a href="wheelPage.html?next=survey-game.html"><button class="play-btn">العب</button></a>
+            <a href="wheelPage.html?next=survey-game.html"><button class="play-btn">ابدأ اللعبة</button></a>
             <a href="main page.html"><button class="home-link">العودة إلى الرئيسية</button></a>
         </div>
 
-        <img src="../images/Top Strip.png" class="strip-bottom" alt="Bottom Strip">
+        <img src="../Images/Top Strip.png" class="strip-bottom" alt="Bottom Strip">
     </div>
 
-        <!-- ================= FOOTER ================= -->
     <footer class="bg-[#403F41] text-gray-300 py-12 px-6">
         <div class="max-w-6xl mx-auto grid md:grid-cols-3 gap-10">
-
-            <!-- About -->
             <div>
                 <img src="../Images/white-logo.png" class="w-65 h-auto mb-4 object-contain">
                 <p class="text-sm leading-6">
@@ -105,7 +85,6 @@
                 </p>
             </div>
 
-            <!-- Links -->
             <div>
                 <h4 class="font-bold mb-4">روابط سريعة</h4>
                 <ul class="space-y-2 text-sm">
@@ -116,7 +95,6 @@
                 </ul>
             </div>
 
-            <!-- Contact -->
             <div>
                 <h4 class="font-bold mb-4">تواصل معنا</h4>
                 <div class="flex gap-6 text-xl">
@@ -139,6 +117,5 @@
             جميع الحقوق محفوظة © 2026 مجموعة مطوري قوقل
         </div>
     </footer>
-    <!-- End -->
 </body>
 </html>
