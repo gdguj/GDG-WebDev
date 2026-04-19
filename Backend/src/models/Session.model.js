@@ -4,11 +4,13 @@ const CellSchema = new mongoose.Schema(
 {
   id: String,
   letter: String,
+  questionText: String,    // نص السؤال
+  answer: String,          // الإجابة الصحيحة (من GameTemplate)
   row: Number,
   col: Number,
+  attempts: [String],
   claimedBy: { type: String, default: "" },
-  status: { type: String, default: "empty" },
-  lastAnswer: { type: String, default: "" }
+  status: { type: String, default: "empty" }
 },
 { _id: false }
 );
