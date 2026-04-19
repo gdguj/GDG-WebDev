@@ -1,6 +1,8 @@
+let currentSessionId = null; // معرف الجلسة الحالية 
+
 const scores = {
-  blue:  { name: 'Goats',     words: 4, pts: 16 },
-  green: { name: 'Team name', words: 2,  pts: 8 }
+  blue:  { name: localStorage.getItem('blueTeamName') || 'Blue Team',     words: 0, pts: 0 },
+  green: { name: localStorage.getItem('greenTeamName') || 'Green Team', words: 0,  pts: 0 }
 };
 
 function updateScoreBar() {
@@ -12,9 +14,9 @@ function updateScoreBar() {
   document.getElementById('team-green-pts').textContent   = scores.green.pts;
 }
 
-const HEX_SIZE = 55; //هنا حجم الخليه نفسه
-const ROWS = 5;//عدد الصفوف الي بتتكون منها شبكة الخلايا
-const COLS = 4;//عدد الأعمدة الي بتتكون منها شبكة الخلايا
+const HEX_SIZE = 55;
+let ROWS = 5;   // سيتم تعديلها ديناميكياً بناءً على عدد الأسئلة
+let COLS = 5;   // سيتم تعديلها ديناميكياً بناءً على عدد الأسئلة
 
 const canvas = document.getElementById('gameCanvas');
 const ctx    = canvas.getContext('2d');
@@ -27,77 +29,52 @@ let selectedLetter = null;
 
 let currentQuestion = null;
 
-//هذي الفنكشن عشان لو كبرت الشبكة حقت الخلايا يصير بدل ما ترجع تكرر الحروف تحط ارقام داخل الخليه
-const CELL_LABELS = (() => {
-  const labels = [];
-  for (let i = 0; i < 26; i++) labels.push(String.fromCharCode(65 + i)); // A–Z
-  const remaining = (ROWS * COLS) - 26;
-  for (let i = 1; i <= remaining; i++) labels.push(String(i));           // 1، 2، 3...
-  return labels;
-})();
 
-/* ================================================
-  ⚙️ QUESTION DATA INTEGRATION
-  ================================================
-  هذي الدالة هي النقطة الوحيدة اللي تحتاج تعدل عليها
-  لما تربط مصدر بيانات الأسئلة الحقيقي.
+// هذي الفنكشن عشان نسترجع كل الاسئلة و الاجوبة من الداتا بيس 
 
-   المطلوب من الدالة:
-     - تاخذ حرف (مثل "H")
-     - ترجع Promise يحتوي على:
-       { question: string, answer: string }
-     - الـ answer يجب أن يبدأ بنفس الحرف
+let allQuestions = []; // هنا بنخزن الأسئلة اللي بتجينا
 
-   ================================================ */
-async function fetchQuestionData(letter) {
+async function loadQuestions() {
+    try {
+        const response = await fetch('/api/init-game', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                gameType: "letter_cells",
+                greenName: localStorage.getItem('greenTeamName') || 'Green Team',
+                blueName: localStorage.getItem('blueTeamName') || 'Blue Team',
+                timestamp: new Date().getTime()
+            })
+        });
 
-  // هذي بيانات وهمية بنحذفها لما نربط مصدر بيانات فعلي
-  await new Promise(r => setTimeout(r, 1000)); 
+        const data = await response.json();
+        console.log("البيانات الكاملة من السيرفر:", data);
+        
+        if (!data.sessionId || !data.cells) {
+            console.error("خطأ: البيانات ناقصة من السيرفر");
+            alert(" حدث خطأ في استقبال البيانات من السيرفر");
+            return;
+        }
 
-  const mockQuestions = {
-    A: { question: 'What is the largest continent on Earth?',            answer: 'asia'      },
-    B: { question: 'What is the capital of Brazil?',                     answer: 'brasilia'  },
-    C: { question: 'What programming concept organizes code into classes?', answer: 'classes' },
-    D: { question: 'What word means a structured set of data?',          answer: 'database'  },
-    E: { question: 'What is the study of living organisms called?',      answer: 'ecology'   },
-    F: { question: 'What protocol is used to transfer files online?',    answer: 'ftp'       },
-    G: { question: 'What site hosts millions of code repositories?',     answer: 'github'    },
-    H: { question: 'What language is used to structure web pages?',      answer: 'html'      },
-    I: { question: "What is Apple's mobile operating system called?",    answer: 'ios'       },
-    J: { question: 'What language is widely used for Android development?', answer: 'java'   },
-    K: { question: 'What keyboard shortcut copies text?',                answer: 'k'         },
-    L: { question: 'What Linux command lists directory contents?',       answer: 'ls'        },
-    M: { question: 'What markup language formats README files?',         answer: 'markdown'  },
-    N: { question: 'What runtime lets JavaScript run outside a browser?', answer: 'node'     },
-    O: { question: 'What CSS property controls element layering?',       answer: 'opacity'   },
-    P: { question: 'What language is famous for data science?',          answer: 'python'    },
-    Q: { question: 'What word means a database search command?',         answer: 'query'     },
-    R: { question: 'What does CSS stand for (first word)?',              answer: 'responsive' },
-    S: { question: 'What scripting language runs in web browsers?',      answer: 'stylesheet' },
-    T: { question: 'What TypeScript adds to JavaScript?',               answer: 'types'     },
-    U: { question: 'What term describes a website address?',             answer: 'url'       },
-    V: { question: 'What tool is used for code version control?',        answer: 'version'   },
-    W: { question: 'What protocol transfers web pages?',                 answer: 'www'       },
-    X: { question: 'What markup language is similar to HTML but stricter?', answer: 'xml'   },
-    Y: { question: 'What JavaScript runtime environment is used for servers?', answer: 'yarn' },
-    Z: { question: 'What is the act of making files smaller called?',    answer: 'zipping'  },
-  };
-
-  return mockQuestions[letter] || {
-    question: `Name something related to technology that starts with "${letter}"`,
-    answer: letter.toLowerCase()
-  };
+        currentSessionId = data.sessionId;
+        allQuestions = data.cells;
+        lettersArray = [];
+        lettersArray = allQuestions.map(cell => cell.letter);
+        drawHexGrid();
+        updateScoreBar();
+        
+    } catch (error) {
+        console.error("❌ خطأ في جلب الأسئلة:", error);
+        alert("❌ فشل الاتصال بالسيرفر. تأكد من أن السيرفر يعمل.");
+    }
 }
 
+let gridLetters = new Map();// عشان نحط كل حرف  مع السؤال المقابل له 
+let lettersArray = Array.from(gridLetters.keys()); // هنا بنحول خريطة الحروف إلى مصفوفة عشان نقدر نستخدمها في رسم الخلايا
+let letterIndex = 0; // هذا المتغير بيستخدم عشان نحدد أي حرف نرسم في كل خلية، بنزوده بعد ما نرسم كل خلية عشان يروح للحرف اللي بعده في المصفوفة
 
-/* ================================================
-   هنا بنرسم خليه وحدة وكل حالة لها لون وحدود مختلفة
-   المفروض انه الحالتين الثانيه غير الطبيعيه تعتمد على الفريق الي بيلعب يعني لو الفريق الأزرق هو الي بيلعب لما يمر الماوس على الخلية تصير زرقاء و لما يجاوب صح تصير برضو زرقاء عشان تحب له و العكس لو الفريق الأخضر هو الي بيلعب
-     - normal: أبيض مع حدود سوداء
-     - hover: أزرق فاتح مع حدود زرقاء سميكة
-     - answered: ازرق فاتح 
-   states: 'normal' | 'hover' | 'answered'
-   ================================================ */
 function drawHexagon(cx, cy, size, label, state = 'normal') {
   ctx.beginPath();
   for (let i = 0; i < 6; i++) {
@@ -124,41 +101,55 @@ function drawHexagon(cx, cy, size, label, state = 'normal') {
   ctx.textAlign    = 'center';
   ctx.textBaseline = 'middle';
   ctx.fillText(label, cx, cy);
+
 }
 
+function drawLetterInsideHex(ctx, x, y, letter) {
+  ctx.fillStyle    = '#000000';
+  ctx.font         = 'bold 30px Arial';
+  ctx.textAlign    = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(letter, x, y);
+}
 
-/* ================================================
-   هنا بنرسم الشبكة كلها يعني محموعة الخلايا مع بعض
-   ================================================ */
 function drawHexGrid(hoveredIdx = -1) {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   hexCells.length = 0;
 
   const colSpacing = HEX_SIZE * Math.sqrt(3);
   const rowSpacing = HEX_SIZE * 1.5;
-  const startX = 82;
+  const startX = 60;
   const startY = HEX_SIZE + 30;
+  
   let labelIdx = 0;
 
-  for (let row = 0; row < ROWS; row++) {
-    for (let col = 0; col < COLS; col++) {
-
+  // ROWS و COLS خليهم 5 عشان تظل الشبكة 25 خلية
+  for (let row = 0; row < 5; row++) {
+    for (let col = 0; col < 5; col++) {
       const offsetX = row % 2 !== 0 ? colSpacing / 2 : 0;
       const cx = startX + col * colSpacing + offsetX;
       const cy = startY + row * rowSpacing;
-      const label = CELL_LABELS[labelIdx++] ?? '';
-      const idx = hexCells.length;
 
+      // سحب الحرف من المصفوفة اللي جت من الباك إند
+      // إذا خلصت الحروف (idx > 2) بياخذ نص فاضي
+      const label = lettersArray[labelIdx] || ""; 
+      
+      const idx = hexCells.length;
       let state = 'normal';
-      if (answeredCells.has(label)) state = 'answered';
+      
+      if (label !== "" && answeredCells.has(label)) state = 'answered';
       else if (idx === hoveredIdx) state = 'hover';
 
+      // نرسم السداسي دائماً (عشان يحافظ على شكل الشبكة)
       drawHexagon(cx, cy, HEX_SIZE, label, state);
+      
+      // نضيف الخلية للمصفوفة فقط إذا كان لها حرف (عشان ما تفتح شاشة سؤال فاضية)
       hexCells.push({ cx, cy, label });
+      
+      labelIdx++; 
     }
   }
 }
-
 
 /* ================================================
    كشف الخلية من إحداثيات الماوس يعني لما يمر الماوس على الخلية يحدد أي خلية بالضبط
@@ -219,6 +210,8 @@ canvas.addEventListener('click', (e) => {
    بعد ما يختار الخليه يقوم يفتح له واجهة السؤال الي خليناهاhidden في الـ CSS
    ================================================ */
 async function openQuestionScreen(letter) {
+  console.log(`\nفتح شاشة السؤال للحرف: "${letter}"`);
+  
   selectedLetter   = letter;
   currentQuestion  = null;
 
@@ -233,66 +226,192 @@ async function openQuestionScreen(letter) {
   document.getElementById('submit-btn').disabled         = false;
   document.getElementById('loading-spinner').classList.remove('hidden');
 
-  /*هنا بنبدل الشاشه بين شبكة الخلايا و واجهةالسؤال يعني بنخفي الواجهة حقت الخلايا و نفتح الواجهة حقت السؤال */
   document.getElementById('gameCanvas').classList.add('hidden');
   document.getElementById('question-screen').classList.remove('hidden');
 
   try {
-    /* هنا بعد الربط الفعلي، الحرف ينرسل لمصدر البيانات بدل البيانات الوهمية */
-    const result = await fetchQuestionData(letter);
+    // البحث عن السؤال في allQuestions
+    console.log(` البحث عن السؤال للحرف "${letter}" في ${allQuestions.length} سؤال`);
+    
+    const result = allQuestions.find(cell => cell.letter === letter);
+    
+    if (!result) {
+      throw new Error(`السؤال للحرف "${letter}" غير موجود في allQuestions`);
+    }
+
+    if (!result.questionText) {
+      console.warn(` questionText فارغ:`, result);
+      throw new Error(`نص السؤال للحرف "${letter}" فارغ`);
+    }
+
     currentQuestion = result;
 
+    console.log(`تم تحميل السؤال:`, {
+      letter: result.letter,
+      question: result.questionText,
+      hasAnswer: !!result.answer
+    });
+
     document.getElementById('loading-spinner').classList.add('hidden');
-    document.getElementById('question-text').textContent = result.question;
+    document.getElementById('question-text').textContent = result.questionText;
+    
+    startGlobalTimer();
     document.getElementById('answer-input').disabled     = false;
     document.getElementById('answer-input').focus();
 
   } catch (err) {
+    console.error(" خطأ في تحميل السؤال:", err);
     document.getElementById('loading-spinner').classList.add('hidden');
-    document.getElementById('question-text').textContent = 'Failed to load question.';
+    document.getElementById('question-text').textContent = `${err.message}`;
+    document.getElementById('submit-btn').disabled = true;
+    
+    // العودة للشبكة بعد 2 ثانية
+    setTimeout(() => returnToBoard(), 2000);
   }
 }
 
+let timeLeft ;
+let timerId = null;
 
-/* ================================================
-   بنشيك على الاجابه صح و لا لا و نحدث النقاط و نرجع للشبكة حقت الخلايا
-     - لازم تكون الإجابة صح
-     - ولازم تبدأ بنفس الحرف
-   ================================================ */
-function submitAnswer() {
-  if (!currentQuestion) return;
+function startGlobalTimer() {
+    timeLeft = 10;
+    clearInterval(timerId); // نحتاج هنا كود يمسح أي عداد قديم عشان ما تتداخل الأوقات
+    
+    timerId = setInterval(() => {
+        //  ننقص الوقت بمقدار 1
+        timeLeft--;
+        //  نحدث نص العنصر في HTML اللي يعرض الوقت المتبقي
+        document.getElementById('Time').textContent = `: ${timeLeft}`;
+        
+        if (timeLeft <= 0) {
+            //  نوقف العداد تماماً
+            clearInterval(timerId);
+            //  ننادي دالة تنهي الجولة وترجع للشبكة
+            returnToBoard();
+            //  نعرض رسالة انتهاء الوقت
+            alert("انتهى الوقت! لم يربح أحد");
+        }
+    }, 1000);
+}
+async function submitAnswer() {
+    const input = document.getElementById('answer-input').value.trim();
+    const playerName = localStorage.getItem('playerName') || 'Unknown Player'; 
+    const playerTeam = localStorage.getItem('playerTeam') || 'blue';
+    
+    console.log(`\n DEBUG submitAnswer:`);
+    console.log(`  - Input: "${input}"`);
+    console.log(`  - PlayerName: "${playerName}"`);
+    console.log(`  - PlayerTeam: "${playerTeam}"`);
+    console.log(`  - SelectedLetter: "${selectedLetter}"`);
+    console.log(`  - SessionID: "${currentSessionId}"`);
+    
+    if (!input) {
+        alert("الرجاء إدخال إجابة");
+        return;
+    }
 
-  const input  = document.getElementById('answer-input').value.trim().toLowerCase();
-  const answer = currentQuestion.answer.toLowerCase();
-  const letter = selectedLetter.toLowerCase();
+    if (!currentSessionId || !selectedLetter) {
+        console.error(" خطأ: معرف الجلسة أو الحرف غير موجود");
+        alert(" حدث خطأ في البيانات. حاول مرة أخرى.");
+        return;
+    }
 
-  const isCorrect = input === answer && input.startsWith(letter);
+    // منع الضغط على الزر مرتين
+    const submitBtn = document.getElementById('submit-btn');
+    if (submitBtn.disabled) {
+        console.warn("الزر معطل - محاولة ضغط مضاعفة");
+        return;
+    }
+    submitBtn.disabled = true;
 
-  if (isCorrect) {
+    // إيقاف التايمر
+    clearInterval(timerId); 
+
+    try {
+        const requestBody = {
+            sessionId: currentSessionId,
+            team: playerTeam,
+            answer: input,
+            letter: selectedLetter,
+            playerName: playerName
+        };
+
+        console.log("إرسال الطلب إلى السيرفر:", requestBody);
+
+        const response = await fetch('/api/answer', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(requestBody)
+        });
+
+        const result = await response.json();
+        console.log(` الرد من السيرفر (Status: ${response.status}):`, result);
+
+        if (!response.ok) {
+            // خطأ من السيرفر
+            console.error(" رد خطأ من السيرفر:", result.error);
+            if (result.error === "already_attempted") {
+                alert(" عذراً، لقد استنفدت محاولتك لهذا السؤال!");
+            } else {
+                alert(` خطأ: ${result.error || 'إجابة خاطئة'}`);
+            }
+            handleWrongAnswer();
+        } else if (result.correct) {
+            console.log(`إجابة صحيحة! النقاط: ${result.points}`);
+            handleCorrectAnswer(playerTeam, result.points);
+        } else {
+            console.log("إجابة خاطئة");
+            handleWrongAnswer();
+        }
+
+    } catch (error) {
+        console.error(" خطأ في الاتصال بالسيرفر:", error);
+        alert("فشل الاتصال بالسيرفر. تأكد من أن السيرفر يعمل.");
+        handleWrongAnswer();
+    } finally {
+        // إعادة تفعيل الزر
+        console.log(" إعادة تفعيل زر Submit");
+        submitBtn.disabled = false;
+    }
+}
+
+function handleCorrectAnswer(team, points) {
     document.getElementById('answer-input').disabled = true;
     document.getElementById('submit-btn').disabled   = true;
     document.getElementById('check-icon').classList.remove('hidden');
-//هنا سويتها على اساس انه الفريق الازرق هو الي قاعد يلعب و لكن بعدين لازم نشيك مين الفريق الي قاعد يلعب و نزوده النقاط و الكلمات
-    scores.blue.pts   += 4;
-    scores.blue.words += 1;
-    updateScoreBar();
+
+    if (scores[team]) { 
+        scores[team].pts = points || (scores[team].pts + 4);  // استخدم النقاط من السيرفر
+        scores[team].words += 1;
+        updateScoreBar();
+    }
 
     /* أنيميشن النقاط */
     const popup = document.getElementById('points-popup');
     popup.classList.remove('hidden');
     requestAnimationFrame(() => popup.classList.add('show'));
 
+    clearInterval(timerId);
+
     setTimeout(() => {
       answeredCells.add(selectedLetter);
       returnToBoard();
     }, 2000);
+}
 
-  } else {
+  function handleWrongAnswer() {
     const input_el = document.getElementById('answer-input');
     input_el.classList.add('wrong');
-    setTimeout(() => input_el.classList.remove('wrong'), 700);
+    setTimeout(() => {
+        input_el.classList.remove('wrong');
+        // الرجوع للشبكة بعد 1.5 ثانية
+        setTimeout(() => {
+            returnToBoard();
+        }, 500);
+    }, 700);
   }
-}
 
 /* هذي سويتها عشان لو ضغط Enter الي في الكيبورد يرسل الاجابه يعني مو لازم يضغط على البوتون حق Submit */
 document.getElementById('answer-input').addEventListener('keydown', (e) => {
@@ -306,3 +425,4 @@ function returnToBoard() {
 }
 
 drawHexGrid();
+loadQuestions(); // نبدأ بتحميل الأسئلة من السيرفر
