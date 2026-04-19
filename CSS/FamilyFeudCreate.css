@@ -1,0 +1,234 @@
+body{
+  font-family:'Cairo';
+  margin:0;
+  background:#f5f7fb;
+}
+
+/* CONTAINER */
+.container{
+  text-align:center;
+  max-width:900px;
+  margin:0 auto;
+  padding-top:40px;
+}
+
+/* TITLE */
+.title{
+  font-size:42px;
+  font-weight:700;
+  margin-bottom:30px;
+}
+
+/* QUESTION NUMBER */
+.q-number{
+  background:#4285F4;
+  color:white;
+  width:50px;
+  height:50px;
+  line-height:50px;
+  border-radius:10px;
+  margin:0 auto 20px;
+  font-weight:bold;
+}
+
+/* QUESTION */
+.input{
+  width:520px;
+  max-width:90%;
+  height:55px;
+  border-radius:14px;
+  border:2px solid #ccc;
+  margin-bottom:20px;
+  padding:0 15px;
+  font-size:16px;
+}
+
+/* ANSWERS BOX */
+.answer{
+  display:flex;
+  align-items:center;
+  gap:15px;
+
+  margin:12px auto;
+  padding:14px 18px;
+
+  border-radius:14px;
+  width:520px;
+}
+
+/* ألوان متكررة مهما زاد العدد */
+.answer:nth-child(4n+1){background:#EA4335;}
+.answer:nth-child(4n+2){background:#4285F4;}
+.answer:nth-child(4n+3){background:#FBBC05;}
+.answer:nth-child(4n+4){background:#34A853;}
+
+.answer input{
+  height:48px;
+  border-radius:12px;
+  border:none;
+
+  padding:0 12px;
+  font-size:14px;
+
+  background:#f1f3f4;
+}
+
+/* خانة الإجابة (كبيرة) */
+.answer input:first-child{
+  flex:1;
+}
+
+/* خانة النقاط (صغيرة) */
+.answer input:last-child{
+  width:100px;
+  text-align:center;
+}
+
+.answer{
+  padding:10px;
+  border-radius:12px;
+  width:520px;
+}
+
+/* ADD ANSWER */
+.add-answer{
+  margin-top:10px;
+  color:#4285F4;
+  cursor:pointer;
+  font-weight:600;
+  margin-bottom:13px; 
+}
+
+/* BUTTONS */
+.buttons{
+  display:flex;
+  flex-direction:column;  /* 👈 هذا اللي يخليهم تحت بعض */
+  align-items:center;
+  gap:12px;
+}
+.buttons button{
+  min-width:140px;
+  height:42px;
+  border-radius:12px;
+  font-weight:600;
+  cursor:pointer;
+}
+
+.save{
+  background:#34A853;
+  color:white;
+  border:none;
+    margin-bottom:20px; 
+
+}
+
+.outline{
+  background:#4285F4;
+  color:white;
+}
+
+/* POPUP (نفس لعبة الحروف) */ 
+
+/* ===== POPUP (نفس لعبة الحروف بالضبط) ===== */
+.popup{
+  position:fixed;
+  top:50%;
+  left:50%;
+  transform:translate(-50%,-50%) scale(1.4);
+
+  background:white;
+  padding:35px 40px;
+  border-radius:20px;
+
+  width:500px;
+  max-width:90%;
+
+  border:2px solid #EA4335;
+  text-align:center;
+
+  z-index:9999; /* 🔥 هذا مهم */
+}
+
+.hidden{display:none;}
+
+.popup p{
+  font-size:18px;
+}
+
+#gameId{
+  font-size:48px;
+  color:#EA4335;
+  margin:15px 0;
+}
+
+/* POPUP BUTTONS (نفس الحروف) */
+/* ===== POPUP BUTTONS FINAL ===== */
+
+.popup button{
+  display:block;
+  margin:12px auto;
+
+  width:220px;
+  height:42px;
+
+  border-radius:14px;
+  font-size:15px;
+  font-weight:600;
+  cursor:pointer;
+
+  transition:0.2s;
+}
+
+/* نسخ */
+.copy{
+  background:#e5e5e5;
+  color:#444;
+  border:none;
+}
+
+.copy:hover{
+  background:#d6d6d6;
+}
+
+/* تعديل */
+.edit{
+  background:white;
+  border:2px solid #000;
+}
+
+.edit:hover{
+  background:#f5f5f5;
+}
+
+/* ابدأ باللعب */
+.start-game{
+  background:#34A853;
+  color:white;
+  border:none;
+}
+
+.start-game:hover{
+  background:#2c8c45;
+}
+
+/* CONFETTI */
+.confetti{
+  position:absolute;
+  top:0;
+  height:100%;
+}
+.confetti.left{left:-28px;}
+.confetti.right{right:-28px;}
+
+.container h1{
+  font-size:32px !important;
+  font-weight: 700px !important;
+  margin-bottom: 25px !important;
+}
+
+
+.note{
+  color:#F9AB00; /* أحمر */
+    margin-bottom:18px; 
+
+}

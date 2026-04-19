@@ -1,0 +1,191 @@
+body{
+  font-family:'Cairo';
+  margin:0;
+  background:#f5f7fb;
+}
+
+/* PAGE */
+.container{
+  text-align:center;
+  max-width:900px;
+  margin:0 auto;
+  padding-top:40px;
+    position:relative;
+
+  
+}
+
+/* TITLE */
+h1{
+  font-size:40px;
+  margin-bottom:40px;
+}
+
+/* QUESTION ROW */
+.question{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:10px;
+
+  padding:15px;
+  border-radius:12px;
+  margin:12px auto;
+  width:750px;
+  max-width:90%;
+}
+
+/* COLORS */
+.red{background:#EA4335;}
+.blue{background:#4285F4;}
+.yellow{background:#FBBC05;}
+.green{background:#34A853;}
+
+.question input{
+  width:200px;
+  height:40px;
+  border-radius:8px;
+  border:none;
+  padding:0 10px;
+}
+
+/* زر رفع صورة */
+.question button{
+  width:120px;
+  height:40px;
+  border-radius:8px;
+  border:none;
+  background:white;
+  cursor:pointer;
+}
+
+/* + */
+.question span{
+  font-size:22px;
+  color:white;
+  font-weight:bold;
+}
+
+/* ===== BUTTONS (نفس لعبة الحروف) ===== */
+.buttons{
+  display:flex;
+  justify-content:center;
+  gap:15px;
+  margin-top:20px;
+}
+
+.buttons button{
+  min-width:140px;
+  height:42px;
+
+  border-radius:12px;
+  font-size:15px;
+  font-weight:600;
+  cursor:pointer;
+}
+
+.outline{
+  background:white;
+  border:1px solid #000;
+}
+
+.outline:hover{
+  background:#f5f5f5;
+}
+
+.primary{
+  background:#4285F4;
+  color:white;
+  border:none;
+}
+
+.primary:hover{
+  background:#3367d6;
+}
+
+/* CHARACTER */
+.character{
+  height:500px;
+  margin-top:20px;
+  left:50px;
+}
+
+
+
+/* ===== POPUP (نفس لعبة الحروف بالضبط) ===== */
+.popup{
+  position:fixed;
+  top:50%;
+  left:50%;
+  transform:translate(-50%,-50%) scale(1.4);
+
+  background:white;
+  padding:35px 40px;
+  border-radius:20px;
+
+  width:500px;
+  max-width:90%;
+
+  border:2px solid #EA4335;
+  text-align:center;
+}
+
+.hidden{display:none;}
+
+.popup p{
+  font-size:18px;
+}
+
+#gameId{
+  font-size:48px;
+  color:#EA4335;
+  margin:15px 0;
+}
+
+/* POPUP BUTTONS (نفس الحروف) */
+.copy{
+  display:block;
+  margin:10px auto;
+  width:190px;
+  height:40px;
+  background:#e5e5e5;
+  border:none;
+  border-radius:10px;
+}
+
+.edit{
+  display:block;
+  margin:10px auto;
+  width:190px;
+  height:40px;
+  background:white;
+  border:1px solid #000;
+  border-radius:12px;
+}
+
+.start-game{
+  display:block;
+  margin:12px auto;
+  width:190px;
+  height:40px;
+  background:#34A853;
+  color:white;
+  border:none;
+  border-radius:14px;
+}
+
+/* CONFETTI */
+.confetti{
+  position:absolute;
+  top:0;
+  height:100%;
+}
+.confetti.left{left:-28px;}
+.confetti.right{right:-28px;}
+
+.container h1{
+  font-size:32px !important;
+  font-weight: 700px !important;
+  margin-bottom: 25px !important;
+}
+

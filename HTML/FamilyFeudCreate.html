@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<title>Family Feud</title>
+
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="../CSS/FamilyFeudCreate.css">
+</head>
+
+<body>
+
+<!-- NAVBAR -->
+<nav class="bg-white shadow-sm">
+  <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+    <img src="../Images/colorful-logo.png" class="h-10">
+      <div class="flex items-center gap-8 font-semibold text-gray-600">
+      <a href="main page.html" class="hover:text-[#0078BF]">الرئيسية</a>
+      <a href="main page.html#about" class="hover:text-[#0078BF]">من نحن</a>
+      <a href="main page.html#goals" class="hover:text-[#0078BF]">أهدافنا</a>
+      <a href="main page.html#games" class="hover:text-[#0078BF]">الألعاب</a>
+    </div>
+  </div>
+</nav>
+
+<div class="container">
+
+<h1 class="title">انشئ لعبة Family Feud الخاصة بك</h1>
+
+<div class="q-number" id="qNum">1</div>
+
+<input id="question" class="input" placeholder="اكتب سؤال...">
+
+<div id="answers"></div>
+
+<div class="add-answer" onclick="addAnswer()">+ إضافة إجابة</div>
+<p class="note">* تأكد أن مجموع النقاط = 100</p>
+
+<div class="buttons">
+<button class="outline" onclick="addQuestion()">إضافة سؤال</button>
+  <button class="save" onclick="saveGame()">حفظ اللعبة</button>
+</div>
+
+</div>
+
+<!-- POPUP -->
+<div id="popup" class="popup hidden">
+
+  <img src="../Images/happyhappyleft.png" class="confetti left">
+<img src="../Images/happyhappyright.png" class="confetti right">
+
+  <p>شارك الرمز مع أصدقائك</p>
+  <h2 id="gameId"></h2>
+
+<button class="copy" onclick="copyID()">نسخ</button>
+
+<button class="edit" onclick="closePopup()">تعديل اللعبة</button>
+
+<button class="start-game" onclick="startGame()">ابدأ باللعب</button>
+</div>
+
+<footer class="bg-[#403F41] text-gray-300 py-12 px-6">
+  <div class="max-w-6xl mx-auto grid md:grid-cols-3 gap-10">
+
+    <div>
+      <img src="../Images/white-logo.png" class="w-65 mb-4">
+      <p class="text-sm">
+        مجتمع عالمي مدعوم من Google Developers
+      </p>
+    </div>
+
+    <div>
+      <h4 class="font-bold mb-4">روابط سريعة</h4>
+      <ul class="space-y-2 text-sm">
+        <li><a href="main page.html">الرئيسية</a></li>
+        <li><a href="main page.html#about">من نحن</a></li>
+        <li><a href="main page.html#goals">أهدافنا</a></li>
+        <li><a href="main page.html#games">الألعاب</a></li>
+      </ul>
+    </div>
+
+    <div>
+      <h4 class="font-bold mb-4">تواصل معنا</h4>
+      <p>gdscuj@gmail.com</p>
+    </div>
+
+  </div>
+</footer>
+
+<script src="../JS/FamilyFeudCreate.js"></script>
+
+</body>
+</html>
