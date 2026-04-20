@@ -1,3 +1,5 @@
+//mock data for community games
+
 const communityGames = [
   {
     id: 1,
@@ -64,8 +66,36 @@ const communityGames = [
   }
 ];
 
+
 const gamesContainer = document.getElementById("gamesContainer");
+const typeFilterValue = document.getElementById("typeFilterValue");
+const sortFilterValue = document.getElementById("sortFilterValue");
+const filterDropdowns = Array.from(document.querySelectorAll("[data-filter-dropdown]"));
 const validGameIds = new Set(communityGames.map((game) => String(game.id)));
+const gameCardsById = new Map();
+const filterState = {
+  type: "all",
+  sort: "newest"
+};
+const filterLabels = {
+  type: {
+    all: "كل الألعاب",
+    image: "لعبة الصور",
+    word: "لعبة الحروف",
+    family: "Family Feud"
+  },
+  sort: {
+    newest: "الأحدث",
+    oldest: "الأقدم"
+  }
+};
+const filterTypeMap = {
+  image: "Image Game",
+  word: "Word Game",
+  family: "Family Feud"
+};
+
+let renderQueue = Promise.resolve();
 
 function formatArabicDate(dateString) {
   const date = new Date(dateString);
@@ -159,6 +189,8 @@ function createGameCard(game) {
   const details = createElement("div", "game-card__details");
 
   article.dataset.id = String(game.id);
+  article.dataset.type = game.type;
+  article.dataset.createdAt = game.createdAt;
   article.setAttribute("role", "button");
   article.setAttribute("tabindex", "0");
   article.setAttribute("aria-label", title);
@@ -196,27 +228,278 @@ function clearContainer(container) {
   }
 }
 
-function renderCommunityGames(games) {
+function parseCreatedAt(dateString) {
+  const time = new Date(dateString).getTime();
+  return Number.isNaN(time) ? 0 : time;
+}
+
+function getFilteredAndSortedGames() {
+  const filteredGames = communityGames.filter((game) => {
+    if (filterState.type === "all") {
+      return true;
+    }
+
+    return game.type === filterTypeMap[filterState.type];
+  });
+
+  filteredGames.sort((leftGame, rightGame) => {
+    const leftDate = parseCreatedAt(leftGame.createdAt);
+    const rightDate = parseCreatedAt(rightGame.createdAt);
+
+    return filterState.sort === "oldest" ? leftDate - rightDate : rightDate - leftDate;
+  });
+
+  return filteredGames;
+}
+
+function removeEmptyState() {
+  if (!gamesContainer) {
+    return;
+  }
+
+  const emptyState = gamesContainer.querySelector(".empty-state");
+
+  if (emptyState) {
+    emptyState.remove();
+  }
+}
+
+function wait(duration) {
+  return new Promise((resolve) => {
+    window.setTimeout(resolve, duration);
+  });
+}
+
+function updateFilterValueText(group) {
+  if (group === "type" && typeFilterValue) {
+    typeFilterValue.textContent = filterLabels.type[filterState.type];
+  }
+
+  if (group === "sort" && sortFilterValue) {
+    sortFilterValue.textContent = filterLabels.sort[filterState.sort];
+  }
+}
+
+function syncSelectedOptions(group) {
+  document.querySelectorAll(`.filter-dropdown__option[data-filter-group="${group}"]`).forEach((option) => {
+    const isSelected = option.dataset.value === filterState[group];
+    option.classList.toggle("is-selected", isSelected);
+    option.setAttribute("aria-selected", String(isSelected));
+  });
+}
+
+function closeDropdown(dropdown) {
+  if (!dropdown) {
+    return;
+  }
+
+  dropdown.classList.remove("is-open");
+  const trigger = dropdown.querySelector(".filter-dropdown__trigger");
+
+  if (trigger) {
+    trigger.setAttribute("aria-expanded", "false");
+  }
+}
+
+function closeAllDropdowns(exceptDropdown) {
+  filterDropdowns.forEach((dropdown) => {
+    if (dropdown !== exceptDropdown) {
+      closeDropdown(dropdown);
+    }
+  });
+}
+
+function initializeGameCardMap() {
+  communityGames.forEach((game) => {
+    gameCardsById.set(String(game.id), createGameCard(game));
+  });
+}
+
+function renderInitialGames() {
   if (!gamesContainer) {
     return;
   }
 
   clearContainer(gamesContainer);
 
-  if (!Array.isArray(games) || !games.length) {
+  const fragment = document.createDocumentFragment();
+
+  getFilteredAndSortedGames().forEach((game) => {
+    const card = gameCardsById.get(String(game.id));
+
+    if (card) {
+      fragment.appendChild(card);
+    }
+  });
+
+  if (!fragment.childNodes.length) {
     gamesContainer.appendChild(createEmptyState());
     return;
   }
 
-  const fragment = document.createDocumentFragment();
-
-  games.forEach((game) => {
-    fragment.appendChild(createGameCard(game));
-  });
-
   gamesContainer.appendChild(fragment);
 }
 
+async function updateDisplayedGames() {
+  if (!gamesContainer) {
+    return;
+  }
+
+  const nextGames = getFilteredAndSortedGames();
+  const nextIds = new Set(nextGames.map((game) => String(game.id)));
+  const currentCards = Array.from(gamesContainer.querySelectorAll(".game-card"));
+  const currentIds = new Set(currentCards.map((card) => card.dataset.id));
+  const cardsToHide = currentCards.filter((card) => !nextIds.has(card.dataset.id));
+  const firstRects = new Map();
+
+  currentCards.forEach((card) => {
+    if (nextIds.has(card.dataset.id)) {
+      firstRects.set(card.dataset.id, card.getBoundingClientRect());
+    }
+  });
+
+  if (cardsToHide.length) {
+    cardsToHide.forEach((card) => {
+      card.classList.add("game-card--exiting");
+      card.setAttribute("aria-hidden", "true");
+      card.setAttribute("tabindex", "-1");
+    });
+
+    await wait(180);
+
+    cardsToHide.forEach((card) => {
+      card.remove();
+      card.classList.remove("game-card--exiting");
+      card.removeAttribute("aria-hidden");
+      card.setAttribute("tabindex", "0");
+    });
+  }
+
+  removeEmptyState();
+
+  if (!nextGames.length) {
+    gamesContainer.appendChild(createEmptyState());
+    return;
+  }
+
+  const enteringCards = [];
+
+  nextGames.forEach((game) => {
+    const card = gameCardsById.get(String(game.id));
+
+    if (!card) {
+      return;
+    }
+
+    if (!currentIds.has(String(game.id))) {
+      enteringCards.push(card);
+    }
+
+    gamesContainer.appendChild(card);
+  });
+
+  const visibleCards = Array.from(gamesContainer.querySelectorAll(".game-card"));
+
+  visibleCards.forEach((card) => {
+    const firstRect = firstRects.get(card.dataset.id);
+
+    if (!firstRect) {
+      card.style.transition = "none";
+      card.style.opacity = "0";
+      card.style.transform = "translateY(8px)";
+      return;
+    }
+
+    const lastRect = card.getBoundingClientRect();
+    const deltaX = firstRect.left - lastRect.left;
+    const deltaY = firstRect.top - lastRect.top;
+
+    if (deltaX || deltaY) {
+      card.style.transition = "none";
+      card.style.transform = `translate(${deltaX}px, ${deltaY}px)`;
+    }
+  });
+
+  gamesContainer.offsetHeight;
+
+  requestAnimationFrame(() => {
+    visibleCards.forEach((card) => {
+      card.style.transition = "";
+      card.style.opacity = "";
+      card.style.transform = "";
+    });
+  });
+
+  if (enteringCards.length) {
+    window.setTimeout(() => {
+      enteringCards.forEach((card) => {
+        card.style.transition = "";
+      });
+    }, 250);
+  }
+}
+
+function queueDisplayedGamesUpdate() {
+  renderQueue = renderQueue.then(() => updateDisplayedGames());
+  return renderQueue;
+}
+
+function applyFilterSelection(group, value) {
+  if (!Object.prototype.hasOwnProperty.call(filterState, group) || filterState[group] === value) {
+    closeAllDropdowns();
+    return;
+  }
+
+  filterState[group] = value;
+  updateFilterValueText(group);
+  syncSelectedOptions(group);
+  closeAllDropdowns();
+  queueDisplayedGamesUpdate();
+}
+
+function attachDropdownEvents() {
+  if (!filterDropdowns.length) {
+    return;
+  }
+
+  filterDropdowns.forEach((dropdown) => {
+    const trigger = dropdown.querySelector(".filter-dropdown__trigger");
+
+    if (!trigger) {
+      return;
+    }
+
+    trigger.addEventListener("click", () => {
+      const shouldOpen = !dropdown.classList.contains("is-open");
+      closeAllDropdowns(dropdown);
+      dropdown.classList.toggle("is-open", shouldOpen);
+      trigger.setAttribute("aria-expanded", String(shouldOpen));
+    });
+  });
+
+  document.addEventListener("click", (event) => {
+    const option = event.target.closest(".filter-dropdown__option");
+
+    if (option) {
+      applyFilterSelection(option.dataset.filterGroup, option.dataset.value);
+      return;
+    }
+
+    const clickedDropdown = event.target.closest("[data-filter-dropdown]");
+
+    if (!clickedDropdown) {
+      closeAllDropdowns();
+    }
+  });
+
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") {
+      closeAllDropdowns();
+    }
+  });
+}
+
+//validate game id
 function getValidatedGameId(card) {
   if (!card) {
     return null;
@@ -231,6 +514,7 @@ function getValidatedGameId(card) {
   return rawId;
 }
 
+//navigate to the selected game using its id
 function handleGameCardSelection(card) {
   const selectedId = getValidatedGameId(card);
 
@@ -276,5 +560,11 @@ function attachGameCardEvents() {
   });
 }
 
-renderCommunityGames(communityGames);
+initializeGameCardMap();
+renderInitialGames();
+updateFilterValueText("type");
+updateFilterValueText("sort");
+syncSelectedOptions("type");
+syncSelectedOptions("sort");
+attachDropdownEvents();
 attachGameCardEvents();

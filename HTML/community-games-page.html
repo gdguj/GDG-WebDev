@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>community games</title>
+  <title>Community Games</title>
 
   <!--fonts-->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -44,6 +44,54 @@
     <p class="header2">تصفح الالعاب التي أنشأها لاعبون آخرون</p>
 
     <main class="community-games-page" dir="rtl" aria-label="الألعاب">
+      <div class="games-filters" aria-label="فلاتر الألعاب">
+        <div class="filter-dropdown" data-filter-dropdown>
+          <button
+            type="button"
+            class="filter-dropdown__trigger"
+            id="typeFilterButton"
+            aria-haspopup="listbox"
+            aria-expanded="false"
+            aria-controls="typeFilterMenu"
+          >
+            <span class="filter-dropdown__text">
+              <span class="filter-dropdown__label">نوع اللعبة</span>
+              <span class="filter-dropdown__value" id="typeFilterValue">كل الألعاب</span>
+            </span>
+            <span class="filter-dropdown__arrow" aria-hidden="true">▼</span>
+          </button>
+
+          <div class="filter-dropdown__menu" id="typeFilterMenu" role="listbox" aria-labelledby="typeFilterButton">
+            <button type="button" class="filter-dropdown__option is-selected" data-filter-group="type" data-value="all" role="option" aria-selected="true">كل الألعاب</button>
+            <button type="button" class="filter-dropdown__option" data-filter-group="type" data-value="image" role="option" aria-selected="false">لعبة الصور</button>
+            <button type="button" class="filter-dropdown__option" data-filter-group="type" data-value="word" role="option" aria-selected="false">لعبة الحروف</button>
+            <button type="button" class="filter-dropdown__option" data-filter-group="type" data-value="family" role="option" aria-selected="false">Family Feud</button>
+          </div>
+        </div>
+
+        <div class="filter-dropdown" data-filter-dropdown>
+          <button
+            type="button"
+            class="filter-dropdown__trigger"
+            id="sortFilterButton"
+            aria-haspopup="listbox"
+            aria-expanded="false"
+            aria-controls="sortFilterMenu"
+          >
+            <span class="filter-dropdown__text">
+              <span class="filter-dropdown__label">التاريخ</span>
+              <span class="filter-dropdown__value" id="sortFilterValue">الأحدث</span>
+            </span>
+            <span class="filter-dropdown__arrow" aria-hidden="true">▼</span>
+          </button>
+
+          <div class="filter-dropdown__menu" id="sortFilterMenu" role="listbox" aria-labelledby="sortFilterButton">
+            <button type="button" class="filter-dropdown__option is-selected" data-filter-group="sort" data-value="newest" role="option" aria-selected="true">الأحدث</button>
+            <button type="button" class="filter-dropdown__option" data-filter-group="sort" data-value="oldest" role="option" aria-selected="false">الأقدم</button>
+          </div>
+        </div>
+      </div>
+
       <div id="gamesContainer" class="games-grid" aria-live="polite"></div>
     </main>
   
