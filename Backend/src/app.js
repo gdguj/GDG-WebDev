@@ -28,3 +28,6 @@ module.exports = app;
 //word grid
 const wordGridRoutes = require("./routes/wordGrid.routes");
 app.use("/word-grid", wordGridRoutes);
+
+//Image Game
+app.use("/image-game", require("./routes/ImageGame.routes"));
