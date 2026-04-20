@@ -42,6 +42,128 @@ body{
   margin: 40px auto 0;
 }
 
+.games-filters{
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 24px;
+  position: relative;
+  z-index: 5;
+}
+
+.filter-dropdown{
+  position: relative;
+}
+
+.filter-dropdown__trigger{
+  min-width: 190px;
+  border: 1px solid #e4e7ec;
+  border-radius: 14px;
+  background: #ffffff;
+  color: #2f3350;
+  padding: 12px 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  font: inherit;
+  cursor: pointer;
+  transition: transform .2s ease, border-color .2s ease, box-shadow .2s ease;
+}
+
+.filter-dropdown__trigger:hover,
+.filter-dropdown__trigger:focus-visible{
+  transform: translateY(-1px);
+  border-color: #cfd5df;
+}
+
+.filter-dropdown__trigger:focus-visible{
+  outline: 3px solid rgba(66, 133, 244, 0.14);
+  outline-offset: 3px;
+}
+
+.filter-dropdown__text{
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+.filter-dropdown__label{
+  font-family: 'Cairo', sans-serif;
+  font-weight: 700;
+}
+
+.filter-dropdown__value{
+  color: #6d7083;
+  font-family: 'Cairo', sans-serif;
+  font-weight: 600;
+}
+
+.filter-dropdown__arrow{
+  color: #7b8190;
+  font-size: 0.8rem;
+  line-height: 1;
+  transition: transform .2s ease;
+  flex-shrink: 0;
+}
+
+.filter-dropdown.is-open .filter-dropdown__arrow{
+  transform: rotate(180deg);
+}
+
+.filter-dropdown__menu{
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  min-width: 100%;
+  border: 1px solid #e4e7ec;
+  border-radius: 14px;
+  background: #ffffff;
+  box-shadow: 0 14px 28px rgba(60, 64, 67, 0.1);
+  padding: 8px;
+  display: grid;
+  gap: 4px;
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transform: translateY(-8px);
+  transition: opacity .2s ease, transform .2s ease, visibility .2s ease;
+}
+
+.filter-dropdown.is-open .filter-dropdown__menu{
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transform: translateY(0);
+}
+
+.filter-dropdown__option{
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  color: #2f3350;
+  font: inherit;
+  font-family: 'Cairo', sans-serif;
+  font-weight: 600;
+  text-align: right;
+  padding: 10px 12px;
+  cursor: pointer;
+  transition: background-color .2s ease, color .2s ease;
+}
+
+.filter-dropdown__option:hover,
+.filter-dropdown__option:focus-visible{
+  background: #f5f7fb;
+  outline: none;
+}
+
+.filter-dropdown__option.is-selected{
+  background: #eef4ff;
+  color: #1d4fbf;
+}
+
 .games-grid{
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
@@ -54,7 +176,8 @@ body{
   background: #ffffff;
   overflow: hidden;
   box-shadow: 0 8px 18px rgba(60, 64, 67, 0.08);
-  transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+  transition: transform .25s ease, opacity .25s ease, box-shadow .18s ease, border-color .18s ease;
+  will-change: transform, opacity;
 }
 
 .game-card--interactive{
@@ -66,6 +189,12 @@ body{
   transform: translateY(-4px);
   box-shadow: 0 14px 28px rgba(60, 64, 67, 0.12);
   border-color: #d7dce5;
+}
+
+.game-card--exiting{
+  opacity: 0;
+  transform: translateY(8px);
+  pointer-events: none;
 }
 
 .game-card--interactive:focus-visible{
@@ -187,6 +316,25 @@ body{
   .community-games-page{
     width: min(100%, calc(100% - 20px));
     margin-top: 28px;
+  }
+
+  .games-filters{
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+
+  .filter-dropdown{
+    width: 100%;
+  }
+
+  .filter-dropdown__trigger{
+    width: 100%;
+    min-width: 0;
+  }
+
+  .filter-dropdown__menu{
+    min-width: 100%;
   }
 
   .games-grid{
