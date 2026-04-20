@@ -5,6 +5,7 @@ const familyFeudRoutes = require("./routes/familyFeud.routes");
 const customGameRoutes = require("./routes/customGame.routes");
 const wordGridRoutes = require("./routes/wordGrid.routes");
 const gameSessionRoutes = require("./routes/gameSession.routes");
+const authRoutes = require("./routes/auth.routes");
 const errorMiddleware = require("./middlewares/error.middleware");
 
 const app = express();
@@ -25,6 +26,7 @@ app.use("/api/family-feud", familyFeudRoutes);
 app.use("/api/custom-games", customGameRoutes);
 app.use("/api", wordGridRoutes);
 app.use("/api/multiplayer", gameSessionRoutes);
+app.use("/api/auth", authRoutes);
 
 // Error middleware
 app.use(errorMiddleware);

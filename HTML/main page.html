@@ -65,11 +65,22 @@
                 <a href="#games" class="hover:text-[#0078BF]">الألعاب</a>
             </div>
 
-            <!-- Button -->
-            <a href="#games"
-                class="bg-[#0078BF] text-white px-6 py-2 rounded-full font-semibold hover:bg-[#086AA4] transition inline-block">
-                ابدأ اللعب!
-            </a>
+            <!-- User greeting + Button -->
+            <div class="flex items-center gap-4">
+                <span id="nav-greeting" dir="rtl" class="hidden font-semibold text-gray-700 text-sm"></span>
+                <button id="nav-logout-btn" dir="rtl"
+                    class="hidden font-semibold text-red-500 hover:text-red-700 border border-red-300 hover:border-red-500 rounded-lg px-4 py-1.5 transition-colors text-sm">
+                    تسجيل الخروج
+                </button>
+                <a id="nav-login-btn" href="auth.html"
+                    class="border border-[#0078BF] text-[#0078BF] px-6 py-2 rounded-full font-semibold hover:bg-[#0078BF] hover:text-white transition inline-block">
+                    تسجيل الدخول
+                </a>
+                <a href="#games"
+                    class="bg-[#0078BF] text-white px-6 py-2 rounded-full font-semibold hover:bg-[#086AA4] transition inline-block">
+                    ابدأ اللعب!
+                </a>
+            </div>
 
         </div>
     </nav>
@@ -342,6 +353,37 @@
     </footer>
     <!-- End -->
 
+    <script>
+      (function () {
+        const raw =
+          localStorage.getItem("gdgCurrentUser") ||
+          sessionStorage.getItem("gdgCurrentUser");
+        if (!raw) return;
+        try {
+          const user = JSON.parse(raw);
+          if (!user || !user.name) return;
+          const greeting = document.getElementById("nav-greeting");
+          const logoutBtn = document.getElementById("nav-logout-btn");
+          if (greeting) {
+            greeting.textContent = "\u0645\u0631\u062D\u0628\u0627\u060C " + user.name;
+            greeting.classList.remove("hidden");
+          }
+          if (logoutBtn) {
+            logoutBtn.classList.remove("hidden");
+            logoutBtn.addEventListener("click", function () {
+              localStorage.removeItem("gdgAuthToken");
+              localStorage.removeItem("gdgCurrentUser");
+              sessionStorage.removeItem("gdgAuthToken");
+              sessionStorage.removeItem("gdgCurrentUser");
+              window.location.reload();
+            });
+          }
+          // Hide login button when already signed in
+          const loginBtn = document.getElementById("nav-login-btn");
+          if (loginBtn) loginBtn.classList.add("hidden");
+        } catch (e) {}
+      })();
+    </script>
 </body>
 
 </html>

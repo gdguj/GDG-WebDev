@@ -6,6 +6,34 @@ const signInForm = document.getElementById('signInForm');
 const registerForm = document.getElementById('registerForm');
 const signInMessage = document.getElementById('signInMessage');
 const registerMessage = document.getElementById('registerMessage');
+const googleSignInBtn = document.getElementById('googleSignInBtn');
+const AUTH_API_BASE = '/api/auth';
+
+let googleClientId = '';
+let googleInitialized = false;
+
+function saveAuthSession(user, token, rememberMe = false) {
+  const payload = JSON.stringify(user);
+
+  if (rememberMe) {
+    localStorage.setItem('gdgCurrentUser', payload);
+    localStorage.setItem('gdgAuthToken', token);
+    sessionStorage.removeItem('gdgCurrentUser');
+    sessionStorage.removeItem('gdgAuthToken');
+    return;
+  }
+
+  sessionStorage.setItem('gdgCurrentUser', payload);
+  sessionStorage.setItem('gdgAuthToken', token);
+  localStorage.removeItem('gdgCurrentUser');
+  localStorage.removeItem('gdgAuthToken');
+}
+
+function getRedirectTarget() {
+  const url = new URL(window.location.href);
+  const target = url.searchParams.get('redirect');
+  return target || 'main page.html';
+}
 
 function switchPanel(target) {
   const toSignIn = target === 'signin';
@@ -31,6 +59,14 @@ function switchPanel(target) {
 signInTab.addEventListener('click', () => switchPanel('signin'));
 registerTab.addEventListener('click', () => switchPanel('register'));
 
+setupGoogleSignIn();
+
+if (googleSignInBtn) {
+  googleSignInBtn.addEventListener('click', () => {
+    triggerGoogleSignIn();
+  });
+}
+
 document.querySelectorAll('.toggle-visibility').forEach((button) => {
   button.addEventListener('click', () => {
     const targetInput = document.getElementById(button.dataset.target);
@@ -47,11 +83,98 @@ function isValidEmail(value) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
 }
 
-signInForm.addEventListener('submit', (event) => {
+async function setupGoogleSignIn() {
+  if (!googleSignInBtn) return;
+
+  try {
+    const response = await fetch(`${AUTH_API_BASE}/google-config`);
+    const result = await response.json();
+
+    if (!response.ok || !result.success || !result.enabled || !result.clientId) {
+      googleSignInBtn.style.display = 'none';
+      return;
+    }
+
+    googleClientId = result.clientId;
+  } catch (error) {
+    googleSignInBtn.style.display = 'none';
+  }
+}
+
+function ensureGoogleInitialized() {
+  if (googleInitialized) return true;
+  if (!googleClientId) return false;
+  if (!window.google || !window.google.accounts || !window.google.accounts.id) {
+    return false;
+  }
+
+  window.google.accounts.id.initialize({
+    client_id: googleClientId,
+    callback: handleGoogleCredential,
+    ux_mode: 'popup'
+  });
+
+  googleInitialized = true;
+  return true;
+}
+
+function triggerGoogleSignIn() {
+  if (!googleSignInBtn) return;
+
+  if (!ensureGoogleInitialized()) {
+    signInMessage.textContent = 'تعذر تهيئة تسجيل الدخول عبر Google حالياً.';
+    signInMessage.className = 'form-message error';
+    return;
+  }
+
+  signInMessage.textContent = '';
+  signInMessage.className = 'form-message';
+
+  window.google.accounts.id.prompt();
+}
+
+async function handleGoogleCredential(googleResponse) {
+  const credential = String(googleResponse && googleResponse.credential ? googleResponse.credential : '').trim();
+  const rememberMe = Boolean(signInForm.rememberMe.checked);
+
+  if (!credential) {
+    signInMessage.textContent = 'لم يتم استلام بيانات Google. حاول مرة أخرى.';
+    signInMessage.className = 'form-message error';
+    return;
+  }
+
+  try {
+    const response = await fetch(`${AUTH_API_BASE}/google`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ idToken: credential })
+    });
+
+    const result = await response.json();
+    if (!response.ok || !result.success) {
+      throw new Error(result.message || 'فشل تسجيل الدخول عبر Google.');
+    }
+
+    saveAuthSession(result.user, result.token, rememberMe);
+    signInMessage.textContent = 'تم تسجيل الدخول عبر Google بنجاح.';
+    signInMessage.className = 'form-message success';
+    setTimeout(() => {
+      window.location.href = getRedirectTarget();
+    }, 450);
+  } catch (error) {
+    signInMessage.textContent = error.message || 'تعذر تسجيل الدخول عبر Google.';
+    signInMessage.className = 'form-message error';
+  }
+}
+
+signInForm.addEventListener('submit', async (event) => {
   event.preventDefault();
 
   const email = signInForm.email.value.trim();
   const password = signInForm.password.value;
+  const rememberMe = Boolean(signInForm.rememberMe.checked);
 
   if (!isValidEmail(email)) {
     signInMessage.textContent = 'يرجى إدخال بريد إلكتروني صحيح.';
@@ -65,11 +188,34 @@ signInForm.addEventListener('submit', (event) => {
     return;
   }
 
-  signInMessage.textContent = 'نسخة تجريبية: تم التحقق من بيانات الدخول محليًا.';
-  signInMessage.className = 'form-message success';
+  try {
+    const response = await fetch(`${AUTH_API_BASE}/login`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ email, password })
+    });
+
+    const result = await response.json();
+
+    if (!response.ok || !result.success) {
+      throw new Error(result.message || 'فشل تسجيل الدخول.');
+    }
+
+    saveAuthSession(result.user, result.token, rememberMe);
+    signInMessage.textContent = 'تم تسجيل الدخول بنجاح.';
+    signInMessage.className = 'form-message success';
+    setTimeout(() => {
+      window.location.href = getRedirectTarget();
+    }, 450);
+  } catch (error) {
+    signInMessage.textContent = error.message || 'حدث خطأ أثناء تسجيل الدخول.';
+    signInMessage.className = 'form-message error';
+  }
 });
 
-registerForm.addEventListener('submit', (event) => {
+registerForm.addEventListener('submit', async (event) => {
   event.preventDefault();
 
   const fullName = registerForm.name.value.trim();
@@ -101,6 +247,34 @@ registerForm.addEventListener('submit', (event) => {
     return;
   }
 
-  registerMessage.textContent = 'نسخة تجريبية: الحساب جاهز للإرسال للواجهة الخلفية.';
-  registerMessage.className = 'form-message success';
+  try {
+    const response = await fetch(`${AUTH_API_BASE}/register`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        name: fullName,
+        email,
+        password
+      })
+    });
+
+    const result = await response.json();
+
+    if (!response.ok || !result.success) {
+      throw new Error(result.message || 'فشل إنشاء الحساب.');
+    }
+
+    saveAuthSession(result.user, result.token, true);
+    registerMessage.textContent = 'تم إنشاء الحساب بنجاح. سيتم تحويلك الآن.';
+    registerMessage.className = 'form-message success';
+    registerForm.reset();
+    setTimeout(() => {
+      window.location.href = getRedirectTarget();
+    }, 550);
+  } catch (error) {
+    registerMessage.textContent = error.message || 'حدث خطأ أثناء إنشاء الحساب.';
+    registerMessage.className = 'form-message error';
+  }
 });
