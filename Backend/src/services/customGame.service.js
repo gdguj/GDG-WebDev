@@ -1,55 +1,40 @@
-const CustomGame = require('../models/CustomGame');
+const mongoose = require("mongoose");
+const UserGame = require("../models/UserGame.model");
 
-/**
- * Generate a short, unique Game ID.
- * Returns a 6-character uppercase alphanumeric string.
- */
-async function generateUniqueGameId() {
-  const maxAttempts = 10;
-  let attempt = 0;
-  let gameId;
-
-  while (attempt < maxAttempts) {
-    gameId = Math.random().toString(36).substring(2, 8).toUpperCase();
-    const existing = await CustomGame.findOne({ gameId }).lean();
-    if (!existing) {
-      return gameId;
-    }
-    attempt += 1;
+function parseObjectId(id, fieldName) {
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    throw new Error(`${fieldName} is invalid`);
   }
-
-  throw new Error('Unable to generate a unique Game ID. Please try again.');
+  return new mongoose.Types.ObjectId(id);
 }
 
-/**
- * Save a new custom game to MongoDB.
- * Generates and returns the Game ID.
- */
 async function saveCustomGame(gamePayload) {
-  const gameId = await generateUniqueGameId();
+  const createdBy = {
+    userId: parseObjectId(gamePayload.createdBy.userId, "createdBy.userId"),
+    name: gamePayload.createdBy.name,
+    email: gamePayload.createdBy.email,
+  };
 
-  const customGame = new CustomGame({
-    ...gamePayload,
-    gameId
+  const userGame = await UserGame.create({
+    gameType: gamePayload.gameType,
+    title: gamePayload.title,
+    description: gamePayload.description,
+    createdBy,
+    data: gamePayload.data,
+    isCustom: true,
   });
 
-  const savedGame = await customGame.save();
-
   return {
-    gameId: savedGame.gameId
+    gameId: userGame._id,
   };
 }
 
-/**
- * Lookup a custom game by Game ID.
- */
 async function findGameById(gameId) {
-  const normalizedGameId = String(gameId).trim().toUpperCase();
-  return CustomGame.findOne({ gameId: normalizedGameId }).lean();
+  const parsedId = parseObjectId(gameId, "gameId");
+  return UserGame.findById(parsedId).lean();
 }
 
 module.exports = {
-  generateUniqueGameId,
   saveCustomGame,
-  findGameById
+  findGameById,
 };

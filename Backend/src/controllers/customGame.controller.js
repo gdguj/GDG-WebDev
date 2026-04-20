@@ -2,18 +2,39 @@ const customGameService = require('../services/customGame.service');
 
 async function createGame(req, res, next) {
   try {
-    const { title, questions } = req.body;
+    const {
+      gameType,
+      title,
+      description = "",
+      createdBy,
+      data,
+      questions,
+    } = req.body;
 
-    if (!title || !questions || !Array.isArray(questions) || questions.length === 0) {
+    const normalizedData = data || (Array.isArray(questions) ? { questions } : null);
+
+    if (
+      !gameType ||
+      !title ||
+      !createdBy ||
+      !createdBy.userId ||
+      !createdBy.name ||
+      !createdBy.email ||
+      !normalizedData
+    ) {
       return res.status(400).json({
         success: false,
-        message: 'Title and at least one question are required.'
+        message:
+          'gameType, title, createdBy(userId,name,email), and data are required.'
       });
     }
 
     const result = await customGameService.saveCustomGame({
+      gameType,
       title,
-      questions
+      description,
+      createdBy,
+      data: normalizedData,
     });
 
     return res.status(201).json({

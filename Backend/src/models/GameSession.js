@@ -1,104 +1,183 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
-const gameSessionSchema = new mongoose.Schema({
-  game: {
-    type: String,
-    enum: ['familyFeud', 'imageGuessing', 'wordGrid'],
-    required: true
-  },
-  teams: [
-    {
+const GAME_TYPES = ["image_guessing", "letter_cells", "survey_game"];
+
+const playerSchema = new mongoose.Schema(
+  {
+    userId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'Team'
-    }
-  ],
-  status: {
-    type: String,
-    enum: ['waiting', 'in-progress', 'finished'],
-    default: 'waiting'
-  },
-  winner: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Team',
-    default: null
-  },
-
-  // ─── Family Feud Round State ───────────────────────────────────────────────
-  familyFeudRound: {
-    currentQuestion: {
-      question: { type: String },
-      answers: [
-        {
-          answer: { type: String },
-          points: { type: Number },
-          revealed: { type: Boolean, default: false }
-        }
-      ]
+      required: true,
     },
-    currentTeam: {
+    name: {
       type: String,
-      enum: ['team1', 'team2'],
-      default: 'team1'
+      required: true,
+      trim: true,
     },
-    wrongAttempts: {
+    score: {
       type: Number,
-      default: 0
+      default: 0,
+      min: 0,
     },
-    roundScore: {
-      type: Number,
-      default: 0
-    },
-    isStealMode: {
+    isReady: {
       type: Boolean,
-      default: false
+      default: false,
     },
-    originalTeam: {
+  },
+  { _id: false }
+);
+
+const teamSchema = new mongoose.Schema(
+  {
+    teamName: {
       type: String,
-      enum: ['team1', 'team2'],
-      default: null
-    }
-  },
-
-  // ─── Stats (added when the game finishes) ───────────────────────────────────
-
-  // Word Grid stats
-  stats: {
-    // Word Grid
-    totalWordsFound: { type: Number },
-    longestWord: {
-      word: { type: String },
-      teamId: { type: mongoose.Schema.Types.ObjectId, ref: 'Team' }
+      required: true,
+      trim: true,
     },
-    highestStreak: {
-      count: { type: Number },
-      teamId: { type: mongoose.Schema.Types.ObjectId, ref: 'Team' }
+    score: {
+      type: Number,
+      default: 0,
+      min: 0,
     },
-    fastestAnswer: {
-      seconds: { type: Number },
-      teamId: { type: mongoose.Schema.Types.ObjectId, ref: 'Team' }
-    },
-    wordsPerTeam: [
+    players: [
       {
-        teamId: { type: mongoose.Schema.Types.ObjectId, ref: 'Team' },
-        wordsFound: { type: Number }
-      }
+        type: mongoose.Schema.Types.ObjectId,
+      },
     ],
-
-    // Guess the Word stats
-    wordsScored: { type: Number }
-
-    // Family Feud → no extra stats needed.
-    // Winner & score are already stored in `winner` + the Teams collection.
   },
+  { _id: false }
+);
 
-  createdAt: {
-    type: Date,
-    default: Date.now
+const currentStateSchema = new mongoose.Schema(
+  {
+    currentQuestionIndex: {
+      type: Number,
+      default: 0,
+      min: 0,
+    },
+    currentTurn: {
+      type: mongoose.Schema.Types.ObjectId,
+      default: null,
+    },
+    timeLeft: {
+      type: Number,
+      default: 0,
+      min: 0,
+    },
   },
-  finishedAt: {
-    type: Date,
-    default: null
+  { _id: false }
+);
+
+const winnerSchema = new mongoose.Schema(
+  {
+    userId: {
+      type: mongoose.Schema.Types.ObjectId,
+      default: null,
+    },
+    name: {
+      type: String,
+      default: "",
+      trim: true,
+    },
+  },
+  { _id: false }
+);
+
+const gameSessionSchema = new mongoose.Schema(
+  {
+    gameId: {
+      type: mongoose.Schema.Types.ObjectId,
+      required: true,
+      index: true,
+    },
+    gameType: {
+      type: String,
+      enum: GAME_TYPES,
+      required: true,
+      index: true,
+    },
+    joinCode: {
+      type: String,
+      required: true,
+      unique: true,
+      uppercase: true,
+      trim: true,
+      index: true,
+    },
+    status: {
+      type: String,
+      enum: ["waiting", "in-progress", "finished"],
+      default: "waiting",
+      index: true,
+    },
+    createdBy: {
+      userId: {
+        type: mongoose.Schema.Types.ObjectId,
+        required: true,
+      },
+      name: {
+        type: String,
+        required: true,
+        trim: true,
+      },
+    },
+    players: {
+      type: [playerSchema],
+      default: [],
+    },
+    teams: {
+      type: [teamSchema],
+      default: [],
+    },
+    currentState: {
+      type: currentStateSchema,
+      default: () => ({ currentQuestionIndex: 0, currentTurn: null, timeLeft: 0 }),
+    },
+    winner: {
+      type: winnerSchema,
+      default: () => ({ userId: null, name: "" }),
+    },
+    settings: {
+      maxPlayers: {
+        type: Number,
+        default: 8,
+        min: 2,
+      },
+      allowTeams: {
+        type: Boolean,
+        default: false,
+      },
+      timePerQuestion: {
+        type: Number,
+        default: 30,
+        min: 5,
+      },
+    },
+    createdAt: {
+      type: Date,
+      default: Date.now,
+      immutable: true,
+    },
+    startedAt: {
+      type: Date,
+      default: null,
+    },
+    finishedAt: {
+      type: Date,
+      default: null,
+    },
+  },
+  {
+    versionKey: false,
+    collection: "gameSessions",
   }
-});
+);
 
-module.exports = mongoose.model('GameSession', gameSessionSchema);
+gameSessionSchema.index(
+  { finishedAt: 1 },
+  {
+    expireAfterSeconds: 86400,
+    partialFilterExpression: { status: "finished", finishedAt: { $type: "date" } },
+  }
+);
+
+module.exports = mongoose.model("GameSession", gameSessionSchema, "gameSessions");

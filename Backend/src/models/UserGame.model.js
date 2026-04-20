@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 
 const GAME_TYPES = ["image_guessing", "letter_cells", "survey_game"];
 
-const gameTemplateSchema = new mongoose.Schema(
+const userGameSchema = new mongoose.Schema(
   {
     gameType: {
       type: String,
@@ -20,18 +20,30 @@ const gameTemplateSchema = new mongoose.Schema(
       default: "",
       trim: true,
     },
+    createdBy: {
+      userId: {
+        type: mongoose.Schema.Types.ObjectId,
+        required: true,
+      },
+      name: {
+        type: String,
+        required: true,
+        trim: true,
+      },
+      email: {
+        type: String,
+        required: true,
+        trim: true,
+        lowercase: true,
+      },
+    },
     data: {
       type: mongoose.Schema.Types.Mixed,
       required: true,
     },
     isCustom: {
       type: Boolean,
-      default: false,
-      immutable: true,
-    },
-    createdBy: {
-      type: String,
-      default: "system",
+      default: true,
       immutable: true,
     },
     createdAt: {
@@ -42,8 +54,8 @@ const gameTemplateSchema = new mongoose.Schema(
   },
   {
     versionKey: false,
-    collection: "gameTemplates",
+    collection: "userGames",
   }
 );
 
-module.exports = mongoose.model("GameTemplate", gameTemplateSchema, "gameTemplates");
+module.exports = mongoose.model("UserGame", userGameSchema, "userGames");

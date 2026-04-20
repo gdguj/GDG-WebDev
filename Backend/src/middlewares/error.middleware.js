@@ -1,6 +1,12 @@
 function errorMiddleware(err, req, res, next) {
-  return res.status(400).json({
-    message: err.message || "Something went wrong",
+  const statusCode = err.statusCode || 400;
+  const message = err.message || "Something went wrong";
+  const isDevelopment = process.env.NODE_ENV !== "production";
+
+  return res.status(statusCode).json({
+    success: false,
+    message,
+    ...(isDevelopment && { error: err.stack }),
   });
 }
 
