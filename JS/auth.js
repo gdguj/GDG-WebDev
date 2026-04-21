@@ -12,16 +12,8 @@ const AUTH_API_BASE = '/api/auth';
 let googleClientId = '';
 let googleInitialized = false;
 
-function saveAuthSession(user, token, rememberMe = false) {
+function saveAuthSession(user, token) {
   const payload = JSON.stringify(user);
-
-  if (rememberMe) {
-    localStorage.setItem('gdgCurrentUser', payload);
-    localStorage.setItem('gdgAuthToken', token);
-    sessionStorage.removeItem('gdgCurrentUser');
-    sessionStorage.removeItem('gdgAuthToken');
-    return;
-  }
 
   sessionStorage.setItem('gdgCurrentUser', payload);
   sessionStorage.setItem('gdgAuthToken', token);
@@ -135,7 +127,6 @@ function triggerGoogleSignIn() {
 
 async function handleGoogleCredential(googleResponse) {
   const credential = String(googleResponse && googleResponse.credential ? googleResponse.credential : '').trim();
-  const rememberMe = Boolean(signInForm.rememberMe.checked);
 
   if (!credential) {
     signInMessage.textContent = 'لم يتم استلام بيانات Google. حاول مرة أخرى.';
@@ -157,7 +148,7 @@ async function handleGoogleCredential(googleResponse) {
       throw new Error(result.message || 'فشل تسجيل الدخول عبر Google.');
     }
 
-    saveAuthSession(result.user, result.token, rememberMe);
+    saveAuthSession(result.user, result.token);
     signInMessage.textContent = 'تم تسجيل الدخول عبر Google بنجاح.';
     signInMessage.className = 'form-message success';
     setTimeout(() => {
@@ -174,7 +165,6 @@ signInForm.addEventListener('submit', async (event) => {
 
   const email = signInForm.email.value.trim();
   const password = signInForm.password.value;
-  const rememberMe = Boolean(signInForm.rememberMe.checked);
 
   if (!isValidEmail(email)) {
     signInMessage.textContent = 'يرجى إدخال بريد إلكتروني صحيح.';
@@ -203,7 +193,7 @@ signInForm.addEventListener('submit', async (event) => {
       throw new Error(result.message || 'فشل تسجيل الدخول.');
     }
 
-    saveAuthSession(result.user, result.token, rememberMe);
+    saveAuthSession(result.user, result.token);
     signInMessage.textContent = 'تم تسجيل الدخول بنجاح.';
     signInMessage.className = 'form-message success';
     setTimeout(() => {
@@ -266,7 +256,7 @@ registerForm.addEventListener('submit', async (event) => {
       throw new Error(result.message || 'فشل إنشاء الحساب.');
     }
 
-    saveAuthSession(result.user, result.token, true);
+    saveAuthSession(result.user, result.token);
     registerMessage.textContent = 'تم إنشاء الحساب بنجاح. سيتم تحويلك الآن.';
     registerMessage.className = 'form-message success';
     registerForm.reset();

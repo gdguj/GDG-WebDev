@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>اختيار نوع اللعبة الجديدة</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <script src="../JS/auth-guard.js"></script>
+  <style>
+    body {
+      margin: 0;
+      font-family: "Cairo", sans-serif;
+      background: linear-gradient(180deg, #f0f7ff 0%, #ffffff 100%);
+      color: #1f2937;
+    }
+
+    .shell {
+      width: min(980px, 92%);
+      margin: 36px auto 48px;
+    }
+
+    .hero {
+      background: #ffffff;
+      border: 1px solid #dbeafe;
+      border-radius: 18px;
+      padding: 22px;
+      box-shadow: 0 12px 30px rgba(30, 64, 175, 0.08);
+      text-align: center;
+    }
+
+    .hero h1 {
+      margin: 0;
+      color: #1e3a8a;
+      font-size: clamp(24px, 3vw, 36px);
+    }
+
+    .hero p {
+      margin: 10px 0 0;
+      color: #475569;
+    }
+
+    .cards {
+      margin-top: 20px;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .card-link {
+      text-decoration: none;
+      color: inherit;
+      background: #ffffff;
+      border: 1px solid #dbeafe;
+      border-radius: 16px;
+      padding: 20px;
+      box-shadow: 0 10px 24px rgba(30, 64, 175, 0.08);
+      transition: transform .2s ease, box-shadow .2s ease;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .card-link:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 16px 28px rgba(30, 64, 175, 0.14);
+    }
+
+    .card-link h2 {
+      margin: 0;
+      color: #1e40af;
+      font-size: 22px;
+    }
+
+    .card-link p {
+      margin: 0;
+      color: #475569;
+      line-height: 1.8;
+    }
+
+    .badge {
+      display: inline-block;
+      width: fit-content;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: #dbeafe;
+      color: #1e3a8a;
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .back {
+      margin-top: 18px;
+      text-align: center;
+    }
+
+    .back a {
+      color: #1d4ed8;
+      font-weight: 700;
+      text-decoration: none;
+    }
+
+    @media (max-width: 900px) {
+      .cards {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <section class="hero">
+      <h1>اختر نوع اللعبة التي تريد إنشاؤها</h1>
+      <p>بعد اختيار النوع، عبّئ الأسئلة والأجوبة ثم اضغط حفظ.</p>
+    </section>
+
+    <section class="cards">
+      <a class="card-link" href="custom-image-game.html">
+        <span class="badge" id="badgeImage" hidden>مقترحة لك</span>
+        <h2>لعبة الصور</h2>
+        <p>أنشئ لعبة تخمين تعتمد على صورتين وإجابة واحدة لكل سؤال.</p>
+      </a>
+
+      <a class="card-link" href="custom-letter-game.html">
+        <span class="badge" id="badgeLetter" hidden>مقترحة لك</span>
+        <h2>لعبة الحروف</h2>
+        <p>أضف الحرف مع السؤال والإجابة لبناء لعبة شبكة حروف خاصة بك.</p>
+      </a>
+
+      <a class="card-link" href="custom-survey-game.html">
+        <span class="badge" id="badgeSurvey" hidden>مقترحة لك</span>
+        <h2>لعبة الاستبيان</h2>
+        <p>أدخل سؤالاً وعدة إجابات مع نقاطها مثل Family Feud.</p>
+      </a>
+    </section>
+
+    <div class="back">
+      <a href="game-entry-logic.html">العودة لصفحة اختيار طريقة اللعب</a>
+    </div>
+  </main>
+
+  <script>
+    (function setRecommendedGame() {
+      const params = new URLSearchParams(window.location.search);
+      const selected = String(params.get("game") || "").trim();
+      const map = {
+        image_guessing: "badgeImage",
+        letter_cells: "badgeLetter",
+        survey_game: "badgeSurvey",
+      };
+
+      if (!map[selected]) return;
+
+      const badge = document.getElementById(map[selected]);
+      if (badge) {
+        badge.hidden = false;
+      }
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>إنشاء لعبة الحروف</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../CSS/custom-game-form.css">
+  <script src="../JS/auth-guard.js"></script>
+</head>
+<body data-game-type="letter_cells">
+  <main class="page-shell">
+    <section class="hero">
+      <h1>إنشاء لعبة الحروف</h1>
+      <p>عبّئ الحرف والسؤال والإجابة لكل خلية ثم احفظ اللعبة.</p>
+      <div class="top-links">
+        <a href="LetterCellGame-Instructions.html">تعليمات اللعبة</a>
+        <a href="main page.html">الرئيسية</a>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="fields-grid">
+        <div class="field">
+          <label for="gameTitle">اسم اللعبة</label>
+          <input id="gameTitle" type="text" placeholder="مثال: شبكة الكلمات">
+        </div>
+        <div class="field">
+          <label for="gameDescription">وصف مختصر</label>
+          <input id="gameDescription" type="text" placeholder="اختياري">
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>أسئلة الحروف</h2>
+      <div id="questionsContainer"></div>
+      <div class="actions">
+        <button id="addQuestionBtn" type="button" class="btn-secondary">إضافة سؤال</button>
+        <button id="saveGameBtn" type="button" class="btn-primary">حفظ اللعبة</button>
+      </div>
+      <p id="saveStatus" class="status"></p>
+    </section>
+  </main>
+
+  <template id="letterQuestionTemplate">
+    <article class="question-item">
+      <h3>سؤال <span data-question-index></span></h3>
+      <div class="fields-grid">
+        <div class="field">
+          <label>الحرف</label>
+          <input type="text" maxlength="1" data-field="letter" placeholder="أ">
+        </div>
+        <div class="field-full">
+          <label>السؤال</label>
+          <input type="text" data-field="question" placeholder="اكتب السؤال">
+        </div>
+        <div class="field-full">
+          <label>الإجابة</label>
+          <input type="text" data-field="answer" placeholder="الإجابة المطلوبة">
+        </div>
+      </div>
+      <div class="actions">
+        <button type="button" class="btn-danger" data-remove-question>حذف السؤال</button>
+      </div>
+    </article>
+  </template>
+
+  <script src="../JS/custom-game-form.js"></script>
+</body>
+</html>

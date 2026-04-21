@@ -85,7 +85,8 @@ body{
 
 .default-div,
 .custom-div,
-.customized-div{
+.customized-div,
+.create-div{
   width: auto;
   height: auto;
   border: 1px solid #e2e5eb;
@@ -94,7 +95,8 @@ body{
 
 .default-div:hover,
 .custom-div:hover,
-.customized-div:hover{
+.customized-div:hover,
+.create-div:hover{
   transform: translateY(-4px);
   box-shadow: 0 8px 16px rgba(60, 64, 67, 0.08);
   background-color: #ffffff;
@@ -133,7 +135,8 @@ body{
 
 .Default-header,
 .Custom-header,
-.customized-header{
+.customized-header,
+.create-header{
   margin: 0;
   padding-left: 0;
   font-weight: bold;
@@ -144,7 +147,8 @@ body{
 
 .Default-p,
 .Custom-p,
-.customized-p{
+.customized-p,
+.create-p{
   display: block;
   margin: 0;
   padding-left: 0;
@@ -189,7 +193,8 @@ body{
 
 .default-btn,
 .custom-btn,
-.customized-btn{
+.customized-btn,
+.create-btn{
   color: var(--brand);
   background-color: #ffffff;
   border: 2px solid #c0d0f3;
@@ -209,7 +214,8 @@ body{
 
 .default-btn:hover,
 .custom-btn:hover,
-.customized-btn:hover{
+.customized-btn:hover,
+.create-btn:hover{
   transform: translateY(-1px);
   box-shadow: 0 6px 14px rgba(60, 64, 67, 0.12);
   opacity: 0.96;
@@ -217,7 +223,8 @@ body{
 
 .default-btn:active,
 .custom-btn:active,
-.customized-btn:active{
+.customized-btn:active,
+.create-btn:active{
   transform: translateY(0);
   background-color: #e7f0ff;
 }
@@ -315,7 +322,8 @@ body{
 
   .Default-header,
   .Custom-header,
-  .customized-header{
+  .customized-header,
+  .create-header{
     font-size: 1.22rem;
   }
 
