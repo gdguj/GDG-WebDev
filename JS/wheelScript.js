@@ -15,6 +15,8 @@ let selectedStarterTeam = null;
 function normalizeTeamToKey(teamLabel) {
   if (teamLabel === 'Team A') return 'team1';
   if (teamLabel === 'Team B') return 'team2';
+  if (teamLabel === 'الفريق أ') return 'team1';
+  if (teamLabel === 'الفريق ب') return 'team2';
   return null;
 }
 
@@ -56,18 +58,20 @@ function spinWheel() {
       target = target.parentElement;
     }
 
-    let winner = 'Unknown';
+    let winner = 'غير معروف';
+    let winnerKey = null;
     if (target) {
       const span = target.querySelector('span');
       if (span) winner = span.textContent.trim();
+      winnerKey = target.dataset.team || null;
     }
 
-    selectedStarterTeam = normalizeTeamToKey(winner);
+    selectedStarterTeam = winnerKey || normalizeTeamToKey(winner);
     if (selectedStarterTeam) {
       sessionStorage.setItem('familyFeudStarterTeam', selectedStarterTeam);
     }
 
-    document.getElementById('resultText').textContent = `It's ${winner}'s turn!`;
+    document.getElementById('resultText').textContent = `الدور على ${winner}!`;
     document.getElementById('spinScreen').classList.remove('active');
     document.getElementById('resultScreen').classList.add('active');
 

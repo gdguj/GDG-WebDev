@@ -32,19 +32,19 @@ body {
 .page-wrapper {
     display: flex;
     flex-direction: column;
-    min-height: 100vh;
+    min-height: calc(100vh - 74px);
 }
 
 
 .content-area {
-    flex: 1;
+    flex: 1 1 auto;
     width: 100%;
     max-width: 1100px;
-    margin: 8px auto;
-    padding: 14px;
+    margin: 0 auto;
+    padding: 6px 14px 2px;
     display: flex;
     align-items: center;
-    min-height: 360px;
+    min-height: 0;
     position: relative;
 }
 
@@ -83,14 +83,15 @@ body {
     width: 100%;
     max-width: 1100px;
     margin: 0 auto;
-    min-height: 460px;
+    min-height: 0;
+    height: 100%;
 }
 
 /* الشخصية - حجم كبير */
 .character {
     position: absolute;
     right: clamp(-210px, -14vw, -115px);
-    bottom: -85px;
+    bottom: -42px;
     width: clamp(340px, 34vw, 460px);
     height: auto;
     display: block;
@@ -230,8 +231,8 @@ body {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 10px;
-    margin: -10px 0 6px;
+    gap: 8px;
+    margin: 0 0 4px;
 }
 
 .home-link {
@@ -257,13 +258,13 @@ footer.bg-\[\#403F41\] {
 
 @media (max-width: 1000px) {
     .character-container {
-        min-height: 420px;
+        height: 100%;
     }
 
     .character {
         width: clamp(300px, 33vw, 360px);
         right: clamp(-155px, -11vw, -85px);
-        bottom: -30px;
+        bottom: -20px;
     }
     
     .speech-bubble {
@@ -302,6 +303,7 @@ footer.bg-\[\#403F41\] {
         align-items: center;
         gap: 30px;
         min-height: auto;
+        height: auto;
     }
     
     .character {

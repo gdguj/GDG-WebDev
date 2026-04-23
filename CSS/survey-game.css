@@ -1,9 +1,15 @@
 /* ================================== */
 /* Reset & Body */
+html,
 body {
     margin: 0;
-    font-family: Arial, sans-serif;
     padding: 0;
+    height: 100%;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    overflow: auto;
 }
 
 /* Header */
@@ -15,33 +21,34 @@ body {
 
 .page-header img {
     width: 100%;
-    height: 60px;
+    height: 46px;
     object-fit: cover;
     display: block;
 }
 
 /* Main container */
 .container {
-    width: 900px;
-    max-width: 95%;
+    width: min(1000px, 96%);
     text-align: center;
-    margin: 40px auto 0;
+    margin: 10px auto 0;
+    display: grid;
+    gap: 8px;
 }
 
 /* Top bar */
 .top-bar {
     display: flex;
     justify-content: space-between;
-    margin-bottom: 20px;
-    flex-wrap: wrap;
-    gap: 50px;
+    margin-bottom: 4px;
+    flex-wrap: nowrap;
+    gap: 16px;
 }
 
 .score-box, .timer-box {
-    padding: 15px;
+    padding: 7px 10px;
     border-radius: 10px;
     text-align: center;
-    flex: 1 1 120px;
+    flex: 1 1 90px;
 }
 
 .score-box {
@@ -54,58 +61,67 @@ body {
 }
 
 .score-box span, .timer-box span {
-    font-size: 22px;
+    font-size: 16px;
     font-weight: bold;
+    line-height: 1;
+}
+
+.score-box p,
+.timer-box p {
+    margin: 0 0 3px;
+    font-size: 13px;
 }
 
 /* Round title */
 .round-title {
-    font-size: 32px;
-    margin-bottom: 15px;
+    font-size: 22px;
+    margin: 0;
+    line-height: 1.05;
 }
 
 /* Question box */
 .question-box {
     background: white;
-    padding: 20px;
+    padding: 10px 14px;
     border-radius: 10px;
     border: 2px solid #3b82f6;
-    font-size: 20px;
-    margin-bottom: 15px;
+    font-size: 16px;
+    margin-bottom: 0;
+    line-height: 1.25;
 }
 
 /* Team message */
 .team-message {
     font-size: 18px;
     font-weight: bold;
-    margin-bottom: 15px;
+    margin-bottom: 8px;
     color: #2563eb;
 }
 
 /* ================================== */
 /* شبكة البطاقات */
 .answers-grid {
-    display: grid; 
+    display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: 25px; /* مسافة أكبر بين البطاقات */
-    margin-bottom: 25px;
+    gap: 8px;
+    margin-bottom: 2px;
 }
 
 /* ================================== */
 /* المربعات */
 .answer-card {
-    background-color: #93c5fd; /* أزرق فاتح قبل الكشف */
+    background-color: #93c5fd;
     color: white;
-    padding: 10px;
-    border-radius: 12px;
-    font-size: 18px;
+    padding: 5px 8px;
+    border-radius: 10px;
+    font-size: 14px;
     font-weight: bold;
     text-align: center;
     position: relative;
     cursor: pointer;
-    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-    transition: background 0.3s ease; /* سيظهر تأثير سلس عند الكشف */
-    height: 35px;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.15);
+    transition: background 0.3s ease;
+    min-height: 34px;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -119,35 +135,35 @@ body {
 /* النقاط في الزاوية */
 .answer-card .points {
     position: absolute;
-    left: 20px;
+    left: 10px;
     background-color: #f6f5f268;
     color: #ffffff;
-    padding: 10px;
-    border-radius: 8px;
-    font-size: 14px;
+    padding: 4px 8px;
+    border-radius: 6px;
+    font-size: 12px;
     font-weight: bold;
 }
 
 /* نص الإجابة */
 .answer-card .text {
-    margin-top: 10px;
-    font-size: 20px;
+    margin-top: 4px;
+    font-size: 14px;
 }
 
 /* Input section */
 .input-section {
-    margin-bottom: 10px;
+    margin-bottom: 4px;
 }
 
 input {
-    padding: 10px !important;
+    padding: 9px !important;
     width: 250px !important;
     border-radius: 6px !important;
     border: 1px solid #ccc;
 }
 
 button {
-    padding: 10px 20px !important;
+    padding: 9px 18px !important;
     border: none !important;
     border-radius: 6px !important;
     background: #2563eb !important;
@@ -162,19 +178,25 @@ button:hover {
 
 /* Strikes */
 .strikes {
-    font-size: 24px;
+    font-size: 22px;
     color: red;
+    min-height: 28px;
 }
 
 /* Responsive tweaks */
-@media (max-width: 600px) {
+@media (max-width: 900px) {
+    .container {
+        margin-top: 16px;
+    }
+
     .answers-grid {
         grid-template-columns: 1fr;
     }
-    
+
     .top-bar {
         flex-direction: column;
         align-items: center;
+        gap: 12px;
     }
 
     input {
@@ -230,25 +252,33 @@ button:hover {
 .popup-content button:hover {
     background: #1e40af;
 }
+.team-strikes-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin-bottom: 4px;
+}
+
 .team-box {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 250px;       /* عرض ثابت للمربع */
-    height: 45px;      /* ارتفاع ثابت للمربع */
-    border-radius: 12px;
-    background-color: #2563eb; /* أزرق ثابت */
+    width: 200px;
+    height: 34px;
+    border-radius: 10px;
+    background-color: #2563eb;
     color: white;
-    font-size: 24px;
-    margin-bottom: 15px;
+    font-size: 18px;
+    margin-bottom: 0;
 }
 
 .round-points-box {
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-bottom: 20px;
-    font-size: 18px;
+    margin-bottom: 4px;
+    font-size: 14px;
     color: #333;
     font-weight: bold;
 }
@@ -260,4 +290,12 @@ button:hover {
 .round-points-box span {
     color: #16a34a;
     font-weight: bold;
+}
+
+.container > .mt-4 {
+    margin-top: 0 !important;
+}
+
+footer.bg-\[\#403F41\] {
+    display: none;
 }

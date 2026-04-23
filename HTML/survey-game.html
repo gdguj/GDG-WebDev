@@ -31,10 +31,7 @@
         </div>
     </nav>
 
-    <!-- Header -->
-    <header class="page-header">
-        <img src="../Images/Top Strip.png" alt="Header Image">
-    </header>
+
     <!-- Popup عند تغير الفريق -->
 <div id="teamPopup" class="popup-overlay">
     <div class="popup-content">
@@ -71,8 +68,11 @@
             جاري تحميل السؤال...
         </div>
 
-        <!-- مربع الفريق الحالي -->
-<div class="team-box" id="currentTeamBox">الفريق أ</div>
+        <!-- مربع الفريق الحالي + الأخطاء -->
+        <div style="display:flex;align-items:center;justify-content:center;gap:12px;margin-bottom:4px;">
+            <div class="team-box" id="currentTeamBox">الفريق أ</div>
+            <div id="strikes" class="strikes"></div>
+        </div>
         
         <!-- Current Round Points -->
         <div class="round-points-box">
@@ -87,9 +87,6 @@
             <input type="text" id="answerInput" placeholder="اكتب إجابتك هنا...">
             <button onclick="submitAnswer()">إرسال</button>
         </div>
-
-        <!-- Strikes -->
-        <div id="strikes" class="strikes"></div>
 
         <!-- new round button -->
         <div class="mt-4">

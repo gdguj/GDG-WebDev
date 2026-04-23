@@ -72,6 +72,18 @@ const currentTeamBox = document.getElementById("currentTeamBox");
 const roundScoreEl = document.getElementById("roundScore");
 const roundTitleEl = document.querySelector(".round-title");
 
+function focusInputWithoutScroll() {
+  try {
+    inputEl.focus({ preventScroll: true });
+  } catch (error) {
+    inputEl.focus();
+  }
+}
+
+function scrollPageToTop() {
+  window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+}
+
 // -------------------------------
 // JSON QUESTIONS
 // -------------------------------
@@ -80,18 +92,29 @@ let remainingQuestionIndexes = [];
 
 // تحميل الأسئلة من JSON
 async function loadQuestions() {
-  const res = await fetch("/Data/family_feud_questions.json", { cache: "no-store" });
-  if (!res.ok) {
-    throw new Error(`Failed to load questions JSON: ${res.status}`);
-  }
+  console.log("🔄 Loading questions...");
+  try {
+    const res = await fetch("/Data/family_feud_questions.json", { cache: "no-store" });
+    console.log("📡 Fetch response status:", res.status);
+    
+    if (!res.ok) {
+      throw new Error(`Failed to load questions JSON: ${res.status}`);
+    }
 
-  questionsData = await res.json();
-  if (!Array.isArray(questionsData) || questionsData.length === 0) {
-    throw new Error("Questions JSON is empty or invalid.");
-  }
+    questionsData = await res.json();
+    console.log("✅ Questions loaded successfully:", questionsData);
+    
+    if (!Array.isArray(questionsData) || questionsData.length === 0) {
+      throw new Error("Questions JSON is empty or invalid.");
+    }
 
-  // Keep a rotating pool so rounds do not repeat questions until all are used.
-  remainingQuestionIndexes = questionsData.map((_, index) => index);
+    // Keep a rotating pool so rounds do not repeat questions until all are used.
+    remainingQuestionIndexes = questionsData.map((_, index) => index);
+    console.log("🎲 Remaining questions pool:", remainingQuestionIndexes);
+  } catch (error) {
+    console.error("❌ Error loading questions:", error);
+    throw error;
+  }
 }
 
 // اختيار سؤال عشوائي
@@ -109,7 +132,12 @@ function getRandomQuestion() {
 // START NEW ROUND
 // -------------------------------
 async function startNewRound() {
-  if (gameOver) return;
+  console.log("🎮 startNewRound() called");
+  
+  if (gameOver) {
+    console.log("❌ Game is over, cannot start new round");
+    return;
+  }
 
   const btn = document.getElementById("startRoundBtn");
   if (btn) btn.style.display = "none";
@@ -117,6 +145,7 @@ async function startNewRound() {
   inputEl.disabled = false;
 
   if (questionsData.length === 0) {
+    console.log("📥 Questions not loaded yet, loading now...");
     await loadQuestions();
   }
 
@@ -143,17 +172,21 @@ async function startNewRound() {
 
   // Load random question
   const q = getRandomQuestion();
+  console.log("✅ Random question loaded:", q);
+  
   gameState.question = q.question;
   gameState.answers = q.answers.map(a => ({
     answer: a.answer,
     points: a.points,
+    synonyms: a.synonyms || [],
     revealed: false
   }));
 
   console.log("✅ New round loaded:", gameState);
 
   updateUI();
-  inputEl.focus();
+  focusInputWithoutScroll();
+  scrollPageToTop();
 
   roundActive = true;
 }
@@ -209,11 +242,14 @@ function renderAnswers() {
 function normalize(str) {
   return String(str)
     .toLowerCase()
-    .replace(/[\u064B-\u0652\u0640]/g, "")
-    .replace(/[هة]/g, "ه")
-    .replace(/[^\u0600-\u06FF0-9\s]/g, "")
+    .replace(/[\u064B-\u0652\u0640]/g, "")  // شكل وتشديد
+    .replace(/[أإآ]/g, "ا")                  // توحيد الألف
+    .replace(/[ىي]/g, "ي")                   // توحيد الياء
+    .replace(/[هة]/g, "ه")                   // توحيد التاء المربوطة
+    .replace(/[ؤئء]/g, "")                   // حذف الهمزات المتغيرة
+    .replace(/[^؀-ۿ0-9\s]/g, "")  // إزالة غير العربي
     .replace(/\s+/g, " ")
-    .replace(/^ال\s?/, "")
+    .replace(/^ال\s?/, "")                   // إزالة ال التعريف
     .trim();
 }
 
@@ -233,10 +269,13 @@ function submitAnswer() {
     gameState.isStealMode &&
     gameState.currentTeam !== gameState.originalTeam;
 
-  // ابحث عن إجابة مطابقة
-  const found = gameState.answers.find(
-    a => normalize(a.answer) === normalized && !a.revealed
-  );
+  // ابحث عن إجابة مطابقة (الإجابة الأصلية أو أي مرادف)
+  const found = gameState.answers.find(a => {
+    if (a.revealed) return false;
+    if (normalize(a.answer) === normalized) return true;
+    if (Array.isArray(a.synonyms) && a.synonyms.some(s => normalize(s) === normalized)) return true;
+    return false;
+  });
 
   // ───────── وضع السرقة (محاولة واحدة فقط) ─────────
   if (isStealTurn) {
@@ -286,7 +325,7 @@ function submitAnswer() {
   }
 
   inputEl.value = "";
-  inputEl.focus();
+  focusInputWithoutScroll();
 }
 
 // -------------------------------
@@ -491,4 +530,15 @@ inputEl.addEventListener("keypress", e => {
   if (e.key === "Enter") submitAnswer();
 });
 
-window.addEventListener("load", startNewRound);
+if ("scrollRestoration" in history) {
+  history.scrollRestoration = "manual";
+}
+
+window.addEventListener("load", () => {
+  scrollPageToTop();
+  startNewRound();
+});
+
+window.addEventListener("pageshow", () => {
+  scrollPageToTop();
+});

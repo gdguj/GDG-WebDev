@@ -6,11 +6,11 @@
   using elementFromPoint() in the JS file.
 -->
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Who Starts the Round?</title>
+  <title>من يبدأ الجولة؟</title>
 
   <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@700;800;900&family=Nunito+Sans:wght@400;600&display=swap" rel="stylesheet">
 
@@ -46,15 +46,15 @@
   <img class="corner corner-bottom-right" src= "../images/Corner-Right.png" alt="">
 
   <div class="screen active" id="spinScreen">
-    <h1>Who will start the round?</h1>
+    <h1>من يبدأ الجولة؟</h1>
 
     <div class="wheel-container">
       <div class="wheel" id="wheel">
-        <div class="wheel-half top">
-          <span>Team A</span>
+        <div class="wheel-half top" data-team="team1">
+          <span>الفريق أ</span>
         </div>
-        <div class="wheel-half bottom">
-          <span>Team B</span>
+        <div class="wheel-half bottom" data-team="team2">
+          <span>الفريق ب</span>
         </div>
       </div>
 
@@ -65,15 +65,15 @@
     </div>
 
     <button class="btn" id="spinBtn" onclick="spinWheel()">
-      Spin the wheel !
+      لف العجلة
     </button>
   </div>
 
 
   <div class="screen" id="resultScreen">
-    <h1>who will start the round?</h1>
+    <h1>من يبدأ الجولة؟</h1>
     <div class="result-text" id="resultText"></div>
-    <button class="btn" onclick="backToGame()">Back to game</button>
+    <button class="btn" onclick="backToGame()">العودة للعبة</button>
   </div>
 
     <!-- ================= FOOTER ================= -->
