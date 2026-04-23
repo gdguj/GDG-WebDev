@@ -45,6 +45,7 @@ body {
     display: flex;
     align-items: center;
     min-height: 360px;
+    position: relative;
 }
 
 .google-title {
@@ -74,46 +75,55 @@ body {
 }
 
 .character-container {
+    position: relative;
     display: flex;
-    align-items: flex-end;
+    align-items: center;
+    justify-content: center;
     gap: 24px;
     width: 100%;
-    max-width: 980px;
+    max-width: 1100px;
     margin: 0 auto;
+    min-height: 460px;
 }
 
 /* الشخصية - حجم كبير */
 .character {
-    width: 250px;
+    position: absolute;
+    right: clamp(-210px, -14vw, -115px);
+    bottom: -85px;
+    width: clamp(340px, 34vw, 460px);
     height: auto;
     display: block;
+    transform: none;
     filter: drop-shadow(0 10px 18px rgba(0,0,0,0.12));
+    z-index: 3;
 }
 
 /* مربع الكلام - حجم كبير */
 .speech-bubble {
     position: relative;
     background: white;
-    border-radius: 28px 28px 28px 12px;
+    border-radius: 28px 28px 12px 28px;
     padding: 24px 28px;
     box-shadow: 0 16px 28px rgba(0, 0, 0, 0.12);
     border: 3px solid #34A853;
-    max-width: 560px;
+    max-width: 650px;
     width: 100%;
-    margin-bottom: 8px;
+    margin: 0 auto;
+    z-index: 2;
 }
 
 
 .speech-bubble::before {
     content: '';
     position: absolute;
-    bottom: 24px;
-    left: -20px;
+    bottom: 58px;
+    right: -20px;
     width: 0;
     height: 0;
     border-top: 14px solid transparent;
     border-bottom: 14px solid transparent;
-    border-right: 20px solid #34A853;
+    border-left: 20px solid #34A853;
     z-index: 1;
 }
 
@@ -121,13 +131,13 @@ body {
 .speech-bubble::after {
     content: '';
     position: absolute;
-    bottom: 25px;
-    left: -14px;
+    bottom: 59px;
+    right: -14px;
     width: 0;
     height: 0;
     border-top: 12px solid transparent;
     border-bottom: 12px solid transparent;
-    border-right: 16px solid white;
+    border-left: 16px solid white;
     z-index: 2;
 }
 
@@ -246,8 +256,14 @@ footer.bg-\[\#403F41\] {
 
 
 @media (max-width: 1000px) {
+    .character-container {
+        min-height: 420px;
+    }
+
     .character {
-        width: 210px;
+        width: clamp(300px, 33vw, 360px);
+        right: clamp(-155px, -11vw, -85px);
+        bottom: -30px;
     }
     
     .speech-bubble {
@@ -285,10 +301,12 @@ footer.bg-\[\#403F41\] {
         flex-direction: column;
         align-items: center;
         gap: 30px;
+        min-height: auto;
     }
     
     .character {
-        width: 220px;
+        position: static;
+        width: 240px;
     }
     
     .speech-bubble::before,
