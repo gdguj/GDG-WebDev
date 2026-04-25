@@ -5,6 +5,11 @@
     survey_game: "survey-Instructions.html",
   };
 
+  const authToken =
+    localStorage.getItem("gdgAuthToken") ||
+    sessionStorage.getItem("gdgAuthToken");
+  const isAuthenticated = Boolean(authToken);
+
   function setJoinMessage(text, kind) {
     const message = document.getElementById("mainJoinCodeMessage");
     if (!message) return;
@@ -12,7 +17,27 @@
     message.className = kind === "error" ? "text-sm text-red-600" : "text-sm text-green-700";
   }
 
+  function redirectToAuth(targetPath) {
+    const authUrl = new URL("auth.html", window.location.href);
+    if (targetPath) {
+      authUrl.searchParams.set("redirect", targetPath);
+    }
+    window.location.href = authUrl.toString();
+  }
+
+  function ensureAuthenticated(targetPath) {
+    if (isAuthenticated) {
+      return true;
+    }
+    redirectToAuth(targetPath || "main page.html#games");
+    return false;
+  }
+
   async function openByCode() {
+    if (!ensureAuthenticated("main page.html#play-methods")) {
+      return;
+    }
+
     const input = document.getElementById("mainJoinCodeInput");
     if (!input) return;
 
@@ -47,6 +72,73 @@
     }
   }
 
+  function wireProtectedLink(anchor) {
+    if (!anchor) return;
+    const target = anchor.getAttribute("href") || "main page.html#games";
+    anchor.addEventListener("click", function (event) {
+      if (isAuthenticated) return;
+      event.preventDefault();
+      redirectToAuth(target);
+    });
+  }
+
+  function wireProtectedCards() {
+    const gameCards = document.querySelectorAll("#games .flip-card");
+    gameCards.forEach(function (card) {
+      const inlineTarget = card.getAttribute("onclick") || "";
+      const match = inlineTarget.match(/window\.location\.href='([^']+)'/);
+      const target = match && match[1] ? match[1] : "main page.html#games";
+
+      card.removeAttribute("onclick");
+      card.addEventListener("click", function (event) {
+        event.preventDefault();
+        if (!ensureAuthenticated(target)) {
+          return;
+        }
+        window.location.href = target;
+      });
+    });
+
+    const gameLinks = document.querySelectorAll("#games a[href], #create-games a[href]");
+    gameLinks.forEach(wireProtectedLink);
+  }
+
+  function showOpenSections() {
+    const createGamesSection = document.getElementById("create-games");
+    const playMethodsSection = document.getElementById("play-methods");
+    if (createGamesSection) createGamesSection.classList.remove("hidden");
+    if (playMethodsSection) playMethodsSection.classList.remove("hidden");
+  }
+
+  showOpenSections();
+  wireProtectedCards();
+
+  const communityBtn = document.getElementById("mainCommunityBtn");
+  const joinBtn = document.getElementById("mainJoinCodeBtn");
+  const joinInput = document.getElementById("mainJoinCodeInput");
+
+  if (communityBtn) {
+    communityBtn.addEventListener("click", function () {
+      if (!ensureAuthenticated("community-games-page.html")) {
+        return;
+      }
+      window.location.href = "community-games-page.html";
+    });
+  }
+
+  if (joinBtn) {
+    joinBtn.addEventListener("click", openByCode);
+  }
+
+  if (joinInput) {
+    joinInput.addEventListener("keydown", function (event) {
+      if (event.key === "Enter") {
+        event.preventDefault();
+        openByCode();
+      }
+    });
+  }
+
   const raw =
     localStorage.getItem("gdgCurrentUser") ||
     sessionStorage.getItem("gdgCurrentUser");
@@ -56,11 +148,6 @@
     if (!user || !user.name) return;
     const greeting = document.getElementById("nav-greeting");
     const logoutBtn = document.getElementById("nav-logout-btn");
-    const createGamesSection = document.getElementById("create-games");
-    const playMethodsSection = document.getElementById("play-methods");
-    const communityBtn = document.getElementById("mainCommunityBtn");
-    const joinBtn = document.getElementById("mainJoinCodeBtn");
-    const joinInput = document.getElementById("mainJoinCodeInput");
     
     if (greeting) {
       greeting.textContent = "مرحباً، " + user.name;
@@ -75,33 +162,6 @@
         sessionStorage.removeItem("gdgAuthToken");
         sessionStorage.removeItem("gdgCurrentUser");
         window.location.reload();
-      });
-    }
-    
-    if (createGamesSection) {
-      createGamesSection.classList.remove("hidden");
-    }
-
-    if (playMethodsSection) {
-      playMethodsSection.classList.remove("hidden");
-    }
-
-    if (communityBtn) {
-      communityBtn.addEventListener("click", function () {
-        window.location.href = "community-games-page.html";
-      });
-    }
-
-    if (joinBtn) {
-      joinBtn.addEventListener("click", openByCode);
-    }
-
-    if (joinInput) {
-      joinInput.addEventListener("keydown", function (event) {
-        if (event.key === "Enter") {
-          event.preventDefault();
-          openByCode();
-        }
       });
     }
     

@@ -310,7 +310,7 @@
     </section>
 
     <!-- ================= PLAY METHODS ================ -->
-    <section id="play-methods" class="py-16 px-6 bg-blue-50 hidden">
+    <section id="play-methods" class="py-16 px-6 bg-blue-50">
         <div class="max-w-6xl mx-auto text-center">
             <h2 class="text-3xl font-bold mb-4 text-[#0f4fa8]">طرق اللعب</h2>
             <p class="text-gray-600 mb-10">اختر طريقة الدخول المناسبة لك</p>
@@ -337,7 +337,7 @@
     </section>
 
     <!-- ================= CREATE GAMES ================= -->
-    <section id="create-games" class="py-16 px-6 hidden">
+    <section id="create-games" class="py-16 px-6">
         <div class="max-w-6xl mx-auto">
             <h2 class="text-3xl font-bold text-center mb-12 text-[#0f4fa8]">إنشاء لعبة جديدة</h2>
 
@@ -449,43 +449,6 @@
     </footer>
     <!-- End -->
 
-    <script>
-      (function () {
-        const raw =
-          localStorage.getItem("gdgCurrentUser") ||
-          sessionStorage.getItem("gdgCurrentUser");
-        if (!raw) return;
-        try {
-          const user = JSON.parse(raw);
-          if (!user || !user.name) return;
-          const greeting = document.getElementById("nav-greeting");
-          const logoutBtn = document.getElementById("nav-logout-btn");
-          if (greeting) {
-            greeting.textContent = "\u0645\u0631\u062D\u0628\u0627\u060C " + user.name;
-            greeting.classList.remove("hidden");
-          }
-          if (logoutBtn) {
-            logoutBtn.classList.remove("hidden");
-            logoutBtn.addEventListener("click", function () {
-              localStorage.removeItem("gdgAuthToken");
-              localStorage.removeItem("gdgCurrentUser");
-              sessionStorage.removeItem("gdgAuthToken");
-              sessionStorage.removeItem("gdgCurrentUser");
-              window.location.reload();
-            });
-          }
-          // Hide login button when already signed in
-          const loginBtn = document.getElementById("nav-login-btn");
-          if (loginBtn) loginBtn.classList.add("hidden");
-
-          // Show play-methods section for authenticated users
-          const playMethodsSection = document.getElementById("play-methods");
-          const createGamesSection = document.getElementById("create-games");
-          if (playMethodsSection) playMethodsSection.classList.remove("hidden");
-          if (createGamesSection) createGamesSection.classList.remove("hidden");
-        } catch (e) {}
-      })();
-    </script>
     <script src="../JS/main-page.js"></script>
 </body>
 
