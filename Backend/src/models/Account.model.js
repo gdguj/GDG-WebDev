@@ -24,7 +24,7 @@ const accountSchema = new mongoose.Schema(
       type: String,
       unique: true,
       sparse: true,
-      default: null,
+      default: undefined,
     },
     authProvider: {
       type: String,

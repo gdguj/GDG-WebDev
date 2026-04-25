@@ -14,6 +14,23 @@ function createAppError(message, statusCode = 400) {
   return error;
 }
 
+function mapDuplicateKeyError(error) {
+  const dupField =
+    (error && error.keyPattern && Object.keys(error.keyPattern)[0]) ||
+    (error && error.keyValue && Object.keys(error.keyValue)[0]) ||
+    "";
+
+  if (dupField === "email") {
+    return createAppError("هذا البريد الإلكتروني مسجل بالفعل.", 409);
+  }
+
+  if (dupField === "googleId") {
+    return createAppError("تعذر إنشاء الحساب حالياً. حاول مرة أخرى.", 409);
+  }
+
+  return createAppError("تعذر إنشاء الحساب بسبب تكرار بيانات الحساب.", 409);
+}
+
 function normalizeEmail(email) {
   return String(email || "").trim().toLowerCase();
 }
@@ -90,7 +107,7 @@ async function register(payload) {
     });
   } catch (error) {
     if (error && error.code === 11000) {
-      throw createAppError("هذا البريد الإلكتروني مسجل بالفعل.", 409);
+      throw mapDuplicateKeyError(error);
     }
     throw error;
   }
