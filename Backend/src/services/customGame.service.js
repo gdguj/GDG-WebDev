@@ -53,8 +53,24 @@ async function findGamesByCreator(userId, options = {}) {
     .lean();
 }
 
+async function findAllCommunityGames(options = {}) {
+  const gameType = String(options.gameType || "").trim();
+
+  const query = {};
+
+  if (gameType) {
+    query.gameType = gameType;
+  }
+
+  return UserGame.find(query)
+    .sort({ createdAt: -1 })
+    .select("_id gameType title description createdAt createdBy data")
+    .lean();
+}
+
 module.exports = {
   saveCustomGame,
   findGameById,
   findGamesByCreator,
+  findAllCommunityGames,
 };

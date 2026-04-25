@@ -300,6 +300,145 @@ body{
   font-weight: 700;
 }
 
+.game-card__actions {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid #eceff4;
+  display: flex;
+  gap: 8px;
+}
+
+.btn-join-code {
+  flex: 1;
+  padding: 10px 12px;
+  background: #4285F4;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  font-family: 'Cairo', sans-serif;
+}
+
+.btn-join-code:hover {
+  background: #3367D6;
+}
+
+.join-code-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.modal-backdrop {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.modal-content {
+  position: relative;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+  max-width: 400px;
+  width: 90%;
+  max-height: 80vh;
+  overflow-y: auto;
+  direction: rtl;
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px;
+  border-bottom: 1px solid #eceff4;
+}
+
+.modal-header h2 {
+  margin: 0;
+  font-size: 1.3rem;
+  color: #2f3350;
+  font-family: 'Cairo', sans-serif;
+}
+
+.modal-close {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: #7b8190;
+  padding: 0;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-close:hover {
+  color: #2f3350;
+}
+
+.modal-body {
+  padding: 20px;
+}
+
+.modal-body p {
+  margin: 0 0 16px;
+  color: #6d7083;
+  font-size: 0.95rem;
+  font-family: 'Cairo', sans-serif;
+}
+
+.join-code-display {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #eef4ff;
+  border: 2px solid #4285F4;
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.join-code-display code {
+  flex: 1;
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: #4285F4;
+  font-family: 'Courier New', monospace;
+  letter-spacing: 3px;
+}
+
+.btn-copy {
+  padding: 8px 16px;
+  background: #4285F4;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  font-family: 'Cairo', sans-serif;
+}
+
+.btn-copy:hover {
+  background: #3367D6;
+}
+
 .sr-only{
   position: absolute;
   width: 1px;

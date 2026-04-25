@@ -1,77 +1,12 @@
-//mock data for community games
+//Community games loaded from backend
 
-const communityGames = [
-  {
-    id: 1,
-    type: "Word Game",
-    creator: "حسناء",
-    questionsCount: 15,
-    createdAt: "2026-04-10"
-  },
-  {
-    id: 2,
-    type: "Image Game",
-    creator: "عبدالله",
-    questionsCount: 20,
-    createdAt: "2026-04-09"
-  },
-  {
-    id: 3,
-    type: "Family Feud",
-    creator: "نور",
-    questionsCount: 12,
-    createdAt: "2026-04-08"
-  },
-  {
-    id: 4,
-    type: "Word Game",
-    creator: "علي",
-    questionsCount: 10,
-    createdAt: "2026-04-06"
-  },
-  {
-    id: 5,
-    type: "Image Game",
-    creator: "فارس",
-    questionsCount: 18,
-    createdAt: "2026-03-30"
-  },
-  {
-    id: 6,
-    type: "Family Feud",
-    creator: "سامي",
-    questionsCount: 15,
-    createdAt: "2026-03-25"
-  },
-  {
-    id: 7,
-    type: "Word Game",
-    creator: "ريم",
-    questionsCount: 20,
-    createdAt: "2026-03-20"
-  },
-  {
-    id: 8,
-    type: "Image Game",
-    creator: "هالة",
-    questionsCount: 22,
-    createdAt: "2026-03-18"
-  },
-  {
-    id: 9,
-    type: "Family Feud",
-    creator: "عمر",
-    questionsCount: 25,
-    createdAt: "2026-03-15"
-  }
-];
-
+let communityGames = [];
 
 const gamesContainer = document.getElementById("gamesContainer");
 const typeFilterValue = document.getElementById("typeFilterValue");
 const sortFilterValue = document.getElementById("sortFilterValue");
 const filterDropdowns = Array.from(document.querySelectorAll("[data-filter-dropdown]"));
-const validGameIds = new Set(communityGames.map((game) => String(game.id)));
+let validGameIds = new Set();
 const gameCardsById = new Map();
 const filterState = {
   type: "all",
@@ -90,12 +25,56 @@ const filterLabels = {
   }
 };
 const filterTypeMap = {
-  image: "Image Game",
-  word: "Word Game",
-  family: "Family Feud"
+  image: "image_guessing",
+  word: "letter_cells",
+  family: "survey_game"
+};
+
+const gameTypeMap = {
+  image_guessing: "لعبة الصور",
+  letter_cells: "لعبة الحروف",
+  survey_game: "Family Feud"
 };
 
 let renderQueue = Promise.resolve();
+
+async function loadCommunityGames() {
+  try {
+    const response = await fetch("/api/custom-games/community");
+    const result = await response.json();
+    
+    console.log("Community games response:", result);
+    
+    if (!response.ok || !result.success) {
+      throw new Error(result.message || "تعذر جلب الألعاب.");
+    }
+    
+    communityGames = Array.isArray(result.games) ? result.games.map((game) => ({
+      id: String(game._id),
+      type: game.gameType,
+      creator: game.createdBy?.name || "غير معروف",
+      questionsCount: getQuestionsCount(game.data),
+      createdAt: game.createdAt
+    })) : [];
+    
+    console.log("Processed community games:", communityGames);
+    
+    validGameIds = new Set(communityGames.map((game) => String(game.id)));
+    gameCardsById.clear();
+    
+    return true;
+  } catch (error) {
+    console.error("Error loading community games:", error);
+    return false;
+  }
+}
+
+function getQuestionsCount(data) {
+  if (!data || !Array.isArray(data.questions)) {
+    return 0;
+  }
+  return data.questions.length;
+}
 
 function formatArabicDate(dateString) {
   const date = new Date(dateString);
@@ -114,7 +93,7 @@ function formatArabicDate(dateString) {
 function getGameIdentity(type) {
   const normalizedType = typeof type === "string" ? type.trim() : "";
 
-  if (normalizedType === "Image Game") {
+  if (normalizedType === "image_guessing") {
     return {
       cardClass: "game-card--image",
       title: "لعبة الصور",
@@ -123,16 +102,16 @@ function getGameIdentity(type) {
     };
   }
 
-  if (normalizedType === "Family Feud") {
+  if (normalizedType === "survey_game") {
     return {
       cardClass: "game-card--family",
-      title: "لعبة Family Feud",
+      title: "Family Feud",
       iconSrc: "../Images/family-feud.png",
-      iconAlt: "أيقونة لعبة Family Feud"
+      iconAlt: "أيقونة Family Feud"
     };
   }
 
-  if (normalizedType === "Word Game") {
+  if (normalizedType === "letter_cells") {
     return {
       cardClass: "game-card--word",
       title: "لعبة الحروف",
@@ -207,7 +186,17 @@ function createGameCard(game) {
     createDetailRow("fa-regular fa-calendar", "تاريخ الإنشاء", formatArabicDate(game.createdAt))
   );
 
-  body.append(creator, details);
+  const actionsDiv = createElement("div", "game-card__actions");
+  const joinCodeBtn = createElement("button", "btn-join-code", "كود الانضمام");
+  joinCodeBtn.setAttribute("type", "button");
+  joinCodeBtn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    e.preventDefault();
+    showJoinCodeModal(game.id);
+  });
+  actionsDiv.appendChild(joinCodeBtn);
+
+  body.append(creator, details, actionsDiv);
   article.append(top, body);
 
   return article;
@@ -560,6 +549,70 @@ function attachGameCardEvents() {
   });
 }
 
+function generateJoinCode() {
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  let code = '';
+  for (let i = 0; i < 6; i++) {
+    code += chars.charAt(Math.floor(Math.random() * chars.length));
+  }
+  return code;
+}
+
+function escapeHtml(text) {
+  const map = {
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#39;'
+  };
+  return text.replace(/[&<>"']/g, (m) => map[m]);
+}
+
+function showJoinCodeModal(gameId) {
+  const joinCode = generateJoinCode();
+  
+  const modal = document.createElement('div');
+  modal.className = 'join-code-modal';
+  modal.innerHTML = 
+    '<div class="modal-backdrop"></div>' +
+    '<div class="modal-content">' +
+      '<div class="modal-header">' +
+        '<h2>كود الانضمام</h2>' +
+        '<button class="modal-close">&times;</button>' +
+      '</div>' +
+      '<div class="modal-body">' +
+        '<p>شارك هذا الكود مع الآخرين للانضمام للعبة:</p>' +
+        '<div class="join-code-display">' +
+          '<code>' + escapeHtml(joinCode) + '</code>' +
+          '<button class="btn-copy">نسخ</button>' +
+        '</div>' +
+      '</div>' +
+    '</div>';
+  
+  document.body.appendChild(modal);
+  
+  const closeBtn = modal.querySelector('.modal-close');
+  const backdrop = modal.querySelector('.modal-backdrop');
+  const copyBtn = modal.querySelector('.btn-copy');
+  
+  const closeModal = function() {
+    modal.remove();
+  };
+  
+  closeBtn.addEventListener('click', closeModal);
+  backdrop.addEventListener('click', closeModal);
+  
+  copyBtn.addEventListener('click', function() {
+    navigator.clipboard.writeText(joinCode).then(() => {
+      copyBtn.textContent = 'تم النسخ!';
+      setTimeout(() => {
+        copyBtn.textContent = 'نسخ';
+      }, 2000);
+    });
+  });
+}
+
 initializeGameCardMap();
 renderInitialGames();
 updateFilterValueText("type");
@@ -568,3 +621,15 @@ syncSelectedOptions("type");
 syncSelectedOptions("sort");
 attachDropdownEvents();
 attachGameCardEvents();
+
+// Load community games from backend
+loadCommunityGames().then((success) => {
+  if (success) {
+    initializeGameCardMap();
+    renderInitialGames();
+  } else {
+    if (gamesContainer) {
+      gamesContainer.innerHTML = '<div class="empty-state"><p class="empty-state__text">تعذر تحميل الألعاب. يرجى المحاولة لاحقاً.</p></div>';
+    }
+  }
+});

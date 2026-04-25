@@ -98,8 +98,24 @@ async function getMyGames(req, res, next) {
   }
 }
 
+async function getCommunityGames(req, res, next) {
+  try {
+    const gameType = String(req.query.gameType || "").trim();
+
+    const games = await customGameService.findAllCommunityGames({ gameType });
+
+    return res.status(200).json({
+      success: true,
+      games,
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
 module.exports = {
   createGame,
   getGameById,
   getMyGames,
+  getCommunityGames,
 };

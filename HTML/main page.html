@@ -309,6 +309,96 @@
         </div>
     </section>
 
+    <!-- ================= PLAY METHODS ================= -->
+    <section id="play-methods" class="py-16 px-6 bg-blue-50 hidden">
+        <div class="max-w-6xl mx-auto text-center">
+            <h2 class="text-3xl font-bold mb-4 text-[#0f4fa8]">طرق اللعب</h2>
+            <p class="text-gray-600 mb-10">اختر طريقة الدخول المناسبة لك</p>
+
+            <div class="grid md:grid-cols-2 gap-8">
+                <article class="bg-white rounded-2xl border border-blue-100 shadow-md p-8 text-right">
+                    <div class="text-4xl mb-4">👥</div>
+                    <h3 class="text-2xl font-bold mb-2">اكتشف ألعابًا جديدة</h3>
+                    <p class="text-gray-600 mb-6">تصفح ألعاب أنشأها لاعبون آخرون.</p>
+                    <button id="mainCommunityBtn" class="bg-[#0078BF] text-white px-6 py-2 rounded-lg font-semibold hover:bg-[#086AA4] transition">استعرض الألعاب</button>
+                </article>
+
+                <article class="bg-white rounded-2xl border border-blue-100 shadow-md p-8 text-right">
+                    <div class="text-4xl mb-4">🔎</div>
+                    <h3 class="text-2xl font-bold mb-2">الدخول برمز اللعبة</h3>
+                    <p class="text-gray-600 mb-6">أدخل الرمز الذي قدمه لك أحد لاعبي اللعبة.</p>
+                    <div class="flex gap-2">
+                        <input type="text" id="mainJoinCodeInput" placeholder="أدخل الرمز هنا..." class="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-[#0078BF]">
+                        <button id="mainJoinCodeBtn" class="bg-green-500 text-white px-6 py-2 rounded-lg font-semibold hover:bg-green-600 transition">دخول</button>
+                    </div>
+                </article>
+            </div>
+        </div>
+    </section>
+
+    <!-- ================= CREATE GAMES ================= -->
+    <section id="create-games" class="py-16 px-6 hidden">
+        <div class="max-w-6xl mx-auto">
+            <h2 class="text-3xl font-bold text-center mb-12 text-[#0f4fa8]">إنشاء لعبة جديدة</h2>
+
+            <div class="grid md:grid-cols-3 gap-8">
+                <!-- Create Letter Game Card -->
+                <div class="flip-card cursor-pointer">
+                    <div class="flip-card-inner">
+                        <!-- Front -->
+                        <div class="flip-card-front bg-white p-10 rounded-xl shadow-lg border border-gray-100 text-center flex flex-col justify-center">
+                            <i class="fas fa-cube text-4xl mb-4 text-[#FF9F43]"></i>
+                            <h3 class="font-bold text-lg">إنشاء لعبة الحروف</h3>
+                        </div>
+                        <!-- Back -->
+                        <div class="flip-card-back bg-[#FF9F43] text-white p-6 rounded-xl shadow-lg flex flex-col justify-center items-center text-center space-y-6">
+                            <p>ابتكر لعبة حروف ممتعة وحدِّ أصدقاءك والمجتمع</p>
+                            <a href="custom-letter-game.html">
+                                <button class="bg-white text-[#FF9F43] font-semibold px-6 py-2 rounded-lg hover:bg-gray-100 transition">أنشئ الآن</button>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Create Image Game Card -->
+                <div class="flip-card cursor-pointer">
+                    <div class="flip-card-inner">
+                        <!-- Front -->
+                        <div class="flip-card-front bg-white p-10 rounded-xl shadow-lg border border-gray-100 text-center flex flex-col justify-center">
+                            <i class="fas fa-image text-4xl mb-4 text-[#0078BF]"></i>
+                            <h3 class="font-bold text-lg">إنشاء لعبة الصور</h3>
+                        </div>
+                        <!-- Back -->
+                        <div class="flip-card-back bg-[#0078BF] text-white p-6 rounded-xl shadow-lg flex flex-col justify-center items-center text-center space-y-6">
+                            <p>ابتكر لعبة صور رائعة شارك أصدقاءك والمجتمع بها</p>
+                            <a href="custom-image-game.html">
+                                <button class="bg-white text-[#0078BF] font-semibold px-6 py-2 rounded-lg hover:bg-gray-100 transition">أنشئ الآن</button>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Create Survey Game Card -->
+                <div class="flip-card cursor-pointer">
+                    <div class="flip-card-inner">
+                        <!-- Front -->
+                        <div class="flip-card-front bg-white p-10 rounded-xl shadow-lg border border-gray-100 text-center flex flex-col justify-center">
+                            <i class="fas fa-poll text-4xl mb-4 text-[#16a34a]"></i>
+                            <h3 class="font-bold text-lg">إنشاء Family Feud</h3>
+                        </div>
+                        <!-- Back -->
+                        <div class="flip-card-back bg-[#16a34a] text-white p-6 rounded-xl shadow-lg flex flex-col justify-center items-center text-center space-y-6">
+                            <p>ابتكر لعبة استبيانية مشوقة تحدي أصدقاءك والمجتمع</p>
+                            <a href="custom-survey-game.html">
+                                <button class="bg-white text-[#16a34a] font-semibold px-6 py-2 rounded-lg hover:bg-gray-100 transition">أنشئ الآن</button>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
 
     <!-- ================= FOOTER ================= -->
     <footer class="bg-[#403F41] text-gray-300 py-12 px-6">
@@ -387,9 +477,16 @@
           // Hide login button when already signed in
           const loginBtn = document.getElementById("nav-login-btn");
           if (loginBtn) loginBtn.classList.add("hidden");
+
+          // Show play-methods section for authenticated users
+          const playMethodsSection = document.getElementById("play-methods");
+          const createGamesSection = document.getElementById("create-games");
+          if (playMethodsSection) playMethodsSection.classList.remove("hidden");
+          if (createGamesSection) createGamesSection.classList.remove("hidden");
         } catch (e) {}
       })();
     </script>
+    <script src="../JS/main-page.js"></script>
 </body>
 
 </html>

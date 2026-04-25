@@ -81,13 +81,77 @@
         '</div>' +
         '<p class="game-title">' + escapeHtml(String(game.title || "بدون عنوان")) + '</p>' +
         '<p class="game-description">' + escapeHtml(description) + '</p>' +
-        '<p class="game-id">رمز اللعبة: ' + escapeHtml(String(game._id || "")) + '</p>' +
         '<div class="game-meta">' +
           '<div>عدد الأسئلة: ' + questionsCount + '</div>' +
           '<div>تاريخ الإنشاء: ' + escapeHtml(createdAt) + '</div>' +
+        '</div>' +
+        '<div class="game-actions">' +
+          '<button class="btn-join-code" data-game-id="' + escapeHtml(String(game._id || "")) + '">كود الانضمام</button>' +
         '</div>';
 
       gamesGrid.appendChild(card);
+      
+      const joinCodeBtn = card.querySelector('.btn-join-code');
+      if (joinCodeBtn) {
+        joinCodeBtn.addEventListener('click', function(e) {
+          e.stopPropagation();
+          const gameId = this.getAttribute('data-game-id');
+          showJoinCodeModal(gameId);
+        });
+      }
+    });
+  }
+
+  function generateJoinCode() {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    let code = '';
+    for (let i = 0; i < 6; i++) {
+      code += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    return code;
+  }
+
+  function showJoinCodeModal(gameId) {
+    const joinCode = generateJoinCode();
+    
+    const modal = document.createElement('div');
+    modal.className = 'join-code-modal';
+    modal.innerHTML = 
+      '<div class="modal-backdrop"></div>' +
+      '<div class="modal-content">' +
+        '<div class="modal-header">' +
+          '<h2>كود الانضمام</h2>' +
+          '<button class="modal-close">&times;</button>' +
+        '</div>' +
+        '<div class="modal-body">' +
+          '<p>شارك هذا الكود مع الآخرين للانضمام للعبة:</p>' +
+          '<div class="join-code-display">' +
+            '<code>' + escapeHtml(joinCode) + '</code>' +
+            '<button class="btn-copy">نسخ</button>' +
+          '</div>' +
+        '</div>' +
+      '</div>';
+    
+    document.body.appendChild(modal);
+    
+    const closeBtn = modal.querySelector('.modal-close');
+    const backdrop = modal.querySelector('.modal-backdrop');
+    const copyBtn = modal.querySelector('.btn-copy');
+    
+    const closeModal = function() {
+      modal.remove();
+    };
+    
+    closeBtn.addEventListener('click', closeModal);
+    backdrop.addEventListener('click', closeModal);
+    
+    copyBtn.addEventListener('click', function() {
+      navigator.clipboard.writeText(joinCode).then(() => {
+        copyBtn.textContent = 'تم النسخ!';
+        setTimeout(() => {
+          copyBtn.textContent = 'نسخ';
+        }, 2000);
+      });
     });
   }
 
