@@ -76,3 +76,10 @@ if (communityBtn) {
     window.location.href = "community-games-page.html" + query;
   });
 }
+
+const myGamesBtn = document.querySelector(".my-games-btn");
+if (myGamesBtn) {
+  myGamesBtn.addEventListener("click", function () {
+    window.location.href = "my-games.html";
+  });
+}

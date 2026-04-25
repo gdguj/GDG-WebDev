@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ألعابي</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="../CSS/my-games.css">
+  <script src="../JS/auth-guard.js"></script>
+</head>
+<body>
+  <main class="my-games-page">
+    <section class="hero-card">
+      <p class="eyebrow">لوحة التحكم</p>
+      <h1>ألعابي</h1>
+      <p class="subtitle">كل الألعاب التي أنشأتها بنفسك في مكان واحد.</p>
+      <div class="hero-actions">
+        <a href="custom-game-selector.html" class="btn-primary">إنشاء لعبة جديدة</a>
+        <a href="game-entry-logic.html" class="btn-ghost">رجوع</a>
+      </div>
+    </section>
+
+    <section class="toolbar">
+      <label for="typeFilter">نوع اللعبة</label>
+      <select id="typeFilter">
+        <option value="all">كل الأنواع</option>
+        <option value="letter_cells">لعبة الحروف</option>
+        <option value="image_guessing">لعبة الصور</option>
+        <option value="survey_game">Family Feud</option>
+      </select>
+    </section>
+
+    <section>
+      <p id="pageMessage" class="page-message">جاري تحميل ألعابك...</p>
+      <div id="gamesGrid" class="games-grid"></div>
+    </section>
+  </main>
+
+  <script src="../JS/my-games.js"></script>
+</body>
+</html>

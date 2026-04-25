@@ -57,18 +57,18 @@ body{
   width: min(1180px, calc(100% - 48px));
   margin: 48px auto 24px;
   display: flex;
-  gap: 24px;
+  gap: 20px;
   align-items: stretch;
   justify-content: center;
-  flex-wrap: nowrap;
-  overflow-x: auto;
+  flex-wrap: wrap;
+  overflow-x: hidden;
   padding: 4px 2px 14px;
 }
 
 .game-card{
-  flex: 1 1 0;
-  min-width: 280px;
-  max-width: 340px;
+  flex: 1 1 220px;
+  min-width: 0;
+  max-width: 300px;
   aspect-ratio: 1 / 1;
   margin: 0;
   padding: 31px 29px 27px;
@@ -86,6 +86,7 @@ body{
 .default-div,
 .custom-div,
 .customized-div,
+.my-games-div,
 .create-div{
   width: auto;
   height: auto;
@@ -96,6 +97,7 @@ body{
 .default-div:hover,
 .custom-div:hover,
 .customized-div:hover,
+.my-games-div:hover,
 .create-div:hover{
   transform: translateY(-4px);
   box-shadow: 0 8px 16px rgba(60, 64, 67, 0.08);
@@ -194,6 +196,7 @@ body{
 .default-btn,
 .custom-btn,
 .customized-btn,
+.my-games-btn,
 .create-btn{
   color: var(--brand);
   background-color: #ffffff;
@@ -215,6 +218,7 @@ body{
 .default-btn:hover,
 .custom-btn:hover,
 .customized-btn:hover,
+.my-games-btn:hover,
 .create-btn:hover{
   transform: translateY(-1px);
   box-shadow: 0 6px 14px rgba(60, 64, 67, 0.12);
@@ -224,6 +228,7 @@ body{
 .default-btn:active,
 .custom-btn:active,
 .customized-btn:active,
+.my-games-btn:active,
 .create-btn:active{
   transform: translateY(0);
   background-color: #e7f0ff;

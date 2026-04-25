@@ -75,7 +75,31 @@ async function getGameById(req, res, next) {
   }
 }
 
+async function getMyGames(req, res, next) {
+  try {
+    const authUserId = req.authUser && req.authUser.id;
+    const gameType = String(req.query.gameType || "").trim();
+
+    if (!authUserId) {
+      return res.status(401).json({
+        success: false,
+        message: "يجب تسجيل الدخول أولاً.",
+      });
+    }
+
+    const games = await customGameService.findGamesByCreator(authUserId, { gameType });
+
+    return res.status(200).json({
+      success: true,
+      games,
+    });
+  } catch (error) {
+    next(error);
+  }
+}
+
 module.exports = {
   createGame,
-  getGameById
+  getGameById,
+  getMyGames,
 };

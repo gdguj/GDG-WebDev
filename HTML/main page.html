@@ -52,29 +52,35 @@
 
     <!-- ================= NAVBAR ========= ======== -->
     <nav class="bg-white shadow-sm">
-        <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+        <div class="max-w-7xl mx-auto px-6 py-4 flex items-center relative">
 
-            <!-- Logo -->
-            <img src="../Images/colorful-logo.png" alt="logo" class="h-10">
+            <!-- Logo + auth buttons + greeting (right side in RTL) -->
+            <div class="flex items-center gap-4">
+                <img src="../Images/colorful-logo.png" alt="logo" class="h-10">
+                <a id="nav-login-btn" href="auth.html"
+                    class="border border-[#0078BF] text-[#0078BF] px-4 py-1.5 rounded-lg font-semibold hover:bg-[#0078BF] hover:text-white transition text-sm inline-block">
+                    تسجيل الدخول
+                </a>
+                <button id="nav-logout-btn" dir="rtl"
+                    class="hidden font-semibold text-red-500 hover:text-red-700 border border-red-300 hover:border-red-500 rounded-lg px-4 py-1.5 transition-colors text-sm">
+                    تسجيل الخروج
+                </button>
+                <span id="nav-greeting" dir="rtl" class="hidden font-semibold text-gray-700 text-base ms-2"></span>
+            </div>
 
-            <!-- Links -->
-            <div class="hidden md:flex items-center gap-8 font-semibold text-gray-600">
+            <!-- Links (absolutely centered) -->
+            <div class="hidden md:flex items-center gap-8 font-semibold text-gray-600 absolute left-1/2 -translate-x-1/2">
                 <a href="#hero" class="hover:text-[#0078BF]">الرئيسية</a>
                 <a href="#about" class="hover:text-[#0078BF]">من نحن</a>
                 <a href="#goals" class="hover:text-[#0078BF]">أهدافنا</a>
                 <a href="#games" class="hover:text-[#0078BF]">الألعاب</a>
             </div>
 
-            <!-- User greeting + Button -->
-            <div class="flex items-center gap-4">
-                <span id="nav-greeting" dir="rtl" class="hidden font-semibold text-gray-700 text-sm"></span>
-                <button id="nav-logout-btn" dir="rtl"
-                    class="hidden font-semibold text-red-500 hover:text-red-700 border border-red-300 hover:border-red-500 rounded-lg px-4 py-1.5 transition-colors text-sm">
-                    تسجيل الخروج
-                </button>
-                <a id="nav-login-btn" href="auth.html"
-                    class="border border-[#0078BF] text-[#0078BF] px-6 py-2 rounded-full font-semibold hover:bg-[#0078BF] hover:text-white transition inline-block">
-                    تسجيل الدخول
+            <!-- Action buttons (left side in RTL) -->
+            <div class="flex items-center gap-4 mr-auto">
+                <a id="nav-my-games-btn" href="my-games.html"
+                    class="border border-[#16a34a] text-[#15803d] px-6 py-2 rounded-full font-semibold hover:bg-[#16a34a] hover:text-white transition inline-block">
+                    ألعابي
                 </a>
                 <a href="#games"
                     class="bg-[#0078BF] text-white px-6 py-2 rounded-full font-semibold hover:bg-[#086AA4] transition inline-block">

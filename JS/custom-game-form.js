@@ -13,9 +13,19 @@
     return;
   }
 
+  const questionCounter = document.getElementById("questionCounter");
+
+  function updateCounter() {
+    if (!questionCounter) return;
+    const count = questionsContainer.querySelectorAll(".question-item").length;
+    questionCounter.textContent = count + " / 25";
+    questionCounter.style.background = count === 25 ? "#22c55e" : (count > 25 ? "#ef4444" : "#3674d8");
+  }
+
   addQuestionBtn.addEventListener("click", () => {
     addQuestionItem();
     renderQuestionIndices();
+    updateCounter();
   });
 
   saveGameBtn.addEventListener("click", async () => {
@@ -84,6 +94,7 @@
 
   addQuestionItem();
   renderQuestionIndices();
+  updateCounter();
 
   function getAuthData() {
     const token = localStorage.getItem("gdgAuthToken") || sessionStorage.getItem("gdgAuthToken");
@@ -128,7 +139,7 @@
 
   function collectImageData() {
     const questionItems = Array.from(questionsContainer.querySelectorAll(".question-item"));
-    const questions = questionItems.map((item) => {
+    const questions = questionItems.map((item, index) => {
       const imageOne = getValue(item, "imageOne");
       const imageTwo = getValue(item, "imageTwo");
       const answer = getValue(item, "answer");
@@ -148,8 +159,20 @@
     return { questions };
   }
 
+  const LETTER_GRID_SIZE = 25; // شبكة 5×5
+  const SURVEY_MIN_QUESTIONS = 2; // اللعبة = جولتين على الأقل
+  const SURVEY_OPTIONS_PER_QUESTION = 10; // عدد مربعات الإجابات في لعبة الاستبيان
+
   function collectLetterData() {
     const questionItems = Array.from(questionsContainer.querySelectorAll(".question-item"));
+
+    if (questionItems.length !== LETTER_GRID_SIZE) {
+      throw new Error(
+        "عدد الأسئلة يجب أن يكون " + LETTER_GRID_SIZE + " بالضبط (شبكة 5×5). " +
+        "حالياً لديك " + questionItems.length + " سؤال."
+      );
+    }
+
     const questions = questionItems.map((item) => {
       const letter = getValue(item, "letter");
       const question = getValue(item, "question");
@@ -166,15 +189,16 @@
       };
     });
 
-    if (!questions.length) {
-      throw new Error("أضف سؤالاً واحداً على الأقل.");
-    }
-
     return { questions };
   }
 
   function collectSurveyData() {
     const questionItems = Array.from(questionsContainer.querySelectorAll(".question-item"));
+
+    if (questionItems.length < SURVEY_MIN_QUESTIONS) {
+      throw new Error("لعبة الاستبيان تعتبر جولتين، لذلك يجب إدخال سؤالين على الأقل.");
+    }
+
     const questions = questionItems.map((item) => {
       const question = getValue(item, "question");
       const answerItems = Array.from(item.querySelectorAll(".answer-item"));
@@ -195,16 +219,18 @@
         return { text, points };
       });
 
-      if (answers.length < 2) {
-        throw new Error("كل سؤال استبيان يحتاج إجابتين على الأقل.");
+      if (answers.length !== SURVEY_OPTIONS_PER_QUESTION) {
+        throw new Error(
+          "السؤال رقم " +
+            (index + 1) +
+            " يجب أن يحتوي " +
+            SURVEY_OPTIONS_PER_QUESTION +
+            " خيارات بالضبط (بعدد مربعات اللعبة)."
+        );
       }
 
       return { question, answers };
     });
-
-    if (!questions.length) {
-      throw new Error("أضف سؤالاً واحداً على الأقل.");
-    }
 
     return { questions };
   }
@@ -234,6 +260,7 @@
       removeBtn.addEventListener("click", () => {
         node.remove();
         renderQuestionIndices();
+        updateCounter();
       });
     }
 
@@ -258,21 +285,38 @@
         return;
       }
 
+      const currentCount = answersWrap.querySelectorAll(".answer-item").length;
+      if (currentCount >= SURVEY_OPTIONS_PER_QUESTION) {
+        return;
+      }
+
       const answerNode = answerTemplate.content.firstElementChild.cloneNode(true);
       const removeAnswerBtn = answerNode.querySelector("[data-remove-answer]");
 
       if (removeAnswerBtn) {
         removeAnswerBtn.addEventListener("click", () => {
           answerNode.remove();
+          syncAnswerControls();
         });
       }
 
       answersWrap.appendChild(answerNode);
+      syncAnswerControls();
+    };
+
+    const syncAnswerControls = () => {
+      const count = answersWrap.querySelectorAll(".answer-item").length;
+      addAnswerBtn.disabled = count >= SURVEY_OPTIONS_PER_QUESTION;
+      addAnswerBtn.title = addAnswerBtn.disabled
+        ? "وصلت للحد المطلوب: " + SURVEY_OPTIONS_PER_QUESTION + " خيارات"
+        : "إضافة إجابة";
     };
 
     addAnswerBtn.addEventListener("click", addAnswerItem);
-    addAnswerItem();
-    addAnswerItem();
+    for (let i = 0; i < SURVEY_OPTIONS_PER_QUESTION; i += 1) {
+      addAnswerItem();
+    }
+    syncAnswerControls();
   }
 
   function renderQuestionIndices() {

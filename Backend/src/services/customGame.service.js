@@ -34,7 +34,27 @@ async function findGameById(gameId) {
   return UserGame.findById(parsedId).lean();
 }
 
+async function findGamesByCreator(userId, options = {}) {
+  const parsedUserId = parseObjectId(userId, "createdBy.userId");
+  const gameType = String(options.gameType || "").trim();
+
+  const query = {
+    "createdBy.userId": parsedUserId,
+    isCustom: true,
+  };
+
+  if (gameType) {
+    query.gameType = gameType;
+  }
+
+  return UserGame.find(query)
+    .sort({ createdAt: -1 })
+    .select("_id gameType title description createdAt createdBy data")
+    .lean();
+}
+
 module.exports = {
   saveCustomGame,
   findGameById,
+  findGamesByCreator,
 };
