@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>غرفة الانتظار</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../CSS/multiplayer.css">
+</head>
+<body class="multiplayer-body" data-page="waiting">
+  <div class="multiplayer-shell">
+    <header class="mp-head">
+      <h1 class="mp-brand">غرفة الانتظار</h1>
+      <nav class="mp-nav">
+        <a href="multiplayer-home.html">الرئيسية</a>
+      </nav>
+    </header>
+
+    <section class="grid-2">
+      <article class="card">
+        <h3>معلومات الجلسة</h3>
+        <div class="join-code-panel">
+          <p class="small">شارك الكود مع اللاعبين للانضمام</p>
+          <div id="sessionCode" class="join-code-big">------</div>
+          <div class="two-actions">
+            <button id="copyCodeBtn" type="button">نسخ الكود</button>
+            <button id="shareCodeBtn" type="button" class="secondary">مشاركة</button>
+          </div>
+        </div>
+        <p><strong>الحالة:</strong> <span id="sessionStatus" class="status-pill status-waiting">انتظار</span></p>
+        <p><strong>المضيف:</strong> <span id="hostIndicator">-</span></p>
+
+        <div class="two-actions">
+          <button id="readyBtn" class="success">تبديل الجاهزية</button>
+          <button id="startBtn">بدء اللعبة</button>
+        </div>
+        <p id="hostOnlyHint" class="small">زر بدء اللعبة متاح للمضيف فقط بعد جاهزية جميع اللاعبين.</p>
+        <p id="mpMessage"></p>
+      </article>
+
+      <article class="card">
+        <h3>اللاعبون</h3>
+        <div id="playersRows" class="rows"></div>
+      </article>
+    </section>
+  </div>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="../JS/multiplayer.js"></script>
+</body>
+</html>

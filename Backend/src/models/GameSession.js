@@ -63,6 +63,27 @@ const currentStateSchema = new mongoose.Schema(
       default: 0,
       min: 0,
     },
+    questionStartedAt: {
+      type: Date,
+      default: null,
+    },
+    questionEndsAt: {
+      type: Date,
+      default: null,
+    },
+    questionTimerSeconds: {
+      type: Number,
+      default: 30,
+      min: 1,
+    },
+    revealedAnswers: {
+      type: [String],
+      default: [],
+    },
+    answeredKeys: {
+      type: [String],
+      default: [],
+    },
   },
   { _id: false }
 );
@@ -151,6 +172,10 @@ const gameSessionSchema = new mongoose.Schema(
         default: 30,
         min: 5,
       },
+    },
+    gameSnapshot: {
+      type: mongoose.Schema.Types.Mixed,
+      default: null,
     },
     createdAt: {
       type: Date,

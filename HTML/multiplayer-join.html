@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>الانضمام لغرفة لعب</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../CSS/multiplayer.css">
+</head>
+<body class="multiplayer-body" data-page="join">
+  <div class="multiplayer-shell">
+    <header class="mp-head">
+      <h1 class="mp-brand">انضمام عبر الكود</h1>
+      <nav class="mp-nav">
+        <a href="multiplayer-home.html">الرئيسية</a>
+      </nav>
+    </header>
+
+    <section class="card" style="max-width:560px; margin: 40px auto 0;">
+      <h3>انضم إلى جلسة مباشرة</h3>
+      <label for="joinCode">كود الانضمام</label>
+      <input id="joinCode" placeholder="من 4 إلى 6 رموز" maxlength="6" style="text-transform:uppercase;">
+
+      <button id="joinBtn">انضمام للجلسة</button>
+      <p id="mpMessage"></p>
+    </section>
+  </div>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="../JS/multiplayer.js"></script>
+</body>
+</html>

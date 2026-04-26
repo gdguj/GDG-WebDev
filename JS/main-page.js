@@ -33,43 +33,11 @@
     return false;
   }
 
-  async function openByCode() {
-    if (!ensureAuthenticated("main page.html#play-methods")) {
+  function goToMultiplayerJoin() {
+    if (!ensureAuthenticated("multiplayer-join.html")) {
       return;
     }
-
-    const input = document.getElementById("mainJoinCodeInput");
-    if (!input) return;
-
-    const code = String(input.value || "").trim();
-    if (!code) {
-      setJoinMessage("أدخل رمز اللعبة أولاً.", "error");
-      return;
-    }
-
-    setJoinMessage("جاري التحقق من الرمز...", "success");
-
-    try {
-      const response = await fetch("/api/custom-games/" + encodeURIComponent(code));
-      const result = await response.json();
-
-      if (!response.ok || !result.success || !result.game) {
-        throw new Error("لا توجد لعبة بهذا الرمز.");
-      }
-
-      const gameType = String(result.game.gameType || "").trim();
-      const route = gameRoutes[gameType];
-
-      if (!route) {
-        throw new Error("نوع اللعبة غير مدعوم.");
-      }
-
-      const target = new URL(route, window.location.href);
-      target.searchParams.set("customGameId", String(result.game._id || code));
-      window.location.href = target.toString();
-    } catch (error) {
-      setJoinMessage(error.message || "تعذر فتح اللعبة بهذا الرمز.", "error");
-    }
+    window.location.href = "multiplayer-join.html";
   }
 
   function wireProtectedLink(anchor) {
@@ -99,14 +67,12 @@
       });
     });
 
-    const gameLinks = document.querySelectorAll("#games a[href], #create-games a[href]");
+    const gameLinks = document.querySelectorAll("#games a[href]");
     gameLinks.forEach(wireProtectedLink);
   }
 
   function showOpenSections() {
-    const createGamesSection = document.getElementById("create-games");
     const playMethodsSection = document.getElementById("play-methods");
-    if (createGamesSection) createGamesSection.classList.remove("hidden");
     if (playMethodsSection) playMethodsSection.classList.remove("hidden");
   }
 
@@ -119,22 +85,22 @@
 
   if (communityBtn) {
     communityBtn.addEventListener("click", function () {
-      if (!ensureAuthenticated("community-games-page.html")) {
+      if (!ensureAuthenticated("multiplayer-home.html")) {
         return;
       }
-      window.location.href = "community-games-page.html";
+      window.location.href = "multiplayer-home.html";
     });
   }
 
   if (joinBtn) {
-    joinBtn.addEventListener("click", openByCode);
+    joinBtn.addEventListener("click", goToMultiplayerJoin);
   }
 
   if (joinInput) {
     joinInput.addEventListener("keydown", function (event) {
       if (event.key === "Enter") {
         event.preventDefault();
-        openByCode();
+        goToMultiplayerJoin();
       }
     });
   }

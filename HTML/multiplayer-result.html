@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>نتيجة الجلسة</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../CSS/multiplayer.css">
+</head>
+<body class="multiplayer-body" data-page="result">
+  <div class="multiplayer-shell">
+    <header class="mp-head">
+      <h1 class="mp-brand">النتائج النهائية</h1>
+      <nav class="mp-nav">
+        <a href="multiplayer-home.html">الرئيسية</a>
+        <a href="multiplayer-leaderboard.html">لوحة المتصدرين</a>
+      </nav>
+    </header>
+
+    <section class="card" style="max-width:700px; margin:0 auto;">
+      <h3>الفائز: <span id="winnerName">-</span></h3>
+      <p><strong>الحالة:</strong> <span id="resultStatus" class="status-pill status-finished">منتهية</span></p>
+      <div id="resultScores" class="rows"></div>
+      <div class="two-actions" style="margin-top:12px;">
+        <button id="playAgainBtn">العب مرة أخرى</button>
+        <button id="backHomeBtn" class="secondary">العودة للرئيسية</button>
+      </div>
+      <p id="mpMessage"></p>
+    </section>
+  </div>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="../JS/multiplayer.js"></script>
+</body>
+</html>

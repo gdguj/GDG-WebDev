@@ -1,9 +1,12 @@
 require("dotenv").config(); 
 
 const express = require("express");
+const http = require("http");
 const mongoose = require('mongoose');
 const path = require("path");
 const app = require("./src/app");
+const { initSocket, emitSessionEvent } = require("./src/realtime/socket");
+const gameSessionService = require("./src/services/gameSession.service");
 
 const PORT = process.env.PORT || 5000;
 
@@ -50,7 +53,11 @@ app.get("/", (req, res) => {
 // ================================
 // بدء السيرفر
 // ================================
-app.listen(PORT, () => {
+const server = http.createServer(app);
+initSocket(server);
+gameSessionService.setRealtimeEmitter(emitSessionEvent);
+
+server.listen(PORT, () => {
   console.log(`🚀 Server running on http://localhost:${PORT}`);
   console.log(`🎮 Survey Game: http://localhost:${PORT}/survey-game.html`);
   console.log(`🖼️  Image Game: http://localhost:${PORT}/imageGame.html`);

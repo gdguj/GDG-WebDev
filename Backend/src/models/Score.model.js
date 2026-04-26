@@ -2,6 +2,11 @@ const mongoose = require("mongoose");
 
 const playerScoreSchema = new mongoose.Schema(
   {
+    userId: {
+      type: mongoose.Schema.Types.ObjectId,
+      default: null,
+      index: true,
+    },
     name: {
       type: String,
       required: true,
@@ -18,6 +23,11 @@ const playerScoreSchema = new mongoose.Schema(
 
 const winnerScoreSchema = new mongoose.Schema(
   {
+    userId: {
+      type: mongoose.Schema.Types.ObjectId,
+      default: null,
+      index: true,
+    },
     name: {
       type: String,
       required: true,

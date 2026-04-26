@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>اللعبة الجماعية المباشرة</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../CSS/multiplayer.css">
+</head>
+<body class="multiplayer-body" data-page="game">
+  <div class="multiplayer-shell">
+    <header class="mp-head">
+      <h1 class="mp-brand">اللعبة قيد التقدم</h1>
+      <nav class="mp-nav">
+        <a href="multiplayer-home.html">الرئيسية</a>
+      </nav>
+    </header>
+
+    <section class="grid-2">
+      <article class="card">
+        <h3>السؤال</h3>
+        <p><strong>الحالة:</strong> <span id="gameStatus" class="status-pill status-progress">قيد التقدم</span></p>
+        <p><strong>المؤقت:</strong> <span class="timer" id="timer">-</span> ثانية</p>
+        <div id="questionBlock">
+          <p id="questionText">جار تحميل السؤال...</p>
+          <p id="hintText" class="small"></p>
+          <div id="visualArea"></div>
+          <div id="surveyMatches" class="rows" style="margin-top:10px;"></div>
+        </div>
+
+        <label for="answerInput">إجابتك</label>
+        <input id="answerInput" placeholder="اكتب الإجابة">
+
+        <div class="two-actions">
+          <button id="submitAnswerBtn" class="success">إرسال الإجابة</button>
+          <button id="nextQuestionBtn" class="secondary">السؤال التالي</button>
+          <button id="finishGameBtn" class="warn">إنهاء الجلسة</button>
+        </div>
+        <p id="mpMessage"></p>
+      </article>
+
+      <article class="card">
+        <h3>لوحة النقاط المباشرة</h3>
+        <div id="scoreRows" class="rows"></div>
+      </article>
+    </section>
+  </div>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="../JS/multiplayer.js"></script>
+</body>
+</html>

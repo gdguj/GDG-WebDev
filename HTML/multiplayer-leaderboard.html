@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>لوحة المتصدرين</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../CSS/multiplayer.css">
+</head>
+<body class="multiplayer-body" data-page="leaderboard">
+  <div class="multiplayer-shell">
+    <header class="mp-head">
+      <h1 class="mp-brand">لوحة المتصدرين</h1>
+      <nav class="mp-nav">
+        <a href="multiplayer-home.html">الرئيسية</a>
+      </nav>
+    </header>
+
+    <section class="card" style="max-width:760px; margin:0 auto;">
+      <h3>أفضل اللاعبين</h3>
+      <label for="leaderboardType">تصفية حسب نوع اللعبة</label>
+      <select id="leaderboardType">
+        <option value="">كل الألعاب</option>
+        <option value="image_guessing">image_guessing</option>
+        <option value="letter_cells">letter_cells</option>
+        <option value="survey_game">survey_game</option>
+      </select>
+      <div id="leaderboardRows" class="rows"></div>
+      <p id="mpMessage"></p>
+    </section>
+  </div>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="../JS/multiplayer.js"></script>
+</body>
+</html>

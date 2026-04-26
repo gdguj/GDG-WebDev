@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>منصة الألعاب الجماعية</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../CSS/multiplayer.css">
+</head>
+<body class="multiplayer-body" data-page="home">
+  <div class="multiplayer-shell">
+    <header class="mp-head">
+      <h1 class="mp-brand">منصة GDG الجماعية</h1>
+      <nav class="mp-nav">
+        <a href="multiplayer-leaderboard.html">لوحة المتصدرين</a>
+        <a href="main page.html">الموقع الرئيسي</a>
+      </nav>
+    </header>
+
+    <section class="hero">
+      <h2>غرف لعب مباشرة، كود انضمام، نقاط لحظية</h2>
+      <p>ابدأ جلسة جديدة في كل مرة وشارك كود انضمام فريد مع أصدقائك.</p>
+    </section>
+
+    <section class="grid-3" style="margin-top: 44px; margin-bottom: 36px;">
+      <article class="card">
+        <h3>1) انضمام للعبة بكود</h3>
+        <p class="small">ادخل إلى صفحة الانضمام ثم اكتب كود الجلسة للدخول مباشرة.</p>
+        <button id="jumpJoin" >انضمام بكود</button>
+      </article>
+
+      <article class="card">
+        <h3>2) إنشاء لعبة مخصصة</h3>
+        <p class="small">أنشئ لعبة خاصة بك واحفظها ثم العبها مع الآخرين.</p>
+        <button id="createCustomTop" class="secondary">إنشاء لعبة مخصصة</button>
+      </article>
+
+      <article class="card">
+        <h3>3) لعب ألعاب المجتمع</h3>
+        <p class="small">افتح صفحة ألعاب المجتمع الأصلية وتصفحها بنفس التصميم الكامل.</p>
+        <button id="jumpCommunity" class="success">عرض ألعاب المجتمع</button>
+      </article>
+    </section>
+
+  </div>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script src="../JS/multiplayer.js"></script>
+</body>
+</html>
