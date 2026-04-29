@@ -7,44 +7,176 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <link rel="stylesheet" href="../CSS/multiplayer.css">
 </head>
+
+
+
 <body class="multiplayer-body" data-page="home">
+
+      <!-- ================= NAVBAR ================= -->
+    <nav lang="ar" dir="rtl" class="bg-white shadow-sm">
+        <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+
+            <!-- Logo -->
+            <img src="../Images/colorful-logo.png" alt="logo" class="h-10">
+
+            <!-- Links -->
+            <div class="hidden md:flex items-center gap-8 font-semibold text-gray-600">
+                <a href="main page.html" class="hover:text-[#0078BF]">الرئيسية</a>
+                <a href="main page.html#about" class="hover:text-[#0078BF]">من نحن</a>
+                <a href="main page.html#goals" class="hover:text-[#0078BF]">أهدافنا</a>
+                <a href="main page.html#games" class="hover:text-[#0078BF]">الألعاب</a>
+            </div>
+
+        </div>
+    </nav>
+
   <div class="multiplayer-shell">
     <header class="mp-head">
-      <h1 class="mp-brand">منصة GDG الجماعية</h1>
-      <nav class="mp-nav">
-        <a href="multiplayer-leaderboard.html">لوحة المتصدرين</a>
-        <a href="main page.html">الموقع الرئيسي</a>
-      </nav>
+      <section class="hero">
+        <div class="hero-image">
+          <img src="../Images/GGCharacter.png" alt="" class="hero-character">
+        </div>
+        <div class="hero-content">
+          <h1 class="mp-brand">منصة <span class="brand-gdg">GDG</span> الجماعية</h1>
+          <nav class="mp-nav">
+            <a  href="multiplayer-leaderboard.html" class="button">
+              <span>لوحة المتصدرين</span>
+              
+            </a>
+            <a href="main page.html" class="button">
+              <span>الموقع الرئيسي</span>
+
+            </a>
+          </nav>
+
+          <div class="hero-copy">
+          <h2>
+            <span class="tone-dark">غرف لعب مباشرة،</span>
+            <span class="tone-blue">كود انضمام،</span>
+            <span class="tone-yellow">نقاط لحظية</span>
+          </h2>
+          <p>ابدأ جلسة جديدة في كل مرة وشارك كود انضمام فريد مع أصدقائك.</p>
+          </div>
+        </div>
+      </section>
     </header>
 
-    <section class="hero">
-      <h2>غرف لعب مباشرة، كود انضمام، نقاط لحظية</h2>
-      <p>ابدأ جلسة جديدة في كل مرة وشارك كود انضمام فريد مع أصدقائك.</p>
-    </section>
-
-    <section class="grid-3" style="margin-top: 44px; margin-bottom: 36px;">
-      <article class="card">
-        <h3>1) انضمام للعبة بكود</h3>
-        <p class="small">ادخل إلى صفحة الانضمام ثم اكتب كود الجلسة للدخول مباشرة.</p>
-        <button id="jumpJoin" >انضمام بكود</button>
+    <section class="grid-3 home-cards">
+      <article class="card join-card">
+        <div class="card-top">
+          <span class="card-icon" aria-hidden="true"><i class="fa-solid fa-gamepad"></i></span>
+          <span class="card-number">01</span>
+        </div>
+        <div class="card-content">
+          <div class="card-body">
+            <h3>انضمام للعبة بكود</h3>
+            <p class="small">ادخل إلى صفحة الانضمام ثم اكتب كود الجلسة للدخول مباشرة.</p>
+          </div>
+        </div>
+        <div class="card-footer">
+          <button id="jumpJoin" class="card-btn">
+            <span>انضم الآن</span>
+            <span class="arrow"> > </span>
+          </button>
+        </div>
       </article>
 
-      <article class="card">
-        <h3>2) إنشاء لعبة مخصصة</h3>
-        <p class="small">أنشئ لعبة خاصة بك واحفظها ثم العبها مع الآخرين.</p>
-        <button id="createCustomTop" class="secondary">إنشاء لعبة مخصصة</button>
+      <article class="card create-card">
+        <div class="card-top">
+          <span class="card-icon" aria-hidden="true"><i class="fa-solid fa-plus"></i></span>
+          <span class="card-number">02</span>
+        </div>
+        <div class="card-content">
+          <div class="card-body">
+            <h3>إنشاء لعبة مخصصة</h3>
+            <p class="small">أنشئ لعبة خاصة بك واحفظها ثم العبها مع الآخرين.</p>
+          </div>
+        </div>
+        <div class="card-footer">
+          <button id="createCustomTop" class="secondary card-btn">
+            <span>ابدأ الآن</span>
+            <span class="arrow">></span>
+          </button>
+        </div>
       </article>
 
-      <article class="card">
-        <h3>3) لعب ألعاب المجتمع</h3>
-        <p class="small">افتح صفحة ألعاب المجتمع الأصلية وتصفحها بنفس التصميم الكامل.</p>
-        <button id="jumpCommunity" class="success">عرض ألعاب المجتمع</button>
+      <article class="card community-card">
+        <div class="card-top">
+          <span class="card-icon" aria-hidden="true"><i class="fa-solid fa-users"></i></span>
+          <span class="card-number">03</span>
+        </div>
+        <div class="card-content">
+          <div class="card-body">
+            <h3>لعب ألعاب المجتمع</h3>
+            <p class="small">افتح صفحة ألعاب المجتمع الأصلية وتصفحها بنفس التصميم الكامل.</p>
+          </div>
+        </div>
+        <div class="card-footer">
+          <button id="jumpCommunity" class="success card-btn">
+            <span>استكشف الألعاب</span>
+            <span class="arrow">></span>
+          </button>
+        </div>
       </article>
     </section>
 
   </div>
+
+  <div class="decorations"></div>
+
+   <!-- ================= FOOTER ================= -->
+    <footer lang="ar" dir="rtl" class="bg-[#403F41] text-gray-300 py-12 px-6">
+        <div class="max-w-6xl mx-auto grid md:grid-cols-3 gap-10">
+
+            <!-- About -->
+            <div>
+                <img src="../Images/white-logo.png" class="w-65 h-auto mb-4 object-contain">
+                <p class="text-sm leading-6">
+                    مجتمع عالمي مدعوم من Google Developers يهدف إلى تمكين الطلاب من خلال المعرفة التقنية وبناء
+                    الحلول.
+                </p>
+            </div>
+
+            <!-- Links -->
+            <div>
+                <h4 class="font-bold mb-4">روابط سريعة</h4>
+                <ul class="space-y-2 text-sm">
+                    <li><a href="main page.html">الرئيسية</a></li>
+                    <li><a href="main page.html#about">من نحن</a></li>
+                    <li><a href="main page.html#goals">أهدافنا</a></li>
+                    <li><a href="main page.html#games">الألعاب</a></li>
+                </ul>
+            </div>
+
+            <!-- Contact -->
+            <div>
+                <h4 class="font-bold mb-4">تواصل معنا</h4>
+                <div class="flex gap-6 text-xl">
+                    <a href="https://linktr.ee/gdsc_uj?utm_source=linktree_profile_share&ltsid=d7e3dc46-128e-42e3-ae37-41c4b5a65285"
+                        target="_blank" class="hover:scale-110 hover:text-white transition duration-300">
+                        <i class="fa-brands fa-x-twitter"></i>
+                    </a>
+                    <a href="https://linktr.ee/gdsc_uj?utm_source=linktree_profile_share&ltsid=d7e3dc46-128e-42e3-ae37-41c4b5a65285"
+                        target="_blank" class="hover:scale-110 hover:text-blue-400 transition duration-300">
+                        <i class="fa-brands fa-linkedin"></i>
+                    </a>
+                </div>
+                <br>
+                <p class="text-sm">gdscuj@gmail.com</p>
+            </div>
+
+        </div>
+
+        <div class="text-center text-s text-gray-400 mt-10">
+            جميع الحقوق محفوظة © 2026 مجموعة مطوري قوقل
+        </div>
+    </footer>
+    <!-- End -->
 
   <script src="/socket.io/socket.io.js"></script>
   <script src="../JS/multiplayer.js"></script>

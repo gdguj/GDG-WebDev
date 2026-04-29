@@ -7,32 +7,221 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
   <link rel="stylesheet" href="../CSS/multiplayer.css">
 </head>
 <body class="multiplayer-body" data-page="leaderboard">
-  <div class="multiplayer-shell">
-    <header class="mp-head">
-      <h1 class="mp-brand">لوحة المتصدرين</h1>
-      <nav class="mp-nav">
-        <a href="multiplayer-home.html">الرئيسية</a>
-      </nav>
+      <!-- ================= NAVBAR ================= -->
+    <nav lang="ar" dir="rtl" class="bg-white shadow-sm">
+        <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+
+            <!-- Logo -->
+            <img src="../Images/colorful-logo.png" alt="logo" class="h-10">
+
+            <!-- Links -->
+            <div class="hidden md:flex items-center gap-8 font-semibold text-gray-600">
+                <a href="main page.html" class="hover:text-[#0078BF]">الرئيسية</a>
+                <a href="main page.html#about" class="hover:text-[#0078BF]">من نحن</a>
+                <a href="main page.html#goals" class="hover:text-[#0078BF]">أهدافنا</a>
+                <a href="main page.html#games" class="hover:text-[#0078BF]">الألعاب</a>
+            </div>
+
+        </div>
+    </nav>
+
+  <div class="multiplayer-shell leaderboard-shell">
+    <header class="leaderboard-head">
+      <a href="multiplayer-home.html" class="button leaderboard-back">
+        <span>العودة للرئيسية</span>
+        <i class="fa-solid fa-house" aria-hidden="true"></i>
+      </a>
+
+      <div class="leaderboard-title-wrap">
+        <h1 class="mp-brand">لوحة المتصدرين</h1>
+      </div>
     </header>
 
-    <section class="card" style="max-width:760px; margin:0 auto;">
-      <h3>أفضل اللاعبين</h3>
-      <label for="leaderboardType">تصفية حسب نوع اللعبة</label>
-      <select id="leaderboardType">
-        <option value="">كل الألعاب</option>
-        <option value="image_guessing">image_guessing</option>
-        <option value="letter_cells">letter_cells</option>
-        <option value="survey_game">survey_game</option>
-      </select>
-      <div id="leaderboardRows" class="rows"></div>
-      <p id="mpMessage"></p>
+    <section class="leaderboard-top-card" id="leaderboardTopCard">
+      <div class="leaderboard-top-trophy" aria-hidden="true">
+        <i class="fa-solid fa-trophy"></i>
+      </div>
+      <div class="leaderboard-top-copy">
+        <p class="leaderboard-top-label">أعلى لاعب هذا الأسبوع</p>
+        <h2 id="leaderboardTopName">—</h2>
+        <div class="leaderboard-top-score"><span id="leaderboardTopScore">0</span> نقطة</div>
+      </div>
+    </section>
+
+    <section class="leaderboard-panel">
+      <div class="leaderboard-filter-block">
+        <label for="leaderboardType">تصفية حسب نوع اللعبة</label>
+        <div class="leaderboard-select-wrap">
+          <select id="leaderboardType">
+            <option value="">كل الألعاب</option>
+            <option value="image_guessing">لعبة الصور</option>
+            <option value="letter_cells">خلية الحروف</option>
+            <option value="survey_game">فاميلي فيود</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="leaderboard-columns" aria-hidden="true">
+        <span>الترتيب</span>
+        <span>اللاعب</span>
+        <span>نوع اللعبة</span>
+        <span>النقاط</span>
+      </div>
+
+      <div id="leaderboardRows" class="rows leaderboard-rows"></div>
+      <p id="mpMessage" class="leaderboard-message"></p>
     </section>
   </div>
 
-  <script src="/socket.io/socket.io.js"></script>
-  <script src="../JS/multiplayer.js"></script>
+  <div class="decorations"></div>
+
+   <!-- ================= FOOTER ================= -->
+    <footer lang="ar" dir="rtl" class="bg-[#403F41] text-gray-300 py-12 px-6">
+        <div class="max-w-6xl mx-auto grid md:grid-cols-3 gap-10">
+
+            <!-- About -->
+            <div>
+                <img src="../Images/white-logo.png" class="w-65 h-auto mb-4 object-contain">
+                <p class="text-sm leading-6">
+                    مجتمع عالمي مدعوم من Google Developers يهدف إلى تمكين الطلاب من خلال المعرفة التقنية وبناء
+                    الحلول.
+                </p>
+            </div>
+
+            <!-- Links -->
+            <div>
+                <h4 class="font-bold mb-4">روابط سريعة</h4>
+                <ul class="space-y-2 text-sm">
+                    <li><a href="main page.html">الرئيسية</a></li>
+                    <li><a href="main page.html#about">من نحن</a></li>
+                    <li><a href="main page.html#goals">أهدافنا</a></li>
+                    <li><a href="main page.html#games">الألعاب</a></li>
+                </ul>
+            </div>
+
+            <!-- Contact -->
+            <div>
+                <h4 class="font-bold mb-4">تواصل معنا</h4>
+                <div class="flex gap-6 text-xl">
+                    <a href="https://linktr.ee/gdsc_uj?utm_source=linktree_profile_share&ltsid=d7e3dc46-128e-42e3-ae37-41c4b5a65285"
+                        target="_blank" class="hover:scale-110 hover:text-white transition duration-300">
+                        <i class="fa-brands fa-x-twitter"></i>
+                    </a>
+                    <a href="https://linktr.ee/gdsc_uj?utm_source=linktree_profile_share&ltsid=d7e3dc46-128e-42e3-ae37-41c4b5a65285"
+                        target="_blank" class="hover:scale-110 hover:text-blue-400 transition duration-300">
+                        <i class="fa-brands fa-linkedin"></i>
+                    </a>
+                </div>
+                <br>
+                <p class="text-sm">gdscuj@gmail.com</p>
+            </div>
+
+        </div>
+
+        <div class="text-center text-s text-gray-400 mt-10">
+            جميع الحقوق محفوظة © 2026 مجموعة مطوري قوقل
+        </div>
+    </footer>
+    <!-- End -->
+
+  <script>
+    (function leaderboardMockPage() {
+      const body = document.body;
+      if (!body || body.dataset.page !== "leaderboard") return;
+
+      const rows = document.getElementById("leaderboardRows");
+      const typeFilter = document.getElementById("leaderboardType");
+      const mpMessage = document.getElementById("mpMessage");
+      const topName = document.getElementById("leaderboardTopName");
+      const topScore = document.getElementById("leaderboardTopScore");
+      const topCard = document.getElementById("leaderboardTopCard");
+
+      const gameLabels = {
+        image_guessing: "لعبة الصور",
+        letter_cells: "خلية الحروف",
+        survey_game: "فاميلي فيود",
+        "": "كل الألعاب"
+      };
+
+      const mockBoard = [
+        { name: "لين", totalScore: 5230, gameType: "survey_game" },
+        { name: "سارة", totalScore: 4890, gameType: "image_guessing" },
+        { name: "محمد", totalScore: 4210, gameType: "letter_cells" },
+        { name: "نور", totalScore: 3760, gameType: "survey_game" },
+        { name: "خالد", totalScore: 3450, gameType: "image_guessing" },
+        { name: "ليان", totalScore: 3340, gameType: "letter_cells" },
+      ];
+
+      function currentGameLabel() {
+        const value = String(typeFilter?.value || "").trim();
+        return gameLabels[value] || "كل الألعاب";
+      }
+
+      function makeHandle(rank) {
+        return "@player_" + String(rank).padStart(2, "0");
+      }
+
+      function updateTopCard(name, score) {
+        topName.textContent = name || "—";
+        topScore.textContent = new Intl.NumberFormat("en-US").format(Number(score || 0));
+        topCard.classList.toggle("is-empty", !name);
+      }
+
+      function gameLabelForType(type) {
+        return gameLabels[String(type || "").trim()] || "كل الألعاب";
+      }
+
+      function makeRow(entry, index) {
+        const rank = String(index + 1).padStart(2, "0");
+        const score = Number(entry.totalScore || 0);
+        return (
+          '<div class="score-row" data-rank="' + rank + '">' +
+            '<div class="leaderboard-rank-badge">' + rank + '</div>' +
+            '<div class="leaderboard-player-cell">' +
+              '<div class="leaderboard-avatar" aria-hidden="true">' + entry.name.charAt(0) + '</div>' +
+              '<div class="leaderboard-player-text">' +
+                '<strong class="leaderboard-player-name">' + entry.name + '</strong>' +
+                '<span class="leaderboard-player-handle">' + makeHandle(index + 1) + '</span>' +
+              '</div>' +
+            '</div>' +
+            '<div class="leaderboard-game-pill">' + gameLabelForType(entry.gameType) + '</div>' +
+            '<strong class="leaderboard-score-value">' + new Intl.NumberFormat("en-US").format(score) + '</strong>' +
+          '</div>'
+        );
+      }
+
+      function renderBoard() {
+        const type = String(typeFilter?.value || "").trim();
+        const visibleRows = mockBoard
+          .filter((entry) => !type || entry.gameType === type)
+          .sort((a, b) => Number(b.totalScore || 0) - Number(a.totalScore || 0))
+          .slice(0, 10);
+
+        rows.innerHTML = "";
+        mpMessage.textContent = "";
+
+        if (!visibleRows.length) {
+          rows.innerHTML = '<div class="small">لا توجد نتائج بعد.</div>';
+          updateTopCard("", 0);
+          return;
+        }
+
+        rows.innerHTML = visibleRows.map(makeRow).join("");
+        updateTopCard(visibleRows[0].name, visibleRows[0].totalScore);
+      }
+
+      typeFilter?.addEventListener("change", () => {
+        requestAnimationFrame(renderBoard);
+      });
+
+      renderBoard();
+    })();
+  </script>
 </body>
 </html>
