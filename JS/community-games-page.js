@@ -187,20 +187,77 @@ function createGameCard(game) {
   );
 
   const actionsDiv = createElement("div", "game-card__actions");
-  const joinCodeBtn = createElement("button", "btn-join-code", "كود الانضمام");
-  joinCodeBtn.setAttribute("type", "button");
-  joinCodeBtn.addEventListener("click", (e) => {
+  const BrowseBtn = createElement("button", "btn-join-code", " تصفح الالعاب");
+  BrowseBtn.setAttribute("type", "button");
+  BrowseBtn.addEventListener("click", (e) => {
     e.stopPropagation();
-    e.preventDefault();
-    showJoinCodeModal(game.id);
-  });
-  actionsDiv.appendChild(joinCodeBtn);
+    showGamePreview(game.id); // يوديه لصفحة الأسئلة
+});
+  actionsDiv.appendChild(BrowseBtn);
 
   body.append(creator, details, actionsDiv);
   article.append(top, body);
 
   return article;
 }
+
+// هذي الميثود جديده
+// دالة تجلب بيانات اللعبة وتفتح البوكس
+async function showGamePreview(gameId) {
+    try {
+        // جلب البيانات كاملة من الباك اند (عشان الأسئلة)
+        const response = await fetch(`/api/custom-games/${gameId}`);
+        const result = await response.json();
+        
+        if (!result.success) return alert("تعذر تحميل البيانات");
+
+        const game = result.game;
+        const questions = game.data.questions || [];
+
+        // إنشاء البوكس برمجياً
+        const overlay = document.createElement('div');
+        overlay.className = 'preview-overlay';
+        
+        const questionsHtml = questions.map((q, i) => `
+            <div class="preview-q-item">
+                <strong>س${i+1}:</strong> ${q.question || q.text || "سؤال بدون نص"}
+            </div>
+        `).join('');
+
+        overlay.innerHTML = `
+            <div class="preview-content">
+                <h2>تصفح أسئلة: ${game.title}</h2>
+                <div class="questions-list-scroll">
+                    ${questionsHtml}
+                </div>
+                <div class="preview-actions">
+                    <button class="btn-close-preview" id="closePreview">إغلاق</button>
+                    <button class="btn-play-now" id="playNowBtn">العب الآن وابدأ تحدي 🚀</button>
+                </div>
+            </div>
+        `;
+
+        document.body.appendChild(overlay);
+
+        // إغلاق البوكس
+        document.getElementById('closePreview').onclick = () => overlay.remove();
+
+        // زر اللعب (هنا بنحط اللوجيك حق الانتقال للعبة لاحقاً)
+        document.getElementById('playNowBtn').onclick = () => {
+            overlay.remove();
+        let gamePage = "";
+          if (game.gameType === "letter_cells") gamePage = "/letterCellGame.html";
+           else if (game.gameType === "image_guessing") gamePage = "/imageGame.html";
+            else if (game.gameType === "survey_game") gamePage = "/survey-game.html";
+            // الانتقال لصفحة اللعبة الفعلية
+            window.location.href = `${gamePage}?id=${gameId}`;
+        };
+
+    } catch (error) {
+        console.error("خطأ:", error);
+    }
+}
+
 
 function createEmptyState() {
   const emptyState = createElement("div", "empty-state");

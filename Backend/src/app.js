@@ -7,6 +7,8 @@ const wordGridRoutes = require("./routes/wordGrid.routes");
 const gameSessionRoutes = require("./routes/gameSession.routes");
 const authRoutes = require("./routes/auth.routes");
 const errorMiddleware = require("./middlewares/error.middleware");
+const lobbyRoutes = require('./routes/lobby.routes');
+
 
 const app = express();
 
@@ -29,6 +31,7 @@ app.use("/api", gameSessionRoutes);
 app.use("/api/multiplayer", gameSessionRoutes);
 app.use("/", gameSessionRoutes);
 app.use("/api/auth", authRoutes);
+app.use('/api/lobby', lobbyRoutes);
 
 // Error middleware
 app.use(errorMiddleware);

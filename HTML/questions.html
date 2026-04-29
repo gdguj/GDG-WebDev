@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <title>تصفح الأسئلة | نادي قوقل</title>
+    <link rel="stylesheet" href="../css/questions-style.css">
+</head>
+<body>
+    <div class="questions-container">
+        <div class="actions-header">
+            <h2 id="gameTitle">تحميل اللعبة...</h2>
+            <button id="startLobbyBtn" class="btn-lobby">بدء تحدي جماعي 👥</button>
+        </div>
+        <div id="questionsList"></div>
+    </div>
+
+    <div id="lobbyModal" class="modal">
+        <div class="modal-content">
+            <h3>كود الانضمام</h3>
+            <p>شارك هذا الكود مع أصدقائك:</p>
+            <h1 id="displayCode">------</h1>
+            <button id="closeModalBtn" class="btn-lobby">تم</button>
+        </div>
+    </div>
+
+    <script src="../js/questions-logic.js"></script>
+</body>
+</html>

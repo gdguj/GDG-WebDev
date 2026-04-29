@@ -9,4 +9,5 @@ router.get('/community', getCommunityGames);
 router.get('/mine', requireAuth, getMyGames);
 router.get('/:gameId', getGameById);
 
+
 module.exports = router;

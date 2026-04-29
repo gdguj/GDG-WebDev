@@ -183,8 +183,27 @@
     }
 
     if (jumpJoinBtn) {
-      jumpJoinBtn.addEventListener("click", () => {
-        window.location.href = "multiplayer-join.html";
+      jumpJoinBtn.addEventListener("click", async () => {
+        // window.location.href = "multiplayer-join.html";
+        try {
+        const joinCode = codeInput.value.trim().toUpperCase();
+        // 1. نرسل طلب للسيرفر للتحقق من الكود
+        const response = await fetch(`/api/lobby/verify/${joinCode}`); // المسار اللي تكلمنا عنه قبل
+        const result = await response.json();
+
+        if (result.success) {
+            // 2. توجيه اللاعب فوراً لصفحة اللعبة المخصصة
+            let targetPage = "";
+            if (result.gameType === "letter_cells") targetPage = "letterCells.html";
+            // ... بقية الأنواع
+            
+            window.location.href = `${targetPage}?id=${result.gameId}&joinCode=${joinCode}`;
+        } else {
+            setMessage("الكود غير صحيح أو انتهت صلاحيته", true);
+        }
+    } catch (error) {
+        setMessage("حدث خطأ في الاتصال", true);
+    }
       });
     }
 
@@ -200,37 +219,38 @@
     const codeInput = document.getElementById("joinCode");
     const joinBtn = document.getElementById("joinBtn");
 
-    if (!joinBtn) {
-      return;
-    }
+    if (!joinBtn) return;
 
     joinBtn.addEventListener("click", async () => {
       try {
         setMessage("", false);
         const joinCode = String(codeInput.value || "").trim().toUpperCase();
-        const name = getSignedInUserName();
 
         if (!joinCode) {
           throw new Error("كود الانضمام مطلوب.");
         }
 
-        const session = await api("/api/session/join", {
-          method: "POST",
-          body: JSON.stringify({
-            joinCode,
-            player: {
-              userId: state.userId,
-              name,
-              isReady: false,
-            },
-          }),
-        });
+        // --- التعديل هنا: نستخدم الـ API اللي سويناه اليوم ---
+        // نرسل طلب للباك اند عشان نتحقق من الكود ونعرف نوع اللعبة
+        const response = await fetch(`/api/lobby/verify/${joinCode}`);
+        const result = await response.json();
 
-        storeSession(session);
-        window.location.href =
-          "multiplayer-waiting.html?sessionId=" +
-          encodeURIComponent(session._id) +
-          "&joined=1";
+        if (!result.success) {
+          throw new Error(result.message || "الجلسة غير موجودة.");
+        }
+
+        // تخزين البيانات عشان اللعبة تقرأها
+        storeSession(result); 
+
+        // تحديد الصفحة بناءً على نوع اللعبة (gameType)
+        let targetPage = "";
+        if (result.gameType === "letter_cells") targetPage = "LetterCellGame.html";
+        else if (result.gameType === "image_guessing") targetPage = "imageGame.html";
+        else if (result.gameType === "survey_game") targetPage = "survey-game.html";
+
+        // التوجيه لصفحة اللعبة مع تمرير الـ ID والكود في الرابط
+        window.location.href = `${targetPage}?id=${result.gameId}&joinCode=${joinCode}`;
+
       } catch (error) {
         setMessage(error.message, true);
       }

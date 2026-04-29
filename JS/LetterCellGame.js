@@ -1,4 +1,6 @@
 let currentSessionId = null; // معرف الجلسة الحالية 
+const urlParams = new URLSearchParams(window.location.search);
+const customGameId = urlParams.get('id');
 
 const scores = {
   blue:  { name: localStorage.getItem('blueTeamName') || 'Blue Team',     words: 0, pts: 0 },
@@ -35,41 +37,121 @@ let currentQuestion = null;
 let allQuestions = []; // هنا بنخزن الأسئلة اللي بتجينا
 
 async function loadQuestions() {
-    try {
-        const response = await fetch('/api/init-game', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                gameType: "letter_cells",
-                greenName: localStorage.getItem('greenTeamName') || 'Green Team',
-                blueName: localStorage.getItem('blueTeamName') || 'Blue Team',
-                timestamp: new Date().getTime()
-            })
-        });
+    // try {
+    //     const response = await fetch('/api/init-game', {
+    //         method: 'POST',
+    //         headers: {
+    //             'Content-Type': 'application/json'
+    //         },
+    //         body: JSON.stringify({
+    //             gameType: "letter_cells",
+    //             greenName: localStorage.getItem('greenTeamName') || 'Green Team',
+    //             blueName: localStorage.getItem('blueTeamName') || 'Blue Team',
+    //             timestamp: new Date().getTime()
+    //         })
+    //     });
 
-        const data = await response.json();
-        console.log("البيانات الكاملة من السيرفر:", data);
+    //     const data = await response.json();
+    //     console.log("البيانات الكاملة من السيرفر:", data);
         
-        if (!data.sessionId || !data.cells) {
-            console.error("خطأ: البيانات ناقصة من السيرفر");
-            alert(" حدث خطأ في استقبال البيانات من السيرفر");
-            return;
+    //     if (!data.sessionId || !data.cells) {
+    //         console.error("خطأ: البيانات ناقصة من السيرفر");
+    //         alert(" حدث خطأ في استقبال البيانات من السيرفر");
+    //         return;
+    //     }
+
+    //     currentSessionId = data.sessionId;
+    //     allQuestions = data.cells;
+    //     lettersArray = [];
+    //     lettersArray = allQuestions.map(cell => cell.letter);
+    //     drawHexGrid();
+    //     updateScoreBar();
+        
+    // } catch (error) {
+    //     console.error("❌ خطأ في جلب الأسئلة:", error);
+    //     alert("❌ فشل الاتصال بالسيرفر. تأكد من أن السيرفر يعمل.");
+    // }
+
+
+    try {
+        let response;
+        let data;
+
+        if (customGameId) {
+            // الحالة الأولى: داخلين لعبة من صنع المستخدم
+            console.log("Loading custom game with ID:", customGameId);
+            response = await fetch(`/api/custom-games/${customGameId}`);
+            const result = await response.json();
+            
+            if (result.success) {
+                // ملاحظة: بيانات الأسئلة في السكيمّا حقتك موجودة داخل result.game.data.questions
+                currentSessionId = "CUSTOM_" + result.game._id; // معرف وهمي أو حقيقي للجلسة
+                allQuestions = result.game.data.questions.map(q => ({
+                    letter: q.letter,
+                    questionText: q.question || q.text,
+                    answer: q.answer
+                }));
+            }
+        } else {
+            // الحالة الثانية: اللعبة العادية (الكود القديم حقك)
+            response = await fetch('/api/init-game', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    gameType: "letter_cells",
+                    greenName: localStorage.getItem('greenTeamName') || 'Green Team',
+                    blueName: localStorage.getItem('blueTeamName') || 'Blue Team',
+                    timestamp: new Date().getTime()
+                })
+            });
+            data = await response.json();
+            if (data.sessionId && data.cells) {
+                currentSessionId = data.sessionId;
+                allQuestions = data.cells;
+            }
         }
 
-        currentSessionId = data.sessionId;
-        allQuestions = data.cells;
-        lettersArray = [];
-        lettersArray = allQuestions.map(cell => cell.letter);
-        drawHexGrid();
-        updateScoreBar();
+        // بعد ما تتعبأ allQuestions، نرسم الشبكة
+        if (allQuestions.length > 0) {
+            lettersArray = allQuestions.map(cell => cell.letter);
+            drawHexGrid();
+            updateScoreBar();
+        } else {
+            alert("لم يتم العثور على أسئلة لهذه اللعبة");
+        }
         
     } catch (error) {
-        console.error("❌ خطأ في جلب الأسئلة:", error);
-        alert("❌ فشل الاتصال بالسيرفر. تأكد من أن السيرفر يعمل.");
+        console.error("❌ خطأ في تحميل الأسئلة:", error);
+        alert("فشل الاتصال بالسيرفر.");
     }
 }
+
+//هنا الكود الي بينشأ رمز الانضمام 
+// دالة لإنشاء اللوبي وعرض الكود للمستخدم
+async function startMultiplayer() {
+    if (!customGameId) {
+        alert("عذراً، خاصية التحدي متاحة فقط للألعاب المنشأة");
+        return;
+    }
+
+    try {
+        const response = await fetch('/api/lobby/create', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ gameId: customGameId })
+        });
+        const result = await response.json();
+
+        if (result.success) {
+            // عرض الكود (ممكن تستخدمي SweetAlert أو المودال اللي سويناه)
+            alert(`كود التحدي الخاص بك: ${result.joinCode}\nأرسله لأصدقائك الآن!`);
+        }
+    } catch (err) {
+        alert("فشل إنشاء كود الانضمام");
+    }
+}
+
+
 
 let gridLetters = new Map();// عشان نحط كل حرف  مع السؤال المقابل له 
 let lettersArray = Array.from(gridLetters.keys()); // هنا بنحول خريطة الحروف إلى مصفوفة عشان نقدر نستخدمها في رسم الخلايا

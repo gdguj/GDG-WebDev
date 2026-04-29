@@ -3,6 +3,10 @@
 //  (Same logic as server-driven version)
 // ===============================
 
+let currentSessionId = null; // معرف الجلسة الحالية 
+const urlParams = new URLSearchParams(window.location.search);
+const customGameId = urlParams.get('id');
+
 // -------------------------------
 // GAME STATE
 // -------------------------------
@@ -84,6 +88,29 @@ function scrollPageToTop() {
   window.scrollTo({ top: 0, left: 0, behavior: "auto" });
 }
 
+async function startMultiplayer() {
+    if (!customGameId) {
+        alert("عذراً، خاصية التحدي متاحة فقط للألعاب المنشأة");
+        return;
+    }
+
+    try {
+        const response = await fetch('/api/lobby/create', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ gameId: customGameId })
+        });
+        const result = await response.json();
+
+        if (result.success) {
+            alert(`كود التحدي الخاص بك: ${result.joinCode}\nأرسله لأصدقائك الآن!`);
+        }
+    } catch (err) {
+        alert("فشل إنشاء كود الانضمام");
+    }
+}
+
+
 // -------------------------------
 // JSON QUESTIONS
 // -------------------------------
@@ -94,6 +121,28 @@ let remainingQuestionIndexes = [];
 async function loadQuestions() {
   console.log("🔄 Loading questions...");
   try {
+
+      if (customGameId) {
+            // الحالة الأولى: داخلين لعبة من صنع المستخدم
+            console.log("Loading custom game with ID:", customGameId);
+            response = await fetch(`/api/custom-games/${customGameId}`);
+            const result = await response.json();
+            
+            if (result.success) {
+            currentSessionId = "CUSTOM_" + result.game._id;
+        
+            questionsData = result.game.data.questions.map(q => ({
+            question: q.question || q.text, 
+            answers: (q.answers || []).map(a => ({
+                answer: a.answer || a.text,
+                points: parseInt(a.points) || 10,
+                synonyms: a.synonyms || []
+            }))
+        }));
+            }
+        } else {
+
+
     const res = await fetch("/Data/family_feud_questions.json", { cache: "no-store" });
     console.log("📡 Fetch response status:", res.status);
     
@@ -110,7 +159,8 @@ async function loadQuestions() {
 
     // Keep a rotating pool so rounds do not repeat questions until all are used.
     remainingQuestionIndexes = questionsData.map((_, index) => index);
-    console.log("🎲 Remaining questions pool:", remainingQuestionIndexes);
+    console.log("🎲 Remaining questions pool:", remainingQuestionIndexes);}
+
   } catch (error) {
     console.error("❌ Error loading questions:", error);
     throw error;

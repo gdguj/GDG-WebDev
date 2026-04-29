@@ -1,3 +1,6 @@
+let currentSessionId = null; // معرف الجلسة الحالية 
+const urlParams = new URLSearchParams(window.location.search);
+const customGameId = urlParams.get('id');
 /* 
    SECTION 1 — QUESTIONS
    ─────────────────────────────────────────
@@ -260,16 +263,55 @@ skipOverlay: document.getElementById('skip-overlay'),
 
 
 /* SECTION 4 — INIT */
-function init() {
-  STATE.shuffled = shuffle([...QUESTIONS]);
-  DOM.teamAName.textContent = TEAM_NAMES.a;
-  DOM.teamBName.textContent = TEAM_NAMES.b;
-  DOM.skipTeamA.textContent = TEAM_NAMES.a;
-  DOM.skipTeamB.textContent = TEAM_NAMES.b;
-  DOM.activeBadge.textContent = 'Both Teams Can Answer';
-  DOM.teamACard.classList.remove('active');
-  DOM.teamBCard.classList.remove('active');
-  loadQuestion();
+// function init() {
+//   STATE.shuffled = shuffle([...QUESTIONS]);
+//   DOM.teamAName.textContent = TEAM_NAMES.a;
+//   DOM.teamBName.textContent = TEAM_NAMES.b;
+//   DOM.skipTeamA.textContent = TEAM_NAMES.a;
+//   DOM.skipTeamB.textContent = TEAM_NAMES.b;
+//   DOM.activeBadge.textContent = 'Both Teams Can Answer';
+//   DOM.teamACard.classList.remove('active');
+//   DOM.teamBCard.classList.remove('active');
+//   loadQuestion();
+// }
+/* SECTION 4 — INIT (UPDATED) */
+async function init() {
+    // عرض أسماء الفرق كالعادة
+    DOM.teamAName.textContent = TEAM_NAMES.a;
+    DOM.teamBName.textContent = TEAM_NAMES.b;
+    DOM.skipTeamA.textContent = TEAM_NAMES.a;
+    DOM.skipTeamB.textContent = TEAM_NAMES.b;
+    DOM.activeBadge.textContent = 'Both Teams Can Answer';
+
+    try {
+        if (customGameId) {
+            // حالة اللعبة المخصصة
+            console.log("Loading Custom Image Game:", customGameId);
+            const response = await fetch(`/api/custom-games/${customGameId}`);
+            const result = await response.json();
+
+            if (result.success) {
+                
+                const customQuestions = result.game.data.questions.map(q => ({
+                    p1: q.imageOne || q.p1, 
+                    p2: q.imageTwo || q.p2,
+                    answers: Array.isArray(q.answers) ? q.answers : [q.answer],
+                    hint: q.hint || "",
+                    pts: 4
+                }));
+                STATE.shuffled = shuffle(customQuestions);
+            }
+        } else {
+            // الحالة العادية: خلط الأسئلة الثابتة
+            STATE.shuffled = shuffle([...QUESTIONS]);
+        }
+    } catch (error) {
+        console.error(" Error loading questions:", error);
+        // لضمان عدم توقف اللعبة، نستخدم الأسئلة الثابتة كخيار احتياطي
+        STATE.shuffled = shuffle([...QUESTIONS]);
+    }
+
+    loadQuestion();
 }
 
 init();
@@ -285,6 +327,7 @@ function loadQuestion() {
     showGameOver();
     return;
   }
+
 
   const q = STATE.shuffled[STATE.qi];
 
@@ -309,6 +352,30 @@ function loadQuestion() {
   resetTimer();
 }
 
+
+//هنا الكود الي بينشأ رمز الانضمام 
+// دالة لإنشاء اللوبي وعرض الكود للمستخدم
+async function startMultiplayer() {
+    if (!customGameId) {
+        alert("عذراً، خاصية التحدي متاحة فقط للألعاب المنشأة");
+        return;
+    }
+
+    try {
+        const response = await fetch('/api/lobby/create', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ gameId: customGameId })
+        });
+        const result = await response.json();
+
+        if (result.success) {
+            alert(`كود التحدي الخاص بك: ${result.joinCode}\nأرسله لأصدقائك الآن!`);
+        }
+    } catch (err) {
+        alert("فشل إنشاء كود الانضمام");
+    }
+}
 
 function resetTimer() {
   clearInterval(STATE.timer);
