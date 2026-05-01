@@ -10,6 +10,9 @@ const gameSessionService = require("./src/services/gameSession.service");
 
 const PORT = process.env.PORT || 5000;
 
+mongoose.set("autoCreate", false);
+mongoose.set("autoIndex", false);
+
 // ================================
 // MongoDB Connection
 // ================================

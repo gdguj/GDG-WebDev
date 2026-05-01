@@ -17,7 +17,24 @@ const CellSchema = new mongoose.Schema(
 
 const SessionSchema = new mongoose.Schema(
 {
-  sessionId: { type: String, unique: true, index: true },
+  sessionId: { type: String, unique: true, sparse: true, index: true },
+  joinCode: {
+    type: String,
+    uppercase: true,
+    trim: true,
+    unique: true,
+    sparse: true,
+    index: true,
+  },
+  gameId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "UserGame",
+    default: null,
+  },
+  expiresAt: {
+    type: Date,
+    default: null,
+  },
   difficulty: String,
   status: String,
   nowPlaying: String,
@@ -34,6 +51,11 @@ const SessionSchema = new mongoose.Schema(
   }
 },
 { timestamps: true }
+);
+
+SessionSchema.index(
+  { expiresAt: 1 },
+  { expireAfterSeconds: 0, partialFilterExpression: { expiresAt: { $type: "date" } } }
 );
 
 module.exports = mongoose.model("Session", SessionSchema);

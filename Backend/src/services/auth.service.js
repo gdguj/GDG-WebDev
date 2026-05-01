@@ -1,7 +1,7 @@
 const crypto = require("crypto");
 const jwt = require("jsonwebtoken");
 const { OAuth2Client } = require("google-auth-library");
-const Account = require("../models/Account.model");
+const pool = require("../db/mysql");
 
 const JWT_SECRET = process.env.JWT_SECRET || "gdg-dev-jwt-secret-change-me";
 const JWT_EXPIRES_IN = "7d";
@@ -12,23 +12,6 @@ function createAppError(message, statusCode = 400) {
   const error = new Error(message);
   error.statusCode = statusCode;
   return error;
-}
-
-function mapDuplicateKeyError(error) {
-  const dupField =
-    (error && error.keyPattern && Object.keys(error.keyPattern)[0]) ||
-    (error && error.keyValue && Object.keys(error.keyValue)[0]) ||
-    "";
-
-  if (dupField === "email") {
-    return createAppError("هذا البريد الإلكتروني مسجل بالفعل.", 409);
-  }
-
-  if (dupField === "googleId") {
-    return createAppError("تعذر إنشاء الحساب حالياً. حاول مرة أخرى.", 409);
-  }
-
-  return createAppError("تعذر إنشاء الحساب بسبب تكرار بيانات الحساب.", 409);
 }
 
 function normalizeEmail(email) {
@@ -57,20 +40,20 @@ function verifyPassword(plainPassword, storedHash) {
   );
 }
 
-function toPublicUser(account) {
+function toPublicUser(row) {
   return {
-    id: account._id,
-    name: account.name,
-    email: account.email,
+    id: row.ID,
+    name: row.Name,
+    email: row.Email,
   };
 }
 
-function signAccessToken(account) {
+function signAccessToken(row) {
   return jwt.sign(
     {
-      sub: String(account._id),
-      name: account.name,
-      email: account.email,
+      sub: String(row.ID),
+      name: row.Name,
+      email: row.Email,
     },
     JWT_SECRET,
     { expiresIn: JWT_EXPIRES_IN }
@@ -92,25 +75,17 @@ async function register(payload) {
     throw createAppError("كلمة المرور يجب أن تكون 8 أحرف على الأقل.", 400);
   }
 
-  const exists = await Account.findOne({ email }).lean();
-  if (exists) {
+  const [existing] = await pool.query("SELECT ID FROM users WHERE Email = ?", [email]);
+  if (existing.length > 0) {
     throw createAppError("هذا البريد الإلكتروني مسجل بالفعل.", 409);
   }
 
-  let account;
-  try {
-    account = await Account.create({
-      name,
-      email,
-      passwordHash: hashPassword(password),
-      authProvider: "local",
-    });
-  } catch (error) {
-    if (error && error.code === 11000) {
-      throw mapDuplicateKeyError(error);
-    }
-    throw error;
-  }
+  const [result] = await pool.query(
+    "INSERT INTO users (Email, Password, Name) VALUES (?, ?, ?)",
+    [email, hashPassword(password), name]
+  );
+
+  const account = { ID: result.insertId, Name: name, Email: email };
 
   return {
     user: toPublicUser(account),
@@ -126,16 +101,18 @@ async function login(payload) {
     throw createAppError("البريد الإلكتروني وكلمة المرور مطلوبان.", 400);
   }
 
-  const account = await Account.findOne({ email });
-  if (!account) {
+  const [rows] = await pool.query("SELECT * FROM users WHERE Email = ?", [email]);
+  if (rows.length === 0) {
     throw createAppError("البريد الإلكتروني أو كلمة المرور غير صحيحة.", 401);
   }
 
-  if (!account.passwordHash) {
+  const account = rows[0];
+
+  if (!account.Password) {
     throw createAppError("هذا الحساب مرتبط بتسجيل الدخول عبر Google.", 401);
   }
 
-  const validPassword = verifyPassword(password, account.passwordHash);
+  const validPassword = verifyPassword(password, account.Password);
   if (!validPassword) {
     throw createAppError("البريد الإلكتروني أو كلمة المرور غير صحيحة.", 401);
   }
@@ -166,30 +143,24 @@ async function loginWithGoogle(payload) {
   }
 
   const payloadData = ticket.getPayload();
-  const googleId = String(payloadData.sub || "").trim();
   const email = normalizeEmail(payloadData.email);
   const name = String(payloadData.name || email.split("@")[0] || "Google User").trim();
 
-  if (!googleId || !email) {
+  if (!email) {
     throw createAppError("تعذر قراءة بيانات حساب Google.", 400);
   }
 
-  let account = await Account.findOne({ email });
+  const [rows] = await pool.query("SELECT * FROM users WHERE Email = ?", [email]);
 
-  if (!account) {
-    account = await Account.create({
-      name,
-      email,
-      passwordHash: null,
-      googleId,
-      authProvider: "google",
-    });
-  } else if (!account.googleId) {
-    account.googleId = googleId;
-    if (!account.authProvider) {
-      account.authProvider = "local";
-    }
-    await account.save();
+  let account;
+  if (rows.length === 0) {
+    const [result] = await pool.query(
+      "INSERT INTO users (Email, Password, Name) VALUES (?, NULL, ?)",
+      [email, name]
+    );
+    account = { ID: result.insertId, Name: name, Email: email };
+  } else {
+    account = rows[0];
   }
 
   return {
@@ -210,11 +181,11 @@ function getGoogleConfig() {
 }
 
 async function getUserById(userId) {
-  const account = await Account.findById(userId);
-  if (!account) {
+  const [rows] = await pool.query("SELECT * FROM users WHERE ID = ?", [userId]);
+  if (rows.length === 0) {
     throw createAppError("المستخدم غير موجود.", 404);
   }
-  return toPublicUser(account);
+  return toPublicUser(rows[0]);
 }
 
 module.exports = {

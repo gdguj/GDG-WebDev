@@ -1,14 +1,12 @@
 const express = require('express');
 const router = express.Router();
 const lobbyController = require('../controllers/lobby.controller');
-const lobbyService = require('../services/GameLobby.service'); // تأكدي من مسار الملف
+const lobbyService = require('../services/lobby.service');
 
 
 router.post('/create', lobbyController.createLobby);
-// في ملف الراوتس حق اللوبي
 router.get('/verify/:code', async (req, res) => {
     try {
-        // استدعاء السيرفس اللي سويناها قبل
         const lobby = await lobbyService.getSessionByCode(req.params.code);
         
         if (!lobby) {

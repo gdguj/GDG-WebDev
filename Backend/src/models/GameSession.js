@@ -193,7 +193,7 @@ const gameSessionSchema = new mongoose.Schema(
   },
   {
     versionKey: false,
-    collection: "gameSessions",
+    collection: "sessions",
   }
 );
 
@@ -205,4 +205,4 @@ gameSessionSchema.index(
   }
 );
 
-module.exports = mongoose.model("GameSession", gameSessionSchema, "gameSessions");
+module.exports = mongoose.model("GameSession", gameSessionSchema, "sessions");

@@ -1,4 +1,4 @@
-const lobbyService = require("../services/GameLobby.service"); // تأكدي من مسار الملف
+const lobbyService = require("../services/lobby.service");
 
 async function createLobby(req, res, next) {
   try {

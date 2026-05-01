@@ -6,6 +6,7 @@
 let currentSessionId = null; // معرف الجلسة الحالية 
 const urlParams = new URLSearchParams(window.location.search);
 const customGameId = urlParams.get('id');
+const FAMILY_FEUD_API_BASE = "http://localhost:5000/api/family-feud";
 
 // -------------------------------
 // GAME STATE
@@ -143,14 +144,15 @@ async function loadQuestions() {
         } else {
 
 
-    const res = await fetch("/Data/family_feud_questions.json", { cache: "no-store" });
+    const res = await fetch(`${FAMILY_FEUD_API_BASE}`, { cache: "no-store" });
     console.log("📡 Fetch response status:", res.status);
     
     if (!res.ok) {
       throw new Error(`Failed to load questions JSON: ${res.status}`);
     }
 
-    questionsData = await res.json();
+    const payload = await res.json();
+    questionsData = payload && Array.isArray(payload.questions) ? payload.questions : [];
     console.log("✅ Questions loaded successfully:", questionsData);
     
     if (!Array.isArray(questionsData) || questionsData.length === 0) {
