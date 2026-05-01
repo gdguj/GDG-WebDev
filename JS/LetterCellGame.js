@@ -44,8 +44,8 @@ function showPopup(message) {
 }
 
 const scores = {
-  blue:  { name: localStorage.getItem('blueTeamName') || 'Blue Team',     words: 0, pts: 0 },
-  green: { name: localStorage.getItem('greenTeamName') || 'Green Team', words: 0,  pts: 0 }
+  blue:  { name: localStorage.getItem('blueTeamName') || 'الفريق الأزرق',     words: 0, pts: 0 },
+  green: { name: localStorage.getItem('greenTeamName') || 'الفريق الأخضر', words: 0,  pts: 0 }
 };
 
 function updateScoreBar() {
@@ -140,8 +140,8 @@ async function loadQuestions() {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     gameType: "letter_cells",
-                    greenName: localStorage.getItem('greenTeamName') || 'Green Team',
-                    blueName: localStorage.getItem('blueTeamName') || 'Blue Team',
+                    greenName: localStorage.getItem('greenTeamName') || 'الفريق الأخضر',
+                    blueName: localStorage.getItem('blueTeamName') || 'الفريق الأزرق',
                     timestamp: new Date().getTime()
                 })
             });
@@ -220,7 +220,7 @@ function drawHexagon(cx, cy, size, label, state = 'normal') {
   ctx.stroke();
 
   ctx.fillStyle    = state === 'answered' ? '#aaa' : '#000000';
-  ctx.font         = 'bold 16px Arial';
+  ctx.font         = 'bold 32px Cairo, Arial';
   ctx.textAlign    = 'center';
   ctx.textBaseline = 'middle';
   ctx.fillText(label, cx, cy);
@@ -308,7 +308,9 @@ function getCellAtPoint(px, py) {
 
 canvas.addEventListener('mousemove', (e) => {
   const rect = canvas.getBoundingClientRect();
-  const idx  = getCellAtPoint(e.clientX - rect.left, e.clientY - rect.top);
+  const scaleX = canvas.width / rect.width;
+  const scaleY = canvas.height / rect.height;
+  const idx  = getCellAtPoint((e.clientX - rect.left) * scaleX, (e.clientY - rect.top) * scaleY);
   drawHexGrid(idx);
   canvas.style.cursor = idx >= 0 && !answeredCells.has(hexCells[idx]?.label)
     ? 'pointer'
@@ -319,7 +321,9 @@ canvas.addEventListener('mouseleave', () => drawHexGrid());
 
 canvas.addEventListener('click', (e) => {
   const rect = canvas.getBoundingClientRect();
-  const idx  = getCellAtPoint(e.clientX - rect.left, e.clientY - rect.top);
+  const scaleX = canvas.width / rect.width;
+  const scaleY = canvas.height / rect.height;
+  const idx  = getCellAtPoint((e.clientX - rect.left) * scaleX, (e.clientY - rect.top) * scaleY);
   if (idx < 0) return;
 
   const { label } = hexCells[idx];
@@ -351,6 +355,7 @@ async function openQuestionScreen(letter) {
 
   document.getElementById('gameCanvas').classList.add('hidden');
   document.getElementById('question-screen').classList.remove('hidden');
+  document.getElementById('navbar').classList.remove('hidden');
 
   try {
     // البحث عن السؤال في allQuestions
@@ -378,9 +383,11 @@ async function openQuestionScreen(letter) {
     document.getElementById('loading-spinner').classList.add('hidden');
     document.getElementById('question-text').textContent = result.questionText;
     
-    startGlobalTimer();
-    document.getElementById('answer-input').disabled     = false;
-    document.getElementById('answer-input').focus();
+    startCountdown(() => {
+      document.getElementById('answer-input').disabled = false;
+      document.getElementById('answer-input').focus();
+      startGlobalTimer();
+    });
 
   } catch (err) {
     console.error(" خطأ في تحميل السؤال:", err);
@@ -393,26 +400,47 @@ async function openQuestionScreen(letter) {
   }
 }
 
-let timeLeft ;
+let timeLeft;
 let timerId = null;
+
+function startCountdown(onComplete) {
+    const overlay = document.getElementById('countdown-overlay');
+    let count = 3;
+    overlay.innerHTML = `<span class="countdown-number">${count}</span>`;
+    overlay.classList.remove('hidden');
+    document.getElementById('answer-input').disabled = true;
+    document.getElementById('submit-btn').disabled   = true;
+
+    const countId = setInterval(() => {
+        count--;
+        if (count <= 0) {
+            clearInterval(countId);
+            overlay.classList.add('hidden');
+            document.getElementById('submit-btn').disabled = false;
+            onComplete();
+        } else {
+            overlay.innerHTML = `<span class="countdown-number">${count}</span>`;
+        }
+    }, 1000);
+}
 
 function startGlobalTimer() {
     timeLeft = 10;
-    clearInterval(timerId); // نحتاج هنا كود يمسح أي عداد قديم عشان ما تتداخل الأوقات
-    
+    clearInterval(timerId);
+
+    const fill = document.getElementById('timerFill');
+    fill.style.width = '100%';
+    document.getElementById('Time').textContent = ': 10';
+
     timerId = setInterval(() => {
-        //  ننقص الوقت بمقدار 1
         timeLeft--;
-        //  نحدث نص العنصر في HTML اللي يعرض الوقت المتبقي
         document.getElementById('Time').textContent = `: ${timeLeft}`;
-        
+        fill.style.width = `${(timeLeft / 10) * 100}%`;
+
         if (timeLeft <= 0) {
-            //  نوقف العداد تماماً
             clearInterval(timerId);
-            //  ننادي دالة تنهي الجولة وترجع للشبكة
             returnToBoard();
-            //  نعرض رسالة انتهاء الوقت
-            alert("انتهى الوقت! لم يربح أحد");
+            showPopup("انتهى الوقت! اختر حرفاً آخر.");
         }
     }, 1000);
 }
@@ -543,9 +571,12 @@ document.getElementById('answer-input').addEventListener('keydown', (e) => {
 
 function returnToBoard() {
   document.getElementById('question-screen').classList.add('hidden');
+  document.getElementById('navbar').classList.add('hidden');
   document.getElementById('gameCanvas').classList.remove('hidden');
+  clearInterval(timerId);
   drawHexGrid();
 }
 
 drawHexGrid();
 loadQuestions(); // نبدأ بتحميل الأسئلة من السيرفر
+document.getElementById('navbar').classList.add('hidden'); // مخفي في البداية

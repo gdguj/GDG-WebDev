@@ -13,22 +13,26 @@ html, body {
   margin: 0;
   padding: 0;
   background-color: var(--white);
-  width: 100vw;
-  min-height: 100vh;    
-  height: auto;          
-  font-family: 'Poppins', sans-serif;
-  display: block;       
+  width: 100%;
+  min-height: 100vh;
+  overflow-y: auto;
+  font-family: 'Cairo', sans-serif;
+  display: block;
+}
+
+footer {
+  display: none !important;
 }
 
 #game-container {
   display: flex;
-  justify-content: center;  
+  flex: 1;
+  min-height: 0;
   flex-direction: column;
   align-items: center;
-  gap: 20px;
-  width: 100vw;
-  max-width: 900px;
-  margin: 0 auto;
+  gap: 0;
+  width: 100%;
+  overflow: hidden;
 }
 
 
@@ -36,7 +40,7 @@ html, body {
 #navbar {
   display: flex;
   position: static;
-  margin-bottom: 5rem;
+  margin-bottom: 0;
   top: 0;
   left: 0;
   align-items: center;
@@ -44,9 +48,10 @@ html, body {
   padding: 10px 28px;
   background: var(--white);
   box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-  height: 72px;
+  height: 60px;
   flex-shrink: 0;
-  width: 100vw;
+  width: 100%;
+  box-sizing: border-box;
   z-index: 40;
 }
 
@@ -84,7 +89,7 @@ html, body {
 
 .timer-fill {
   height: 100%;
-  width: 70%;  /* نتحكم فيها بعدين في JS */
+  width: 100%;
   background: var(--yellow);
   border-radius: 6px;
   transition: width 1s linear;
@@ -106,11 +111,16 @@ html, body {
 
 
 canvas {
-  margin-top: 5px;
+  display: block;
+  margin: 8px auto;
   border-right: 10px solid var(--green);
   border-left: 10px solid var(--green);
   border-bottom: 10px solid var(--blue);
   border-top: 10px solid var(--blue);
+  flex-shrink: 1;
+  max-height: calc(100vh - 230px);
+  width: auto;
+  height: auto;
 }
 /* ================================================
    هنا خلينا الواجهة حقت السؤال مخفية في البداية
@@ -125,17 +135,16 @@ canvas {
 #question-screen {
   background: var(--white);
   border-radius: 16px;
-  padding: 40px 50px;
-  width: 520px;
-  height: 420px;
+  padding: 24px 40px;
+  width: min(520px, 90vw);
   box-shadow: 0 4px 24px rgba(0, 0, 0, 0.13);
   text-align: center;
   position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 20px;
-  margin-top: 2rem;
+  gap: 12px;
+  margin: 1rem auto;
 }
 
 .q-letter {
@@ -193,12 +202,12 @@ canvas {
   background: var(--blue);
   color: var(--white);
   border: 1.5px solid var(--black);
-  padding: 12px 48px;
+  padding: 10px 40px;
   border-radius: 8px;
-  font-size: 30px;
-  font-weight: 200;
+  font-size: 22px;
+  font-weight: 600;
   cursor: pointer;
-  margin-top: 3rem;
+  margin-top: 8px;
   transition: background 0.2s, transform 0.1s;
 }
 .submit-btn:hover    { background: var(--blue); }
@@ -227,6 +236,34 @@ canvas {
 }
 
 /* ================================================
+   Countdown Overlay (3, 2, 1 before timer starts)
+   ================================================ */
+.countdown-overlay {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  z-index: 9999;
+}
+
+.countdown-number {
+  font-size: 12rem;
+  font-weight: 900;
+  color: var(--blue);
+  font-family: 'Cairo', sans-serif;
+  opacity: 0.25;
+  animation: popIn 0.3s ease;
+  display: block;
+  line-height: 1;
+}
+
+@keyframes popIn {
+  from { transform: scale(0.5); opacity: 0; }
+  to   { transform: scale(1);   opacity: 1; }
+}
+
+/* ================================================
    Loading Spinner 
    ================================================ */
 .spinner {
@@ -245,18 +282,15 @@ canvas {
 #score-bar {
   display: flex;
   flex-direction: row;
-  position: static;
-  bottom: 0;
   justify-content: space-between;
   align-items: center;
   padding: 10px 28px;
   background: var(--white);
   border-top: 1px solid var(--light-gray);
-  width: 100vw;
+  width: 100%;
   box-sizing: border-box;
-  margin-left: calc(50% - 50vw);
-  margin-right: calc(50% - 50vw);
-  margin-top: 100px;
+  flex-shrink: 0;
+  margin-top: 60px;
 }
 
 .team-pill {
@@ -264,13 +298,13 @@ canvas {
   align-items: stretch;
   border-radius: 5px;
   overflow: hidden;
-  font-size: 20px;
+  font-size: 17px;
   font-weight: 700;
-  min-width: 180px;
+  min-width: 160px;
 }
 
 .team-pill-name {
-  padding: 10px 18px;
+  padding: 6px 12px;
   color: var(--white);
 }
 
@@ -281,7 +315,7 @@ canvas {
 }
 
 .team-pill-num {
-  padding: 10px 16px;
+  padding: 6px 10px;
   color: var(--white);
 }
 

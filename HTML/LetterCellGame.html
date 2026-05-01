@@ -1,8 +1,8 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8" />
-  <title>Hex Game Board</title>
+  <title>لعبة خلايا الحروف</title>
 
   
   <script src="https://cdn.tailwindcss.com"></script>
@@ -16,7 +16,7 @@
 <body>
 
  <!-- ================= NAVBAR ================= -->
-  <nav class="bg-white shadow-sm ">
+  <nav class="bg-white shadow-sm flex-shrink-0">
         <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
 
             <!-- Logo -->
@@ -41,7 +41,7 @@
 <nav id="navbar">
     <div class="nav-timer">
     <div class ="timer-header">
-        <span class="nav-label">Time Remaining</span>
+        <span class="nav-label">الوقت المتبقي</span>
         <!-- <span class="hourglass"><svg  xmlns="http://www.w3.org/2000/svg" width="24" height="24"  
             fill="currentColor" viewBox="0 0 24 24" > 
             <path d="M5 2H4v2h1v1c0 2.46 1.32 4.77 3.43 6.02.35.21.57.55.57.9v.16c0 .35-.21.69-.57.9A7.01 7.01 0 0 0 5 19v1H4v2h16v-2h-1v-1c0-2.46-1.32-4.77-3.43-6.02-.36-.21-.57-.55-.57-.9v-.16c0-.35.21-.69.57-.9A7.01 7.01 0 0 0 19 5V4h1V2zm12 3c0 1.76-.94 3.41-2.45 4.3-.97.57-1.55 1.55-1.55 2.62v.16c0 1.07.58 2.05 1.55 2.62 1.51.89 2.45 2.54 2.45 4.3v1H7v-1c0-1.76.94-3.41 2.45-4.3.97-.57 1.55-1.55 1.55-2.62v-.16c0-1.07-.58-2.05-1.55-2.62A5.01 5.01 0 0 1 7 5V4h10z"></path>
@@ -66,13 +66,13 @@
   <div id="question-letter" class="q-letter">H</div>
     <!-- يطلع وقت مانكون ننتظر تحميل السؤال -->
   <div id="loading-spinner" class="spinner hidden"></div>
-  <p id="question-text" class="q-text">Loading...</p>
+  <p id="question-text" class="q-text">جارٍ التحميل...</p>
   <div class="answer-row">
       <input
         type="text"
         id="answer-input"
         class="answer-input"
-        placeholder="Type your answer..."
+        placeholder="اكتب إجابتك..."
       />
       <div id="check-icon" class="check-icon hidden"><svg  xmlns="http://www.w3.org/2000/svg" width="24" height="24"  
         fill="currentColor" viewBox="0 0 24 24" >
@@ -82,12 +82,15 @@
       </div>
   </div>
 
-    <button id="submit-btn" class="submit-btn" onclick="submitAnswer()">Submit</button>
+    <button id="submit-btn" class="submit-btn" onclick="submitAnswer()">إرسال</button>
 
     <!-- الانيمشين حق النقاط-->
     <div id="points-popup" class="points-popup hidden">
-      + 4 Points
+      + 4 نقاط
     </div>
+
+    <!-- عداد العد التنازلي قبل بداية التايمر -->
+    <div id="countdown-overlay" class="countdown-overlay hidden">3</div>
 
   </div>
 
@@ -95,7 +98,7 @@
 
     <!-- الفريق الأزرق -->
     <div class="team-pill blue">
-      <span class="team-pill-name" id="team-blue-name">Blue Team</span>
+      <span class="team-pill-name" id="team-blue-name">الفريق الأزرق</span>
       <span class="team-pill-num" id="team-blue-words">0</span>
       <span class="team-pill-divider"></span>
       <span class="team-pill-num" id="team-blue-pts">0</span>
@@ -103,7 +106,7 @@
 
     <!-- الفريق الأخضر -->
     <div class="team-pill green">
-      <span class="team-pill-name" id="team-green-name">Green Team</span>
+      <span class="team-pill-name" id="team-green-name">الفريق الأخضر</span>
       <span class="team-pill-num" id="team-green-words">0</span>
       <span class="team-pill-divider"></span>
       <span class="team-pill-num" id="team-green-pts">0</span>
