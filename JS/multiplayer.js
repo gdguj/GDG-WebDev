@@ -183,27 +183,8 @@
     }
 
     if (jumpJoinBtn) {
-      jumpJoinBtn.addEventListener("click", async () => {
-        // window.location.href = "multiplayer-join.html";
-        try {
-        const joinCode = codeInput.value.trim().toUpperCase();
-        // 1. نرسل طلب للسيرفر للتحقق من الكود
-        const response = await fetch(`/api/lobby/verify/${joinCode}`); // المسار اللي تكلمنا عنه قبل
-        const result = await response.json();
-
-        if (result.success) {
-            // 2. توجيه اللاعب فوراً لصفحة اللعبة المخصصة
-            let targetPage = "";
-            if (result.gameType === "letter_cells") targetPage = "letterCells.html";
-            // ... بقية الأنواع
-            
-            window.location.href = `${targetPage}?id=${result.gameId}&joinCode=${joinCode}`;
-        } else {
-            setMessage("الكود غير صحيح أو انتهت صلاحيته", true);
-        }
-    } catch (error) {
-        setMessage("حدث خطأ في الاتصال", true);
-    }
+      jumpJoinBtn.addEventListener("click", () => {
+        window.location.href = "multiplayer-join.html";
       });
     }
 

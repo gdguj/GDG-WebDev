@@ -42,26 +42,23 @@
           <img src="../Images/GGCharacter.png" alt="" class="hero-character">
         </div>
         <div class="hero-content">
-          <h1 class="mp-brand">منصة <span class="brand-gdg">GDG</span> الجماعية</h1>
-          <nav class="mp-nav">
-            <a  href="multiplayer-leaderboard.html" class="button">
-              <span>لوحة المتصدرين</span>
-              
-            </a>
-            <a href="main page.html" class="button">
-              <span>الموقع الرئيسي</span>
-
-            </a>
-          </nav>
+          <h1 class="mp-brand">العب مع <span class="brand-gdg">GDG</span> !</h1>
 
           <div class="hero-copy">
-          <h2>
-            <span class="tone-dark">غرف لعب مباشرة،</span>
-            <span class="tone-blue">كود انضمام،</span>
-            <span class="tone-yellow">نقاط لحظية</span>
-          </h2>
-          <p>ابدأ جلسة جديدة في كل مرة وشارك كود انضمام فريد مع أصدقائك.</p>
+            <h2>
+              <span class="tone-dark">العب،</span>
+              <span class="tone-blue">نافس،</span>
+              <span class="tone-yellow">تصدّر!</span>
+            </h2>
+            <p>شارك الكود مع أصحابك وانضموا في ثواني ... من يكسب؟</p>
           </div>
+
+          <nav class="mp-nav" style="margin-top: 40px;">
+            <a href="multiplayer-leaderboard.html" class="button leaderboard-btn">
+              <span class="btn-text">🏆 لوحة المتصدرين 🏆</span>
+              <span class="confetti-container"></span>
+            </a>
+          </nav>
         </div>
       </section>
     </header>
@@ -74,8 +71,8 @@
         </div>
         <div class="card-content">
           <div class="card-body">
-            <h3>انضمام للعبة بكود</h3>
-            <p class="small">ادخل إلى صفحة الانضمام ثم اكتب كود الجلسة للدخول مباشرة.</p>
+            <h3>عندك كود؟ ادخل!</h3>
+            <p class="small">حصلت على كود من صاحبك؟ ادخله وانضم للعبة مباشرة.</p>
           </div>
         </div>
         <div class="card-footer">
@@ -93,8 +90,8 @@
         </div>
         <div class="card-content">
           <div class="card-body">
-            <h3>إنشاء لعبة مخصصة</h3>
-            <p class="small">أنشئ لعبة خاصة بك واحفظها ثم العبها مع الآخرين.</p>
+            <h3>صمّم لعبتك!</h3>
+            <p class="small">أنشئ لعبة بأسئلتك الخاصة وشارك الكود مع رفاقك.</p>
           </div>
         </div>
         <div class="card-footer">
@@ -112,8 +109,8 @@
         </div>
         <div class="card-content">
           <div class="card-body">
-            <h3>لعب ألعاب المجتمع</h3>
-            <p class="small">افتح صفحة ألعاب المجتمع الأصلية وتصفحها بنفس التصميم الكامل.</p>
+            <h3>العب مع الكل</h3>
+            <p class="small">تصفّح ألعاب أنشأها ناس ثانيين وتحدّاهم!</p>
           </div>
         </div>
         <div class="card-footer">
@@ -180,5 +177,33 @@
 
   <script src="/socket.io/socket.io.js"></script>
   <script src="../JS/multiplayer.js"></script>
+  <script>
+    (function() {
+      const colors = ['#fbbc04','#ea4335','#34a853','#1a73e8','#ff6d00','#e91e63','#9c27b0','#00bcd4'];
+      const btn = document.querySelector('.leaderboard-btn');
+      if (!btn) return;
+      btn.addEventListener('mouseenter', function() {
+        const container = btn.querySelector('.confetti-container');
+        for (let i = 0; i < 18; i++) {
+          const piece = document.createElement('span');
+          piece.className = 'confetti-piece';
+          const angle = Math.random() * 360;
+          const dist = 40 + Math.random() * 60;
+          const tx = Math.cos(angle * Math.PI / 180) * dist + 'px';
+          const ty = (-(30 + Math.random() * 50)) + 'px';
+          const rot = (Math.random() * 360) + 'deg';
+          piece.style.cssText = `
+            background: ${colors[Math.floor(Math.random() * colors.length)]};
+            left: ${20 + Math.random() * 60}%;
+            top: ${20 + Math.random() * 60}%;
+            --tx: ${tx}; --ty: ${ty}; --rot: ${rot};
+            animation-delay: ${Math.random() * 0.3}s;
+          `;
+          container.appendChild(piece);
+          piece.addEventListener('animationend', () => piece.remove());
+        }
+      });
+    })();
+  </script>
 </body>
 </html>

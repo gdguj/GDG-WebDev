@@ -802,27 +802,28 @@ body.multiplayer-body[data-page="home"] .hero {
   flex-direction: row-reverse;
   align-items: center;
   justify-content: space-between;
-  gap: 80px;
+  gap: 450px;
   max-width: 1200px;
-  margin: 70px auto 50px;
+  margin: 80px auto 50px;
+  text-align: right;
 }
 
 body.multiplayer-body[data-page="home"] .hero-content {
   flex: 1 1 0;
-  max-width: 620px;
+  max-width: 520px;
   text-align: right;
 }
 
 body.multiplayer-body[data-page="home"] .hero-image {
-  flex: 1 1 0;
+  flex: 0 0 auto;
   display: flex;
   justify-content: center;
 }
 
 body.multiplayer-body[data-page="home"] .mp-brand {
-  margin: 0 0 30px;
+  margin: 0 0 20px;
   color: #0e2240;
-  font-size: clamp(55px, 4.4vw, 48px);
+  font-size: clamp(32px, 3vw, 42px);
   font-weight: 800;
   line-height: 1.2;
   text-align: right;
@@ -846,8 +847,8 @@ body.multiplayer-body[data-page="home"] .mp-nav {
 }
 
 body.multiplayer-body[data-page="home"] .button {
-  min-width: 258px;
-  padding: 14px 28px;
+  min-width: 180px;
+  padding: 11px 22px;
   border-radius: 999px;
   border: 1px solid #eef1f5;
   background: #ffffff;
@@ -856,8 +857,8 @@ body.multiplayer-body[data-page="home"] .button {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 10px;
-  font-size: 20px;
+  gap: 8px;
+  font-size: 16px;
   font-weight: 600;
   line-height: 1;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
@@ -878,7 +879,7 @@ body.multiplayer-body[data-page="home"] .button:last-child i {
 }
 
 body.multiplayer-body[data-page="home"] .mp-nav i {
-  font-size: 28px;
+  font-size: 18px;
 }
 
 body.multiplayer-body[data-page="home"] .hero {
@@ -887,7 +888,6 @@ body.multiplayer-body[data-page="home"] .hero {
   border-radius: 0;
   padding: 0;
   box-shadow: none;
-  margin: 0;
   overflow: visible;
   text-align: right;
 }
@@ -898,8 +898,8 @@ body.multiplayer-body[data-page="home"] .hero::after {
 }
 
 body.multiplayer-body[data-page="home"] .hero h2 {
-  margin: 0 0 24px;
-  font-size: clamp(28px, 2.8vw, 32px);
+  margin: 0 0 16px;
+  font-size: clamp(18px, 1.9vw, 24px);
   font-weight: 800;
   line-height: 1.6;
   color: #0f2141;
@@ -921,13 +921,14 @@ body.multiplayer-body[data-page="home"] .hero p {
   margin: 0;
   max-width: 560px;
   color: #6e7a8c;
-  font-size: 18px;
+  font-size: 15px;
   line-height: 1.9;
+  text-align: right;
 }
 
 body.multiplayer-body[data-page="home"] .hero-character {
   flex: 0 0 auto;
-  width: clamp(420px, 34vw, 480px);
+  width: clamp(260px, 24vw, 320px);
   height: auto;
   animation: floatSimple 3s ease-in-out infinite;
 }
@@ -956,6 +957,61 @@ body.multiplayer-body[data-page="home"] .home-cards .card:hover {
   transform: none;
   border-color: #edf0f4;
   box-shadow: 0 10px 24px rgba(15, 23, 42, 0.05);
+}
+
+/* ===== Leaderboard Button Celebration ===== */
+body.multiplayer-body[data-page="home"] .leaderboard-btn {
+  position: relative;
+  overflow: visible;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.3s ease;
+}
+
+body.multiplayer-body[data-page="home"] .leaderboard-btn:hover {
+  transform: translateY(-3px) scale(1.05);
+  background: linear-gradient(130deg, #f9a825, #fbbc04, #ff6d00, #e91e63, #9c27b0);
+  background-size: 300% 300%;
+  animation: rainbowShift 1.2s ease infinite;
+  box-shadow: 0 0 24px rgba(251, 188, 4, 0.7), 0 0 48px rgba(233, 30, 99, 0.4);
+  color: #fff;
+  border-color: transparent;
+}
+
+body.multiplayer-body[data-page="home"] .leaderboard-btn:hover .btn-text {
+  animation: shake 0.4s ease;
+}
+
+body.multiplayer-body[data-page="home"] .confetti-container {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  pointer-events: none;
+  overflow: visible;
+}
+
+body.multiplayer-body[data-page="home"] .confetti-piece {
+  position: absolute;
+  width: 7px;
+  height: 7px;
+  border-radius: 2px;
+  opacity: 0;
+  animation: confettiFly 0.8s ease forwards;
+}
+
+@keyframes rainbowShift {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25%       { transform: translateX(-4px) rotate(-3deg); }
+  75%       { transform: translateX(4px) rotate(3deg); }
+}
+
+@keyframes confettiFly {
+  0%   { opacity: 1; transform: translate(0, 0) rotate(0deg); }
+  100% { opacity: 0; transform: translate(var(--tx), var(--ty)) rotate(var(--rot)); }
 }
 
 body.multiplayer-body[data-page="home"] .card-top {
@@ -1234,9 +1290,9 @@ body.multiplayer-body[data-page="leaderboard"] .multiplayer-shell {
 
 body.multiplayer-body[data-page="leaderboard"] .leaderboard-head {
   display: flex;
-  flex-direction: row-reverse;
+  flex-direction: row;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-start;
   gap: 18px;
   margin-bottom: 22px;
 }
@@ -1273,7 +1329,7 @@ body.multiplayer-body[data-page="leaderboard"] .leaderboard-title-wrap {
 body.multiplayer-body[data-page="leaderboard"] .mp-brand {
   margin: 0;
   color: #4285f4;
-  font-size: clamp(32px, 4vw, 42px);
+  font-size: clamp(25px, 3vw, 30px);
   font-weight: 800;
   line-height: 1.15;
   text-shadow: none;
@@ -1307,9 +1363,9 @@ body.multiplayer-body[data-page="leaderboard"] .leaderboard-top-card {
   display: flex;
   flex-direction: row-reverse;
   align-items: center;
-  gap: 18px;
-  padding: 14px 22px;
-  border-radius: 22px;
+  gap: 12px;
+  padding: 10px 16px;
+  border-radius: 16px;
   border: 1px solid rgba(66, 133, 244, 0.1);
   background: #ffffff;
   box-shadow: 0 6px 18px rgba(15, 23, 42, 0.04);
@@ -1321,14 +1377,14 @@ body.multiplayer-body[data-page="leaderboard"] .leaderboard-top-card.is-empty {
 }
 
 body.multiplayer-body[data-page="leaderboard"] .leaderboard-top-trophy {
-  width: 96px;
-  height: 96px;
+  width: 62px;
+  height: 62px;
   border-radius: 50%;
   background: #4285f4;
   color: #fbbc05;
   display: grid;
   place-items: center;
-  font-size: 44px;
+  font-size: 28px;
   flex: 0 0 auto;
 }
 
@@ -1342,25 +1398,25 @@ body.multiplayer-body[data-page="leaderboard"] .leaderboard-top-copy {
 body.multiplayer-body[data-page="leaderboard"] .leaderboard-top-label {
   margin: 0;
   color: #4285f4;
-  font-size: 15px;
+  font-size: 12px;
   font-weight: 700;
 }
 
 body.multiplayer-body[data-page="leaderboard"] .leaderboard-top-copy h2 {
   margin: 0;
   color: #0e2240;
-  font-size: clamp(24px, 3vw, 34px);
+  font-size: clamp(16px, 2vw, 22px);
   font-weight: 800;
   line-height: 1.2;
 }
 
 body.multiplayer-body[data-page="leaderboard"] .leaderboard-top-score {
-  padding: 6px 14px;
+  padding: 4px 10px;
   border-radius: 999px;
   border: 1px solid rgba(66, 133, 244, 0.12);
   background: rgba(66, 133, 244, 0.08);
   color: #4285f4;
-  font-size: 16px;
+  font-size: 13px;
   font-weight: 800;
 }
 
