@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ar" dir="rtl">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -45,7 +45,7 @@
         <!-- LEFT SIDE -->
         <div class="left">
           <h1 class="heading">
-            <span class="heading-label">Game Results:</span><br />
+            <span class="heading-label" id="results-heading-label">Game Results:</span><br />
             <span class="congrats">
               <span class="c-blue">C</span><span class="c-red">o</span><span class="c-yellow">n</span><span class="c-green">g</span><span class="c-blue">r</span><span class="c-red">a</span><span class="c-yellow">t</span><span class="c-green">u</span><span class="c-blue">l</span><span class="c-red">a</span><span class="c-yellow">t</span><span class="c-green">i</span><span class="c-blue">o</span><span class="c-red">n</span><span class="c-yellow">s</span><span class="c-green">!</span>
             </span>
@@ -53,32 +53,26 @@
 
           <div class="winner-row">
             <span class="trophy">🏆</span>
-            <span class="winner-text">Winner:</span>
-            <span class="winner-name">Goats</span>
-
-            <select class="team-members">
-              <option selected>Team Members</option>
-              <option>User1</option>
-              <option>User2</option>
-            </select>
+            <span class="winner-text" id="winner-text-label">Winner:</span>
+            <span class="winner-name" id="winner-name">Goats</span>
           </div>
 
           <div class="score-line">
-            Score: <span class="score-num">24</span> Points
+            <span id="score-line-label">Score:</span> <span class="score-num" id="winner-score">24</span> <span id="score-line-suffix">Points</span>
           </div>
 
           <hr class="divider" />
 
           <div class="stats-title">
             <span>ⓘ</span>
-            <span>Match Statistics</span>
+            <span id="stats-title-text">Match Statistics</span>
           </div>
 
           <ul class="stats">
-            <li>Total Words Found: <strong>10</strong></li>
-            <li>Longest Word: “SaudiArabia” (Goats)</li>
-            <li>Highest Streak: <strong>4</strong> (Goats)</li>
-            <li>Fastest Answer: <strong>2.8s</strong> (Green Team)</li>
+            <li id="stat-total-words">Total Words Found: <strong>10</strong></li>
+            <li id="stat-winning-rule">Winning Rule: Straight line of 5 cells</li>
+            <li id="stat-blue-score">Blue Team Score: <strong>0</strong></li>
+            <li id="stat-green-score">Green Team Score: <strong>0</strong></li>
           </ul>
         </div>
 
@@ -90,15 +84,15 @@
 
           <div class="score-pill">
             <div class="pill pill-blue">
-              <span>Goats</span>
-              <span>6</span>
+              <span id="results-blue-name">Goats</span>
+              <span id="results-blue-points">6</span>
             </div>
 
             <div class="divider-vertical"></div>
 
             <div class="pill pill-green">
-              <span>Green team</span>
-              <span>4</span>
+              <span id="results-green-name">Green team</span>
+              <span id="results-green-points">4</span>
             </div>
           </div>
         </div>
@@ -107,8 +101,7 @@
 
       <!-- Buttons Row -->
       <div class="buttons-row">
-        <button class="btn primary">Play Again</button>
-        <button class="btn outline">Back to Home</button>
+        <button class="btn primary" id="play-again-btn">العب مرة أخرى</button>
       </div>
 
       <!-- Bottom Pattern -->
@@ -165,5 +158,6 @@
         </div>
     </footer>
     <!-- End -->
+    <script src="../JS/game-results.js"></script>
 </body>
 </html>

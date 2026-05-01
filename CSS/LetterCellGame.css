@@ -14,10 +14,11 @@ html, body {
   padding: 0;
   background-color: var(--white);
   width: 100%;
-  min-height: 100vh;
-  overflow-y: auto;
+  height: 100vh;
+  overflow: hidden;
   font-family: 'Cairo', sans-serif;
-  display: block;
+  display: flex;
+  flex-direction: column;
 }
 
 footer {
@@ -290,7 +291,7 @@ canvas {
   width: 100%;
   box-sizing: border-box;
   flex-shrink: 0;
-  margin-top: 60px;
+  margin-top: 10px;
 }
 
 .team-pill {
@@ -654,27 +655,27 @@ canvas {
    Turn Indicator
    ================================================ */
 .turn-indicator {
-  width: calc(100% - 48px);
-  max-width: 420px;
-  padding: 10px 20px;
+  width: fit-content;
+  max-width: min(320px, calc(100% - 48px));
+  padding: 6px 14px;
   text-align: center;
-  font-size: 1rem;
+  font-size: 0.9rem;
   font-weight: 700;
   font-family: 'Cairo', sans-serif;
-  border-radius: 10px;
-  margin: 8px auto 0;
+  border-radius: 8px;
+  margin: 6px auto 0;
   box-sizing: border-box;
   transition: background 0.3s, color 0.3s;
 }
 .turn-indicator.blue-turn {
   background: #e8f0fe;
   color: #1a56db;
-  border: 2px solid var(--blue);
+  border: 1.5px solid var(--blue);
 }
 .turn-indicator.green-turn {
   background: #e6f4ea;
   color: #137333;
-  border: 2px solid var(--green);
+  border: 1.5px solid var(--green);
 }
 
 /* ================================================
@@ -712,17 +713,66 @@ canvas {
 }
 .wheel-wrapper {
   position: relative;
-  display: inline-block;
+  width: clamp(220px, 32vh, 280px);
+  height: clamp(220px, 32vh, 280px);
 }
-.wheel-pointer {
+.wheel {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  overflow: hidden;
+  position: relative;
+  box-shadow: 0 8px 30px rgba(0,0,0,0.15);
+}
+.wheel-half {
   position: absolute;
-  top: -18px;
+  width: 100%;
+  height: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 900;
+  font-size: 1.2rem;
+  color: #1f2937;
+}
+.wheel-half.top {
+  top: 0;
+  background: #bbdefb;
+}
+.wheel-half.bottom {
+  bottom: 0;
+  background: #c8e6c9;
+}
+.needle {
+  position: absolute;
+  top: 50%;
   left: 50%;
-  transform: translateX(-50%);
-  font-size: 26px;
-  color: #e53935;
-  z-index: 2;
-  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+  transform: translate(-50%, -50%);
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.needle::before {
+  content: '';
+  width: 0;
+  height: 0;
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  border-bottom: 12px solid #f5a623;
+  margin-bottom: 2px;
+}
+.needle-line {
+  width: 3px;
+  height: 35px;
+  background: #f5a623;
+}
+.needle-dot {
+  width: 12px;
+  height: 12px;
+  background: #f5a623;
+  border-radius: 50%;
+  margin-top: -2px;
 }
 .spin-result-text {
   font-size: 1.1rem;

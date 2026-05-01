@@ -188,8 +188,18 @@
     <div class="wheel-card">
       <h2 class="wheel-title">🎡 أدر العجلة لتحديد من يبدأ!</h2>
       <div class="wheel-wrapper">
-        <div class="wheel-pointer">▼</div>
-        <canvas id="wheelCanvas" width="260" height="260"></canvas>
+          <div class="wheel" id="wheel">
+            <div class="wheel-half top" data-team="blue">
+              <span id="wheel-blue-name">الفريق الأزرق</span>
+            </div>
+            <div class="wheel-half bottom" data-team="green">
+              <span id="wheel-green-name">الفريق الأخضر</span>
+            </div>
+          </div>
+          <div class="needle">
+            <div class="needle-line"></div>
+            <div class="needle-dot"></div>
+          </div>
       </div>
       <p id="spin-result-text" class="spin-result-text"></p>
       <button id="spin-btn" class="spin-btn" onclick="spinWheel()">أدر العجلة</button>

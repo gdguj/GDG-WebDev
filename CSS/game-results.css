@@ -9,39 +9,51 @@
 
 *{ box-sizing:border-box; }
 body{
-  font-family: 'Poppins', sans-serif;
+  margin: 0;
+  font-family: 'Cairo', 'Poppins', sans-serif;
+  background: #f5f6f8;
+  height: 100vh;
+  overflow: hidden;
 }
 
 .page{
   display:grid;
   place-items:center;
-  min-height:100vh;
-  padding:40px;
+  min-height:calc(100vh - 76px);
+  padding:10px 14px;
 }
 
 .card{
-  width:1150px;
+  width:min(1120px, 96vw);
+  height:calc(100vh - 92px);
   background:#fff;
   border-radius:20px;
-  box-shadow:0 20px 40px rgba(0,0,0,.12);
-  padding:50px 60px 140px;
+  box-shadow:0 14px 28px rgba(0,0,0,.1);
+  padding:16px 20px 12px;
   position:relative;
+  overflow:hidden;
+  display:flex;
+  flex-direction:column;
 }
 
 .content{
   display:grid;
   grid-template-columns:1.1fr 1fr;
-  gap:40px;
+  gap:14px;
+  flex:1;
+  min-height:0;
 }
 
 .heading-label{
-  font-size:44px;
+  font-size:38px;
   font-weight:800;
+  line-height:1.1;
 }
 
 .congrats{
   font-size:56px;
   font-weight:900;
+  line-height:1;
 }
 
 .c-blue{color:var(--blue);}
@@ -50,53 +62,64 @@ body{
 .c-green{color:var(--green);}
 
 .winner-row{
-  margin-top:20px;
+  margin-top:8px;
   display:flex;
   align-items:center;
-  gap:10px;
+  gap:8px;
+  flex-wrap:wrap;
 }
 
 .winner-text{
-  font-size:24px;
+  font-size:20px;
   font-weight:700;
 }
 
 .winner-name{
-  font-size:24px;
+  font-size:22px;
   font-weight:800;
   color:var(--blue);
 }
 
 .team-members{
-  margin-left:10px;
-  height:30px;
+  margin-inline-start:8px;
+  height:24px;
+  font-size:12px;
 }
 
 .score-line{
-  margin-top:10px;
-  font-size:20px;
+  margin-top:6px;
+  font-size:22px;
+  font-weight:700;
 }
 
 .divider{
-  margin:15px 0;
+  margin:8px 0;
+}
+
+.stats-title {
+  font-size:20px;
+  font-weight:700;
 }
 
 .stats{
+  margin: 6px 0 0;
+  padding-inline-start: 18px;
   font-size:18px;
-  line-height:1.8;
+  line-height:1.5;
 }
 
 .right{
   display:flex;
   flex-direction:column;
   align-items:center;
-  gap:20px;
+  gap:10px;
+  justify-content:flex-start;
 }
 
 /* mini map size */
 .mini-map{
-  width:450px;
-  box-shadow:0 15px 25px rgba(0,0,0,.15);
+  width:min(500px, 43vw);
+  box-shadow:0 10px 18px rgba(0,0,0,.14);
 }
 
 .mini-map img{
@@ -107,19 +130,20 @@ body{
 /* score pill */
 .score-pill{
   display:flex;
-  width:360px;
+  width:min(360px, 33vw);
   border-radius:12px;
   overflow:hidden;
-  box-shadow:0 10px 20px rgba(0,0,0,.2);
+  box-shadow:0 8px 16px rgba(0,0,0,.18);
 }
 
 .pill{
   flex:1;
   display:flex;
   justify-content:space-between;
-  padding:12px 18px;
+  padding:8px 12px;
   color:#fff;
   font-weight:800;
+  font-size:16px;
 }
 
 .pill-blue{background:var(--blue);}
@@ -132,22 +156,24 @@ body{
 
 /* BUTTONS */
 .buttons-row{
-  margin-top:50px;
+  margin-top:10px;
   display:flex;
-  justify-content:space-between;
+  direction: rtl;
+  justify-content:flex-start;
+  gap:12px;
 }
 
 .btn{
-  width:465px;
-  height:82px;
-  font-size:28px;
+  width:min(260px, 24vw);
+  height:48px;
+  font-size:18px;
   font-weight:800;
-  border-radius:14px;
+  border-radius:12px;
   display:flex;
   align-items:center;
   justify-content:center;
   cursor:pointer;
-  box-shadow:0 10px 20px rgba(0,0,0,.15);
+  box-shadow:0 8px 14px rgba(0,0,0,.12);
 }
 
 .btn.primary{
@@ -163,10 +189,35 @@ body{
 
 /* bottom pattern */
 .pattern{
-  position:absolute;
-  bottom:0;
-  left:0;
-  right:0;
-  height:90px;
-  background:url("pattern.png") center/cover no-repeat;
+  display:none;
+}
+
+footer {
+  display: none !important;
+}
+
+@media (max-width: 1200px) {
+  .card {
+    padding: 14px 16px 10px;
+  }
+
+  .heading-label { font-size: 30px; }
+  .congrats { font-size: 44px; }
+  .winner-text { font-size: 18px; }
+  .winner-name { font-size: 20px; }
+  .score-line { font-size: 20px; }
+  .stats-title { font-size: 18px; }
+  .stats { font-size: 16px; }
+  .btn { width: min(240px, 26vw); height: 44px; font-size: 16px; }
+}
+
+@media (max-width: 900px) {
+  body { overflow: auto; height: auto; }
+  .page { min-height: auto; padding: 14px; }
+  .card { height: auto; overflow: visible; }
+  .content { grid-template-columns: 1fr; }
+  .mini-map { width: min(460px, 92vw); }
+  .score-pill { width: min(460px, 92vw); }
+  .buttons-row { flex-direction: column; }
+  .btn { width: 100%; }
 }

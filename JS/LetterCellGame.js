@@ -1,9 +1,8 @@
-let currentSessionId = null; // معرف الجلسة الحالية 
+let currentSessionId = null; // معرف الجلسة الحالية
 const urlParams = new URLSearchParams(window.location.search);
 const customGameId = urlParams.get('id');
 
 function showPopup(message) {
-  // Remove existing popup if any
   const existing = document.getElementById('custom-popup-overlay');
   if (existing) existing.remove();
 
@@ -28,7 +27,7 @@ function showPopup(message) {
         background:#0078BF; color:#fff; border:none;
         padding:10px 36px; border-radius:10px; font-size:1rem;
         font-family:'Cairo',sans-serif; font-weight:700; cursor:pointer;
-      ">حسناً</button>
+      ">حسنا</button>
     </div>
   `;
 
@@ -40,134 +39,156 @@ function showPopup(message) {
 
   document.body.appendChild(overlay);
   overlay.querySelector('#popup-ok-btn').addEventListener('click', () => overlay.remove());
-  overlay.addEventListener('click', (e) => { if (e.target === overlay) overlay.remove(); });
+  overlay.addEventListener('click', (event) => {
+    if (event.target === overlay) overlay.remove();
+  });
 }
 
 const scores = {
-  blue:  { name: localStorage.getItem('blueTeamName') || 'الفريق الأزرق',     words: 0, pts: 0 },
-  green: { name: localStorage.getItem('greenTeamName') || 'الفريق الأخضر', words: 0,  pts: 0 }
+  blue: { name: localStorage.getItem('blueTeamName') || 'الفريق الازرق', words: 0, pts: 0 },
+  green: { name: localStorage.getItem('greenTeamName') || 'الفريق الاخضر', words: 0, pts: 0 }
 };
 
 function updateScoreBar() {
-  document.getElementById('team-blue-name').textContent  = scores.blue.name;
+  document.getElementById('team-blue-name').textContent = scores.blue.name;
   document.getElementById('team-blue-words').textContent = scores.blue.words;
-  document.getElementById('team-blue-pts').textContent   = scores.blue.pts;
-  document.getElementById('team-green-name').textContent  = scores.green.name;
+  document.getElementById('team-blue-pts').textContent = scores.blue.pts;
+  document.getElementById('team-green-name').textContent = scores.green.name;
   document.getElementById('team-green-words').textContent = scores.green.words;
-  document.getElementById('team-green-pts').textContent   = scores.green.pts;
+  document.getElementById('team-green-pts').textContent = scores.green.pts;
 }
 
 const HEX_SIZE = 55;
-let ROWS = 5;   // سيتم تعديلها ديناميكياً بناءً على عدد الأسئلة
-let COLS = 5;   // سيتم تعديلها ديناميكياً بناءً على عدد الأسئلة
+const BOARD_SIZE = 5;
+let ROWS = 5;
+let COLS = 5;
 
 const canvas = document.getElementById('gameCanvas');
-const ctx    = canvas.getContext('2d');
-
+const ctx = canvas.getContext('2d');
 const hexCells = [];
 
-const answeredCells = new Map(); // letter → 'blue' | 'green'
+const answeredCells = new Map(); // cellKey -> 'blue' | 'green' | null
 
-let currentTurn = 'blue';    // الفريق الحالي اللي دوره يختار
-let gameStarted  = false;    // ما تبدأ اللعبة إلا بعد العجلة
-
+let currentTurn = 'blue';
+let gameStarted = false;
 let selectedLetter = null;
-
+let selectedCellKey = null;
 let currentQuestion = null;
+let allQuestions = [];
 
+// تطبيع النص العربي للمقارنة
+function normalizeArabic(str) {
+  return str
+    .trim()
+    .replace(/[\u064B-\u0652]/g, '')
+    .replace(/[أإآٱ]/g, 'ا')
+    .replace(/ة/g, 'ه')
+    .replace(/ى/g, 'ي')
+    .replace(/[ءؤئ]/g, '')
+    .replace(/\s+/g, ' ')
+    .toLowerCase();
+}
 
-// هذي الفنكشن عشان نسترجع كل الاسئلة و الاجوبة من الداتا بيس 
+function toCellKey(row, col) {
+  return `${row}-${col}`;
+}
 
-let allQuestions = []; // هنا بنخزن الأسئلة اللي بتجينا
+function oddRowToCube(row, col) {
+  const x = col - (row - (row & 1)) / 2;
+  const z = row;
+  const y = -x - z;
+  return { x, y, z };
+}
+
+function buildWinningLines() {
+  const groups = new Map();
+
+  for (let row = 0; row < BOARD_SIZE; row++) {
+    for (let col = 0; col < BOARD_SIZE; col++) {
+      const cube = oddRowToCube(row, col);
+      const cell = { row, col, key: toCellKey(row, col) };
+
+      ['x', 'y', 'z'].forEach((axis) => {
+        const lineKey = `${axis}:${cube[axis]}`;
+        if (!groups.has(lineKey)) groups.set(lineKey, []);
+        groups.get(lineKey).push(cell);
+      });
+    }
+  }
+
+  return Array.from(groups.values()).filter((line) => line.length === BOARD_SIZE);
+}
+
+const winningLines = buildWinningLines();
+
+function hasStraightWinningLine(team) {
+  return winningLines.some((line) => line.every((cell) => answeredCells.get(cell.key) === team));
+}
+
+function goToResultsPage(team) {
+  const payload = {
+    game: 'letter-cells',
+    winnerTeam: team,
+    winnerName: scores[team].name,
+    winnerScore: scores[team].pts,
+    winnerWords: scores[team].words,
+    blue: { ...scores.blue },
+    green: { ...scores.green },
+    winningRule: 'خط مستقيم كامل من 5 خلايا',
+    playedAt: Date.now()
+  };
+
+  sessionStorage.setItem('letterCellGameResult', JSON.stringify(payload));
+  window.location.href = 'game-results.html';
+}
 
 async function loadQuestions() {
-    // try {
-    //     const response = await fetch('/api/init-game', {
-    //         method: 'POST',
-    //         headers: {
-    //             'Content-Type': 'application/json'
-    //         },
-    //         body: JSON.stringify({
-    //             gameType: "letter_cells",
-    //             greenName: localStorage.getItem('greenTeamName') || 'Green Team',
-    //             blueName: localStorage.getItem('blueTeamName') || 'Blue Team',
-    //             timestamp: new Date().getTime()
-    //         })
-    //     });
+  try {
+    let response;
+    let data;
 
-    //     const data = await response.json();
-    //     console.log("البيانات الكاملة من السيرفر:", data);
-        
-    //     if (!data.sessionId || !data.cells) {
-    //         console.error("خطأ: البيانات ناقصة من السيرفر");
-    //         alert(" حدث خطأ في استقبال البيانات من السيرفر");
-    //         return;
-    //     }
+    if (customGameId) {
+      response = await fetch(`/api/custom-games/${customGameId}`);
+      const result = await response.json();
 
-    //     currentSessionId = data.sessionId;
-    //     allQuestions = data.cells;
-    //     lettersArray = [];
-    //     lettersArray = allQuestions.map(cell => cell.letter);
-    //     drawHexGrid();
-    //     updateScoreBar();
-        
-    // } catch (error) {
-    //     console.error("❌ خطأ في جلب الأسئلة:", error);
-    //     alert("❌ فشل الاتصال بالسيرفر. تأكد من أن السيرفر يعمل.");
-    // }
+      if (result.success) {
+        currentSessionId = 'CUSTOM_' + result.game._id;
+        allQuestions = result.game.data.questions.map((question) => ({
+          letter: question.letter,
+          questionText: question.question || question.text,
+          answer: question.answer
+        }));
+      }
+    } else {
+      response = await fetch('/api/init-game', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          gameType: 'letter_cells',
+          greenName: localStorage.getItem('greenTeamName') || 'الفريق الاخضر',
+          blueName: localStorage.getItem('blueTeamName') || 'الفريق الازرق',
+          timestamp: new Date().getTime()
+        })
+      });
+      data = await response.json();
 
-
-    try {
-        let response;
-        let data;
-
-        if (customGameId) {
-            // الحالة الأولى: داخلين لعبة من صنع المستخدم
-            console.log("Loading custom game with ID:", customGameId);
-            response = await fetch(`/api/custom-games/${customGameId}`);
-            const result = await response.json();
-            
-            if (result.success) {
-                // ملاحظة: بيانات الأسئلة في السكيمّا حقتك موجودة داخل result.game.data.questions
-                currentSessionId = "CUSTOM_" + result.game._id; // معرف وهمي أو حقيقي للجلسة
-                allQuestions = result.game.data.questions.map(q => ({
-                    letter: q.letter,
-                    questionText: q.question || q.text,
-                    answer: q.answer
-                }));
-            }
-        } else {
-            // الحالة الثانية: اللعبة العادية (الكود القديم حقك)
-            response = await fetch('/api/init-game', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    gameType: "letter_cells",
-                    greenName: localStorage.getItem('greenTeamName') || 'الفريق الأخضر',
-                    blueName: localStorage.getItem('blueTeamName') || 'الفريق الأزرق',
-                    timestamp: new Date().getTime()
-                })
-            });
-            data = await response.json();
-            if (data.sessionId && data.cells) {
-                currentSessionId = data.sessionId;
-                allQuestions = data.cells;
-            }
-        }
-
-        // بعد ما تتعبأ allQuestions، نرسم الشبكة
-        if (allQuestions.length > 0) {
-            lettersArray = allQuestions.map(cell => cell.letter);
-            drawHexGrid();
-            updateScoreBar();
-        } else {
-            alert("لم يتم العثور على أسئلة لهذه اللعبة");
-        }
-        
-    } catch (error) {
-        console.error("❌ خطأ في تحميل الأسئلة:", error);
-        alert("فشل الاتصال بالسيرفر.");
+      if (data.sessionId && data.cells) {
+        currentSessionId = data.sessionId;
+        allQuestions = data.cells;
+      }
     }
+
+    if (allQuestions.length > 0) {
+      lettersArray = allQuestions.map((cell) => cell.letter);
+      drawHexGrid();
+      updateScoreBar();
+    } else {
+      showPopup('لم يتم العثور على اسئلة لهذه اللعبة');
+    }
+  } catch (error) {
+    console.error('خطا في تحميل الاسئلة:', error);
+    showPopup('فشل الاتصال بالسيرفر.');
+  }
 }
 
 //هنا الكود الي بينشأ رمز الانضمام 
@@ -201,7 +222,7 @@ let gridLetters = new Map();// عشان نحط كل حرف  مع السؤال ا
 let lettersArray = Array.from(gridLetters.keys()); // هنا بنحول خريطة الحروف إلى مصفوفة عشان نقدر نستخدمها في رسم الخلايا
 let letterIndex = 0; // هذا المتغير بيستخدم عشان نحدد أي حرف نرسم في كل خلية، بنزوده بعد ما نرسم كل خلية عشان يروح للحرف اللي بعده في المصفوفة
 
-function drawHexagon(cx, cy, size, label, state = 'normal') {
+function drawHexagon(cx, cy, size, label, state = 'normal', owner = null) {
   ctx.beginPath();
   for (let i = 0; i < 6; i++) {
     const angle = (Math.PI / 180) * (60 * i - 90);
@@ -213,23 +234,21 @@ function drawHexagon(cx, cy, size, label, state = 'normal') {
   ctx.closePath();
 
       if (state === 'answered') {
-        const teamColor = answeredCells.get(label);
-        ctx.fillStyle = teamColor === null ? '#e0e0e0'
-          : teamColor === 'green' ? '#c8e6c9' : '#bbdefb';
-      } else if (state === 'hover') ctx.fillStyle = '#e3f2fd';
+        ctx.fillStyle = owner === null ? '#e0e0e0'
+          : owner === 'green' ? '#c8e6c9' : '#bbdefb';
+      } else if (state === 'hover') ctx.fillStyle = currentTurn === 'green' ? '#c8e6c9' : '#e3f2fd';
       else ctx.fillStyle = '#ffffff';
       ctx.fill();
 
-      ctx.strokeStyle = state === 'hover' ? '#2196f3'
+      ctx.strokeStyle = state === 'hover' ? (currentTurn === 'green' ? '#34A853' : '#2196f3')
         : state === 'answered'
-          ? (answeredCells.get(label) === null ? '#aaa'
-            : answeredCells.get(label) === 'green' ? '#34A853' : '#4285F4')
+          ? (owner === null ? '#aaa' : owner === 'green' ? '#34A853' : '#4285F4')
           : '#000000';
       ctx.lineWidth   = (state === 'hover' || state === 'answered') ? 3 : 2.5;
   ctx.stroke();
 
   ctx.fillStyle    = state === 'answered'
-    ? (answeredCells.get(label) === null ? '#888' : (answeredCells.get(label) === 'green' ? '#2e7d32' : '#1a56db'))
+    ? (owner === null ? '#888' : (owner === 'green' ? '#2e7d32' : '#1a56db'))
     : '#000000';
   ctx.font         = 'bold 32px Cairo, Arial';
   ctx.textAlign    = 'center';
@@ -258,11 +277,12 @@ function drawHexGrid(hoveredIdx = -1) {
   let labelIdx = 0;
 
   // ROWS و COLS خليهم 5 عشان تظل الشبكة 25 خلية
-  for (let row = 0; row < 5; row++) {
-    for (let col = 0; col < 5; col++) {
+  for (let row = 0; row < BOARD_SIZE; row++) {
+    for (let col = 0; col < BOARD_SIZE; col++) {
       const offsetX = row % 2 !== 0 ? colSpacing / 2 : 0;
       const cx = startX + col * colSpacing + offsetX;
       const cy = startY + row * rowSpacing;
+      const key = toCellKey(row, col);
 
       // سحب الحرف من المصفوفة اللي جت من الباك إند
       // إذا خلصت الحروف (idx > 2) بياخذ نص فاضي
@@ -271,14 +291,14 @@ function drawHexGrid(hoveredIdx = -1) {
       const idx = hexCells.length;
       let state = 'normal';
       
-      if (label !== "" && answeredCells.has(label)) state = 'answered';
+      if (label !== "" && answeredCells.has(key)) state = 'answered';
       else if (idx === hoveredIdx) state = 'hover';
 
       // نرسم السداسي دائماً (عشان يحافظ على شكل الشبكة)
-      drawHexagon(cx, cy, HEX_SIZE, label, state);
+      drawHexagon(cx, cy, HEX_SIZE, label, state, answeredCells.get(key));
       
       // نضيف الخلية للمصفوفة فقط إذا كان لها حرف (عشان ما تفتح شاشة سؤال فاضية)
-      hexCells.push({ cx, cy, label });
+      hexCells.push({ cx, cy, label, row, col, key });
       
       labelIdx++; 
     }
@@ -324,7 +344,7 @@ canvas.addEventListener('mousemove', (e) => {
   const scaleY = canvas.height / rect.height;
   const idx  = getCellAtPoint((e.clientX - rect.left) * scaleX, (e.clientY - rect.top) * scaleY);
   drawHexGrid(idx);
-  canvas.style.cursor = idx >= 0 && !answeredCells.has(hexCells[idx]?.label)
+  canvas.style.cursor = idx >= 0 && !answeredCells.has(hexCells[idx]?.key)
     ? 'pointer'
     : 'default';
 });
@@ -339,18 +359,19 @@ canvas.addEventListener('click', (e) => {
   const idx  = getCellAtPoint((e.clientX - rect.left) * scaleX, (e.clientY - rect.top) * scaleY);
   if (idx < 0) return;
 
-  const { label } = hexCells[idx];
-  if (answeredCells.has(label)) return; // مجاوب قبل
+  const { label, key } = hexCells[idx];
+  if (answeredCells.has(key)) return; // مجاوب قبل
 
-  openQuestionScreen(label);
+  openQuestionScreen(label, key);
 });
 
 
 /* ================================================
    بعد ما يختار الخليه يقوم يفتح له واجهة السؤال الي خليناهاhidden في الـ CSS
    ================================================ */
-async function openQuestionScreen(letter) {
+async function openQuestionScreen(letter, cellKey) {
   selectedLetter  = letter;
+  selectedCellKey = cellKey;
   currentQuestion = null;
 
   // reset UI
@@ -359,6 +380,7 @@ async function openQuestionScreen(letter) {
   document.getElementById('loading-spinner').classList.remove('hidden');
   document.getElementById('points-popup').classList.add('hidden');
   document.getElementById('points-popup').classList.remove('show');
+  document.getElementById('points-popup').textContent = '+ 4 نقاط';
   document.getElementById('correct-answer-reveal').classList.add('hidden');
 
   // reset both team inputs
@@ -464,9 +486,9 @@ async function submitTeamAnswer(team) {
     input.disabled = true;
     btn.disabled   = true;
 
-    // مقارنة محلية مع الإجابة
+    // مقارنة محلية مع الإجابة (مع تجاهل الفروقات الإملائية)
     const correct = currentQuestion?.answer
-        ? answer.trim() === currentQuestion.answer.trim()
+        ? normalizeArabic(answer) === normalizeArabic(currentQuestion.answer)
         : false;
 
     if (correct) {
@@ -484,12 +506,19 @@ async function submitTeamAnswer(team) {
         scores[team].pts   += 4;
         scores[team].words += 1;
         updateScoreBar();
-        answeredCells.set(selectedLetter, team);
+        answeredCells.set(selectedCellKey, team);
         currentTurn = team;
 
         const popup = document.getElementById('points-popup');
         popup.classList.remove('hidden');
         requestAnimationFrame(() => popup.classList.add('show'));
+
+        if (hasStraightWinningLine(team)) {
+          popup.textContent = `🏆 فاز ${scores[team].name}`;
+          gameStarted = false;
+          setTimeout(() => goToResultsPage(team), 1400);
+          return;
+        }
 
         setTimeout(() => returnToBoard(), 2000);
 
@@ -519,7 +548,7 @@ function endRoundNoWinner() {
         document.getElementById('correct-answer-reveal').classList.remove('hidden');
     }
 
-    answeredCells.set(selectedLetter, null); // خلية رمادية
+    answeredCells.set(selectedCellKey, null); // خلية رمادية
     currentTurn = currentTurn === 'blue' ? 'green' : 'blue';
 
     setTimeout(() => returnToBoard(), 2500);
@@ -597,106 +626,64 @@ let isSpinning  = false;
 let wheelResult = null;
 
 function initWheel() {
-  const wc = document.getElementById('wheelCanvas');
-  if (!wc) return;
-  drawWheel(0);
-}
+  const wheel = document.getElementById('wheel');
+  if (!wheel) return;
 
-function drawWheel(angle) {
-  const wc  = document.getElementById('wheelCanvas');
-  if (!wc) return;
-  const wctx = wc.getContext('2d');
-  const cx   = wc.width  / 2;
-  const cy   = wc.height / 2;
-  const r    = Math.min(cx, cy) - 18;
+  wheel.style.transition = 'none';
+  wheel.style.transform = 'rotate(0deg)';
+  wheelAngle = 0;
+  wheelResult = null;
+  isSpinning = false;
 
-  wctx.clearRect(0, 0, wc.width, wc.height);
-
-  const bName = scores.blue.name;
-  const gName = scores.green.name;
-
-  // Blue section
-  wctx.beginPath();
-  wctx.moveTo(cx, cy);
-  wctx.arc(cx, cy, r, angle, angle + Math.PI);
-  wctx.closePath();
-  wctx.fillStyle = '#4285F4';
-  wctx.fill();
-
-  // Green section
-  wctx.beginPath();
-  wctx.moveTo(cx, cy);
-  wctx.arc(cx, cy, r, angle + Math.PI, angle + Math.PI * 2);
-  wctx.closePath();
-  wctx.fillStyle = '#34A853';
-  wctx.fill();
-
-  // Border
-  wctx.beginPath();
-  wctx.arc(cx, cy, r, 0, Math.PI * 2);
-  wctx.strokeStyle = '#fff';
-  wctx.lineWidth = 4;
-  wctx.stroke();
-
-  // Divider line
-  wctx.beginPath();
-  wctx.moveTo(cx + Math.cos(angle) * r, cy + Math.sin(angle) * r);
-  wctx.lineTo(cx - Math.cos(angle) * r, cy - Math.sin(angle) * r);
-  wctx.strokeStyle = '#fff';
-  wctx.lineWidth = 4;
-  wctx.stroke();
-
-  // Labels
-  wctx.fillStyle = '#fff';
-  wctx.font = 'bold 15px Cairo, Arial';
-  wctx.textAlign = 'center';
-  wctx.textBaseline = 'middle';
-  const blueA  = angle + Math.PI / 2;
-  const greenA = angle + Math.PI * 3 / 2;
-  wctx.fillText(bName, cx + Math.cos(blueA)  * r * 0.6, cy + Math.sin(blueA)  * r * 0.6);
-  wctx.fillText(gName, cx + Math.cos(greenA) * r * 0.6, cy + Math.sin(greenA) * r * 0.6);
-
-  // Center circle
-  wctx.beginPath();
-  wctx.arc(cx, cy, 12, 0, Math.PI * 2);
-  wctx.fillStyle = '#fff';
-  wctx.fill();
+  document.getElementById('wheel-blue-name').textContent = scores.blue.name;
+  document.getElementById('wheel-green-name').textContent = scores.green.name;
+  document.getElementById('spin-result-text').textContent = '';
+  document.getElementById('spin-result-text').style.color = '#333';
+  document.getElementById('spin-btn').disabled = false;
+  document.getElementById('start-game-btn').classList.add('hidden');
 }
 
 function spinWheel() {
   if (isSpinning) return;
   isSpinning = true;
-  document.getElementById('spin-btn').disabled = true;
+  const spinBtn = document.getElementById('spin-btn');
+  const wheel = document.getElementById('wheel');
+  spinBtn.disabled = true;
+  document.getElementById('start-game-btn').classList.add('hidden');
+  document.getElementById('spin-result-text').textContent = '';
 
-  const totalRot  = (6 + Math.random() * 6) * Math.PI * 2;
-  const startAngle = wheelAngle;
-  const endAngle   = startAngle + totalRot;
-  const duration   = 3500;
-  const startTime  = performance.now();
+  const extraSpins = (5 + Math.floor(Math.random() * 4)) * 360;
+  const landing = Math.floor(Math.random() * 359);
+  const totalRotation = wheelAngle + extraSpins + landing;
 
-  function animate(now) {
-    const elapsed  = now - startTime;
-    const progress = Math.min(elapsed / duration, 1);
-    const eased    = 1 - Math.pow(1 - progress, 4);
-    wheelAngle = startAngle + (endAngle - startAngle) * eased;
-    drawWheel(wheelAngle);
+  wheel.style.transition = 'transform 4000ms cubic-bezier(0.22, 1, 0.36, 1)';
+  wheel.style.transform = `rotate(${totalRotation}deg)`;
+  wheelAngle = totalRotation;
 
-    if (progress < 1) {
-      requestAnimationFrame(animate);
-    } else {
-      // تحديد الفائز: المؤشر في الأعلى = -PI/2
-      const pointerInWheel = ((-Math.PI / 2 - wheelAngle) % (Math.PI * 2) + Math.PI * 2) % (Math.PI * 2);
-      wheelResult = pointerInWheel < Math.PI ? 'blue' : 'green';
-      isSpinning  = false;
+  setTimeout(() => {
+    const needle = document.querySelector('.needle');
+    const needleRect = needle.getBoundingClientRect();
+    const tipX = needleRect.left + needleRect.width / 2;
+    const tipY = needleRect.top;
 
-      const winnerName = wheelResult === 'blue' ? scores.blue.name : scores.green.name;
-      const resultEl   = document.getElementById('spin-result-text');
-      resultEl.textContent = `🎉 يبدأ: ${winnerName}!`;
-      resultEl.style.color = wheelResult === 'blue' ? '#4285F4' : '#34A853';
-      document.getElementById('start-game-btn').classList.remove('hidden');
+    needle.style.visibility = 'hidden';
+    const elementUnderTip = document.elementFromPoint(tipX, tipY);
+    needle.style.visibility = 'visible';
+
+    let target = elementUnderTip;
+    while (target && !target.classList.contains('wheel-half')) {
+      target = target.parentElement;
     }
-  }
-  requestAnimationFrame(animate);
+
+    wheelResult = target && target.dataset.team ? target.dataset.team : 'blue';
+    isSpinning = false;
+
+    const winnerName = wheelResult === 'blue' ? scores.blue.name : scores.green.name;
+    const resultEl = document.getElementById('spin-result-text');
+    resultEl.textContent = `يبدا: ${winnerName}`;
+    resultEl.style.color = wheelResult === 'blue' ? '#4285F4' : '#34A853';
+    document.getElementById('start-game-btn').classList.remove('hidden');
+  }, 4100);
 }
 
 function startGame() {
