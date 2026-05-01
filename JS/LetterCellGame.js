@@ -66,7 +66,10 @@ const ctx    = canvas.getContext('2d');
 
 const hexCells = [];
 
-const answeredCells = new Set();
+const answeredCells = new Map(); // letter → 'blue' | 'green'
+
+let currentTurn = 'blue';    // الفريق الحالي اللي دوره يختار
+let gameStarted  = false;    // ما تبدأ اللعبة إلا بعد العجلة
 
 let selectedLetter = null;
 
@@ -209,17 +212,25 @@ function drawHexagon(cx, cy, size, label, state = 'normal') {
   }
   ctx.closePath();
 
-  /* لون الخلية حسب الحالة */
-  if (state === 'answered') ctx.fillStyle = '#e3f2fd';
-  else if (state === 'hover') ctx.fillStyle = '#e3f2fd';
-  else ctx.fillStyle = '#ffffff';
-  ctx.fill();
+      if (state === 'answered') {
+        const teamColor = answeredCells.get(label);
+        ctx.fillStyle = teamColor === null ? '#e0e0e0'
+          : teamColor === 'green' ? '#c8e6c9' : '#bbdefb';
+      } else if (state === 'hover') ctx.fillStyle = '#e3f2fd';
+      else ctx.fillStyle = '#ffffff';
+      ctx.fill();
 
-  ctx.strokeStyle = state === 'hover' ? '#2196f3' : '#000000';
-  ctx.lineWidth   = state === 'hover' ? 3 : 2.5;
+      ctx.strokeStyle = state === 'hover' ? '#2196f3'
+        : state === 'answered'
+          ? (answeredCells.get(label) === null ? '#aaa'
+            : answeredCells.get(label) === 'green' ? '#34A853' : '#4285F4')
+          : '#000000';
+      ctx.lineWidth   = (state === 'hover' || state === 'answered') ? 3 : 2.5;
   ctx.stroke();
 
-  ctx.fillStyle    = state === 'answered' ? '#aaa' : '#000000';
+  ctx.fillStyle    = state === 'answered'
+    ? (answeredCells.get(label) === null ? '#888' : (answeredCells.get(label) === 'green' ? '#2e7d32' : '#1a56db'))
+    : '#000000';
   ctx.font         = 'bold 32px Cairo, Arial';
   ctx.textAlign    = 'center';
   ctx.textBaseline = 'middle';
@@ -307,6 +318,7 @@ function getCellAtPoint(px, py) {
 }
 
 canvas.addEventListener('mousemove', (e) => {
+  if (!gameStarted) return;
   const rect = canvas.getBoundingClientRect();
   const scaleX = canvas.width / rect.width;
   const scaleY = canvas.height / rect.height;
@@ -320,6 +332,7 @@ canvas.addEventListener('mousemove', (e) => {
 canvas.addEventListener('mouseleave', () => drawHexGrid());
 
 canvas.addEventListener('click', (e) => {
+  if (!gameStarted) return;
   const rect = canvas.getBoundingClientRect();
   const scaleX = canvas.width / rect.width;
   const scaleY = canvas.height / rect.height;
@@ -337,68 +350,62 @@ canvas.addEventListener('click', (e) => {
    بعد ما يختار الخليه يقوم يفتح له واجهة السؤال الي خليناهاhidden في الـ CSS
    ================================================ */
 async function openQuestionScreen(letter) {
-  console.log(`\nفتح شاشة السؤال للحرف: "${letter}"`);
-  
-  selectedLetter   = letter;
-  currentQuestion  = null;
+  selectedLetter  = letter;
+  currentQuestion = null;
 
+  // reset UI
   document.getElementById('question-letter').textContent = letter;
   document.getElementById('question-text').textContent   = '';
-  document.getElementById('answer-input').value          = '';
-  document.getElementById('answer-input').disabled       = true;
-  document.getElementById('answer-input').className      = 'answer-input';
-  document.getElementById('check-icon').classList.add('hidden');
+  document.getElementById('loading-spinner').classList.remove('hidden');
   document.getElementById('points-popup').classList.add('hidden');
   document.getElementById('points-popup').classList.remove('show');
-  document.getElementById('submit-btn').disabled         = false;
-  document.getElementById('loading-spinner').classList.remove('hidden');
+  document.getElementById('correct-answer-reveal').classList.add('hidden');
+
+  // reset both team inputs
+  ['blue','green'].forEach(t => {
+    const input  = document.getElementById(`answer-${t}`);
+    const btn    = document.getElementById(`submit-${t}`);
+    const status = document.getElementById(`${t}-status`);
+    const box    = document.getElementById(`${t}-answer-box`);
+    input.value     = '';
+    input.disabled  = true;
+    btn.disabled    = false;
+    status.textContent = '';
+    status.className   = 'team-answer-status';
+    box.className      = `team-answer-box ${t}-box`;
+  });
+
+  // update label names
+  document.getElementById('blue-answer-label').textContent  = scores.blue.name;
+  document.getElementById('green-answer-label').textContent = scores.green.name;
 
   document.getElementById('gameCanvas').classList.add('hidden');
   document.getElementById('question-screen').classList.remove('hidden');
   document.getElementById('navbar').classList.remove('hidden');
 
   try {
-    // البحث عن السؤال في allQuestions
-    console.log(` البحث عن السؤال للحرف "${letter}" في ${allQuestions.length} سؤال`);
-    
     const result = allQuestions.find(cell => cell.letter === letter);
-    
-    if (!result) {
-      throw new Error(`السؤال للحرف "${letter}" غير موجود في allQuestions`);
-    }
-
-    if (!result.questionText) {
-      console.warn(` questionText فارغ:`, result);
-      throw new Error(`نص السؤال للحرف "${letter}" فارغ`);
-    }
-
+    if (!result || !result.questionText) throw new Error('السؤال غير موجود');
     currentQuestion = result;
-
-    console.log(`تم تحميل السؤال:`, {
-      letter: result.letter,
-      question: result.questionText,
-      hasAnswer: !!result.answer
-    });
 
     document.getElementById('loading-spinner').classList.add('hidden');
     document.getElementById('question-text').textContent = result.questionText;
-    
+
     startCountdown(() => {
-      document.getElementById('answer-input').disabled = false;
-      document.getElementById('answer-input').focus();
+      document.getElementById('answer-blue').disabled  = false;
+      document.getElementById('answer-green').disabled = false;
       startGlobalTimer();
     });
 
   } catch (err) {
-    console.error(" خطأ في تحميل السؤال:", err);
     document.getElementById('loading-spinner').classList.add('hidden');
-    document.getElementById('question-text').textContent = `${err.message}`;
-    document.getElementById('submit-btn').disabled = true;
-    
-    // العودة للشبكة بعد 2 ثانية
+    document.getElementById('question-text').textContent = err.message;
     setTimeout(() => returnToBoard(), 2000);
   }
 }
+
+// حالة الإجابات
+const teamAnswered = { blue: false, green: false };
 
 let timeLeft;
 let timerId = null;
@@ -408,15 +415,12 @@ function startCountdown(onComplete) {
     let count = 3;
     overlay.innerHTML = `<span class="countdown-number">${count}</span>`;
     overlay.classList.remove('hidden');
-    document.getElementById('answer-input').disabled = true;
-    document.getElementById('submit-btn').disabled   = true;
 
     const countId = setInterval(() => {
         count--;
         if (count <= 0) {
             clearInterval(countId);
             overlay.classList.add('hidden');
-            document.getElementById('submit-btn').disabled = false;
             onComplete();
         } else {
             overlay.innerHTML = `<span class="countdown-number">${count}</span>`;
@@ -426,6 +430,8 @@ function startCountdown(onComplete) {
 
 function startGlobalTimer() {
     timeLeft = 10;
+    teamAnswered.blue  = false;
+    teamAnswered.green = false;
     clearInterval(timerId);
 
     const fill = document.getElementById('timerFill');
@@ -439,144 +445,263 @@ function startGlobalTimer() {
 
         if (timeLeft <= 0) {
             clearInterval(timerId);
-            returnToBoard();
-            showPopup("انتهى الوقت! اختر حرفاً آخر.");
+            endRoundNoWinner();
         }
     }, 1000);
 }
-async function submitAnswer() {
-    const input = document.getElementById('answer-input').value.trim();
-    const playerName = localStorage.getItem('playerName') || 'Unknown Player'; 
-    const playerTeam = localStorage.getItem('playerTeam') || 'blue';
-    
-    console.log(`\n DEBUG submitAnswer:`);
-    console.log(`  - Input: "${input}"`);
-    console.log(`  - PlayerName: "${playerName}"`);
-    console.log(`  - PlayerTeam: "${playerTeam}"`);
-    console.log(`  - SelectedLetter: "${selectedLetter}"`);
-    console.log(`  - SessionID: "${currentSessionId}"`);
-    
-    if (!input) {
-        alert("الرجاء إدخال إجابة");
-        return;
-    }
 
-    if (!currentSessionId || !selectedLetter) {
-        console.error(" خطأ: معرف الجلسة أو الحرف غير موجود");
-        alert(" حدث خطأ في البيانات. حاول مرة أخرى.");
-        return;
-    }
+async function submitTeamAnswer(team) {
+    if (teamAnswered[team]) return;
+    const input  = document.getElementById(`answer-${team}`);
+    const btn    = document.getElementById(`submit-${team}`);
+    const status = document.getElementById(`${team}-status`);
+    const box    = document.getElementById(`${team}-answer-box`);
+    const answer = input.value.trim();
 
-    // منع الضغط على الزر مرتين
-    const submitBtn = document.getElementById('submit-btn');
-    if (submitBtn.disabled) {
-        console.warn("الزر معطل - محاولة ضغط مضاعفة");
-        return;
-    }
-    submitBtn.disabled = true;
+    if (!answer) { input.focus(); return; }
 
-    // إيقاف التايمر
-    clearInterval(timerId); 
+    teamAnswered[team] = true;
+    input.disabled = true;
+    btn.disabled   = true;
 
-    try {
-        const requestBody = {
-            sessionId: currentSessionId,
-            team: playerTeam,
-            answer: input,
-            letter: selectedLetter,
-            playerName: playerName
-        };
+    // مقارنة محلية مع الإجابة
+    const correct = currentQuestion?.answer
+        ? answer.trim() === currentQuestion.answer.trim()
+        : false;
 
-        console.log("إرسال الطلب إلى السيرفر:", requestBody);
+    if (correct) {
+        clearInterval(timerId);
+        status.textContent = '✓ إجابة صحيحة!';
+        status.className   = 'team-answer-status status-correct';
+        box.classList.add('answered-correct');
 
-        const response = await fetch('/api/answer', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(requestBody)
-        });
+        // أوقف الفريق الآخر
+        const other = team === 'blue' ? 'green' : 'blue';
+        document.getElementById(`answer-${other}`).disabled = true;
+        document.getElementById(`submit-${other}`).disabled = true;
 
-        const result = await response.json();
-        console.log(` الرد من السيرفر (Status: ${response.status}):`, result);
-
-        if (!response.ok) {
-            // خطأ من السيرفر
-            console.error(" رد خطأ من السيرفر:", result.error);
-            if (result.error === "already_attempted") {
-                alert(" عذراً، لقد استنفدت محاولتك لهذا السؤال!");
-            } else {
-                alert(` خطأ: ${result.error || 'إجابة خاطئة'}`);
-            }
-            handleWrongAnswer();
-        } else if (result.correct) {
-            console.log(`إجابة صحيحة! النقاط: ${result.points}`);
-            handleCorrectAnswer(playerTeam, result.points);
-        } else {
-            console.log("إجابة خاطئة");
-            handleWrongAnswer();
-        }
-
-    } catch (error) {
-        console.error(" خطأ في الاتصال بالسيرفر:", error);
-        alert("فشل الاتصال بالسيرفر. تأكد من أن السيرفر يعمل.");
-        handleWrongAnswer();
-    } finally {
-        // إعادة تفعيل الزر
-        console.log(" إعادة تفعيل زر Submit");
-        submitBtn.disabled = false;
-    }
-}
-
-function handleCorrectAnswer(team, points) {
-    document.getElementById('answer-input').disabled = true;
-    document.getElementById('submit-btn').disabled   = true;
-    document.getElementById('check-icon').classList.remove('hidden');
-
-    if (scores[team]) { 
-        scores[team].pts = points || (scores[team].pts + 4);  // استخدم النقاط من السيرفر
+        // نقاط
+        scores[team].pts   += 4;
         scores[team].words += 1;
         updateScoreBar();
+        answeredCells.set(selectedLetter, team);
+        currentTurn = team;
+
+        const popup = document.getElementById('points-popup');
+        popup.classList.remove('hidden');
+        requestAnimationFrame(() => popup.classList.add('show'));
+
+        setTimeout(() => returnToBoard(), 2000);
+
+    } else {
+        status.textContent = '✗ إجابة خاطئة';
+        status.className   = 'team-answer-status status-wrong';
+        box.classList.add('answered-wrong');
+
+        // لو كلا الفريقين أجابا وكلاهم خطأ
+        if (teamAnswered.blue && teamAnswered.green) {
+            clearInterval(timerId);
+            endRoundNoWinner();
+        }
     }
-
-    /* أنيميشن النقاط */
-    const popup = document.getElementById('points-popup');
-    popup.classList.remove('hidden');
-    requestAnimationFrame(() => popup.classList.add('show'));
-
-    clearInterval(timerId);
-
-    setTimeout(() => {
-      answeredCells.add(selectedLetter);
-      returnToBoard();
-    }, 2000);
 }
 
-  function handleWrongAnswer() {
-    const input_el = document.getElementById('answer-input');
-    input_el.classList.add('wrong');
-    setTimeout(() => {
-        input_el.classList.remove('wrong');
-        // الرجوع للشبكة بعد 1.5 ثانية
-        setTimeout(() => {
-            returnToBoard();
-        }, 500);
-    }, 700);
-  }
+function endRoundNoWinner() {
+    // أوقف كل الإدخالات
+    ['blue','green'].forEach(t => {
+        document.getElementById(`answer-${t}`).disabled = true;
+        document.getElementById(`submit-${t}`).disabled = true;
+    });
 
-/* هذي سويتها عشان لو ضغط Enter الي في الكيبورد يرسل الاجابه يعني مو لازم يضغط على البوتون حق Submit */
-document.getElementById('answer-input').addEventListener('keydown', (e) => {
-  if (e.key === 'Enter') submitAnswer();
-});
+    // أظهر الإجابة الصحيحة
+    if (currentQuestion?.answer) {
+        document.getElementById('correct-answer-text').textContent = currentQuestion.answer;
+        document.getElementById('correct-answer-reveal').classList.remove('hidden');
+    }
+
+    answeredCells.set(selectedLetter, null); // خلية رمادية
+    currentTurn = currentTurn === 'blue' ? 'green' : 'blue';
+
+    setTimeout(() => returnToBoard(), 2500);
+}
+
+// Enter key لكل input
+document.getElementById('answer-blue').addEventListener('keydown',  e => { if (e.key === 'Enter') submitTeamAnswer('blue'); });
+document.getElementById('answer-green').addEventListener('keydown', e => { if (e.key === 'Enter') submitTeamAnswer('green'); });
 
 function returnToBoard() {
   document.getElementById('question-screen').classList.add('hidden');
   document.getElementById('navbar').classList.add('hidden');
   document.getElementById('gameCanvas').classList.remove('hidden');
   clearInterval(timerId);
+  updateTurnIndicator();
   drawHexGrid();
 }
 
 drawHexGrid();
-loadQuestions(); // نبدأ بتحميل الأسئلة من السيرفر
-document.getElementById('navbar').classList.add('hidden'); // مخفي في البداية
+loadQuestions();
+document.getElementById('navbar').classList.add('hidden');
+initWheel();
+
+/* ================================================
+   دالة مؤشر الدور
+   ================================================ */
+function updateTurnIndicator() {
+  const indicator = document.getElementById('turn-indicator');
+  const text      = document.getElementById('turn-text');
+  if (!indicator || !gameStarted) return;
+  const teamName = scores[currentTurn]?.name || (currentTurn === 'blue' ? 'الفريق الأزرق' : 'الفريق الأخضر');
+  text.textContent = `🎯 دور ${teamName} لاختيار حرف`;
+  indicator.className = 'turn-indicator ' + (currentTurn === 'blue' ? 'blue-turn' : 'green-turn');
+  indicator.classList.remove('hidden');
+}
+
+/* ================================================
+   Winner Popup
+   ================================================ */
+let pendingCorrectAnswer = false;
+
+function showWinnerPopup(isCorrect) {
+  pendingCorrectAnswer = isCorrect;
+  const overlay = document.getElementById('winner-popup-overlay');
+  document.getElementById('winner-popup-title').textContent =
+    isCorrect ? '🎉 إجابة صحيحة! من كان أسرع؟' : '⏰ من أجاب؟';
+  document.getElementById('winner-blue-btn').textContent  = scores.blue.name;
+  document.getElementById('winner-green-btn').textContent = scores.green.name;
+  overlay.classList.remove('hidden');
+}
+
+function handleWinnerChoice(team) {
+  document.getElementById('winner-popup-overlay').classList.add('hidden');
+  clearInterval(timerId);
+
+  if (team && pendingCorrectAnswer) {
+    scores[team].pts   += 4;
+    scores[team].words += 1;
+    updateScoreBar();
+    answeredCells.set(selectedLetter, team);
+    currentTurn = team; // الفائز يختار الحرف التالي
+  } else {
+    // لم يجب أحد أو إجابة خاطئة → الدور للفريق الآخر
+    currentTurn = currentTurn === 'blue' ? 'green' : 'blue';
+  }
+
+  returnToBoard();
+}
+
+/* ================================================
+   Wheel Logic
+   ================================================ */
+let wheelAngle  = 0;
+let isSpinning  = false;
+let wheelResult = null;
+
+function initWheel() {
+  const wc = document.getElementById('wheelCanvas');
+  if (!wc) return;
+  drawWheel(0);
+}
+
+function drawWheel(angle) {
+  const wc  = document.getElementById('wheelCanvas');
+  if (!wc) return;
+  const wctx = wc.getContext('2d');
+  const cx   = wc.width  / 2;
+  const cy   = wc.height / 2;
+  const r    = Math.min(cx, cy) - 18;
+
+  wctx.clearRect(0, 0, wc.width, wc.height);
+
+  const bName = scores.blue.name;
+  const gName = scores.green.name;
+
+  // Blue section
+  wctx.beginPath();
+  wctx.moveTo(cx, cy);
+  wctx.arc(cx, cy, r, angle, angle + Math.PI);
+  wctx.closePath();
+  wctx.fillStyle = '#4285F4';
+  wctx.fill();
+
+  // Green section
+  wctx.beginPath();
+  wctx.moveTo(cx, cy);
+  wctx.arc(cx, cy, r, angle + Math.PI, angle + Math.PI * 2);
+  wctx.closePath();
+  wctx.fillStyle = '#34A853';
+  wctx.fill();
+
+  // Border
+  wctx.beginPath();
+  wctx.arc(cx, cy, r, 0, Math.PI * 2);
+  wctx.strokeStyle = '#fff';
+  wctx.lineWidth = 4;
+  wctx.stroke();
+
+  // Divider line
+  wctx.beginPath();
+  wctx.moveTo(cx + Math.cos(angle) * r, cy + Math.sin(angle) * r);
+  wctx.lineTo(cx - Math.cos(angle) * r, cy - Math.sin(angle) * r);
+  wctx.strokeStyle = '#fff';
+  wctx.lineWidth = 4;
+  wctx.stroke();
+
+  // Labels
+  wctx.fillStyle = '#fff';
+  wctx.font = 'bold 15px Cairo, Arial';
+  wctx.textAlign = 'center';
+  wctx.textBaseline = 'middle';
+  const blueA  = angle + Math.PI / 2;
+  const greenA = angle + Math.PI * 3 / 2;
+  wctx.fillText(bName, cx + Math.cos(blueA)  * r * 0.6, cy + Math.sin(blueA)  * r * 0.6);
+  wctx.fillText(gName, cx + Math.cos(greenA) * r * 0.6, cy + Math.sin(greenA) * r * 0.6);
+
+  // Center circle
+  wctx.beginPath();
+  wctx.arc(cx, cy, 12, 0, Math.PI * 2);
+  wctx.fillStyle = '#fff';
+  wctx.fill();
+}
+
+function spinWheel() {
+  if (isSpinning) return;
+  isSpinning = true;
+  document.getElementById('spin-btn').disabled = true;
+
+  const totalRot  = (6 + Math.random() * 6) * Math.PI * 2;
+  const startAngle = wheelAngle;
+  const endAngle   = startAngle + totalRot;
+  const duration   = 3500;
+  const startTime  = performance.now();
+
+  function animate(now) {
+    const elapsed  = now - startTime;
+    const progress = Math.min(elapsed / duration, 1);
+    const eased    = 1 - Math.pow(1 - progress, 4);
+    wheelAngle = startAngle + (endAngle - startAngle) * eased;
+    drawWheel(wheelAngle);
+
+    if (progress < 1) {
+      requestAnimationFrame(animate);
+    } else {
+      // تحديد الفائز: المؤشر في الأعلى = -PI/2
+      const pointerInWheel = ((-Math.PI / 2 - wheelAngle) % (Math.PI * 2) + Math.PI * 2) % (Math.PI * 2);
+      wheelResult = pointerInWheel < Math.PI ? 'blue' : 'green';
+      isSpinning  = false;
+
+      const winnerName = wheelResult === 'blue' ? scores.blue.name : scores.green.name;
+      const resultEl   = document.getElementById('spin-result-text');
+      resultEl.textContent = `🎉 يبدأ: ${winnerName}!`;
+      resultEl.style.color = wheelResult === 'blue' ? '#4285F4' : '#34A853';
+      document.getElementById('start-game-btn').classList.remove('hidden');
+    }
+  }
+  requestAnimationFrame(animate);
+}
+
+function startGame() {
+  currentTurn = wheelResult || 'blue';
+  gameStarted  = true;
+  document.getElementById('wheel-overlay').style.display = 'none';
+  updateTurnIndicator();
+}
