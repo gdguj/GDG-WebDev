@@ -25,7 +25,31 @@ function getVisibleCollectionNames(collections) {
     .filter((name) => name && !name.startsWith("system."));
 }
 
+function enforceModelCollectionPolicy() {
+  const modelNames = mongoose.modelNames();
+  const disallowedModels = [];
+
+  modelNames.forEach((modelName) => {
+    const model = mongoose.model(modelName);
+    const collectionName = String(
+      (model && model.collection && model.collection.collectionName) || ""
+    );
+
+    if (collectionName && !ALLOWED_COLLECTIONS.has(collectionName)) {
+      disallowedModels.push(`${modelName}->${collectionName}`);
+    }
+  });
+
+  if (disallowedModels.length) {
+    throw new Error(
+      `Disallowed model-collection bindings: ${disallowedModels.join(", ")}`
+    );
+  }
+}
+
 async function enforceCollectionPolicy() {
+  enforceModelCollectionPolicy();
+
   const collections = await mongoose.connection.db
     .listCollections({}, { nameOnly: true })
     .toArray();

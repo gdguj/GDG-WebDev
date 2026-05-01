@@ -125,7 +125,36 @@ function hasStraightWinningLine(team) {
   return winningLines.some((line) => line.every((cell) => answeredCells.get(cell.key) === team));
 }
 
-function goToResultsPage(team) {
+async function persistScore(gameType, points, externalSessionId, metadata) {
+  try {
+    const token = localStorage.getItem('gdgAuthToken') || sessionStorage.getItem('gdgAuthToken');
+    if (!token) return;
+
+    await fetch('/api/scores/record', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        gameType,
+        points,
+        externalSessionId,
+        source: 'letter_cells_local',
+        metadata,
+      }),
+    });
+  } catch (error) {
+    console.error('Score persistence failed:', error);
+  }
+}
+
+async function goToResultsPage(team) {
+  await persistScore('letter_cells', scores[team].pts, currentSessionId || `letter-local-${Date.now()}`, {
+    winnerTeam: team,
+    winnerName: scores[team].name,
+  });
+
   const payload = {
     game: 'letter-cells',
     winnerTeam: team,

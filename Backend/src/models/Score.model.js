@@ -12,6 +12,13 @@ const playerScoreSchema = new mongoose.Schema(
       required: true,
       trim: true,
     },
+    email: {
+      type: String,
+      default: null,
+      trim: true,
+      lowercase: true,
+      index: true,
+    },
     score: {
       type: Number,
       required: true,
@@ -33,6 +40,13 @@ const winnerScoreSchema = new mongoose.Schema(
       required: true,
       trim: true,
     },
+    email: {
+      type: String,
+      default: null,
+      trim: true,
+      lowercase: true,
+      index: true,
+    },
     score: {
       type: Number,
       required: true,
@@ -46,13 +60,20 @@ const scoreSchema = new mongoose.Schema(
   {
     sessionId: {
       type: mongoose.Schema.Types.ObjectId,
-      required: true,
+      default: null,
       ref: "GameSession",
       index: true,
     },
+    externalSessionId: {
+      type: String,
+      default: null,
+      trim: true,
+      index: true,
+      sparse: true,
+    },
     gameId: {
       type: mongoose.Schema.Types.ObjectId,
-      required: true,
+      default: null,
       index: true,
     },
     gameType: {
@@ -72,6 +93,23 @@ const scoreSchema = new mongoose.Schema(
     winner: {
       type: winnerScoreSchema,
       required: true,
+    },
+    accountEmail: {
+      type: String,
+      default: null,
+      trim: true,
+      lowercase: true,
+      index: true,
+    },
+    source: {
+      type: String,
+      default: "multiplayer",
+      trim: true,
+      index: true,
+    },
+    metadata: {
+      type: mongoose.Schema.Types.Mixed,
+      default: null,
     },
     playedAt: {
       type: Date,

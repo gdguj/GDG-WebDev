@@ -30,6 +30,30 @@ let teamScores = {
   team2: 0
 };
 
+async function persistScore(gameType, points, externalSessionId, metadata) {
+  try {
+    const token = localStorage.getItem('gdgAuthToken') || sessionStorage.getItem('gdgAuthToken');
+    if (!token) return;
+
+    await fetch('/api/scores/record', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        gameType,
+        points,
+        externalSessionId,
+        source: 'survey_game_local',
+        metadata,
+      }),
+    });
+  } catch (error) {
+    console.error('Score persistence failed:', error);
+  }
+}
+
 let roundHistory = [];
 
 function getTeamLabel(teamKey) {
@@ -493,7 +517,7 @@ function handleRoundEnd(message, winnerTeamKey) {
   btn.style.display = "inline-block";
 }
 
-function finishGame() {
+async function finishGame() {
   gameOver = true;
 
   const winnerTeamKey =
@@ -510,6 +534,12 @@ function finishGame() {
     rounds: roundHistory,
     generatedAt: new Date().toISOString()
   };
+
+  const winnerPoints = Math.max(teamScores.team1, teamScores.team2);
+  await persistScore('survey_game', winnerPoints, `survey-local-${Date.now()}`, {
+    winnerTeam: winnerTeamKey,
+    roundsPlayed: roundCounter,
+  });
 
   sessionStorage.setItem("familyFeudFinalResult", JSON.stringify(finalResultPayload));
   window.location.href = "survey-results.html";

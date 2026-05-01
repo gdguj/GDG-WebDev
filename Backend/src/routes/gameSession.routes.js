@@ -15,11 +15,4 @@ router.get("/games/templates", controller.getTemplateGames);
 router.get("/games/user", controller.getUserGames);
 router.get("/session/:sessionId", controller.getSession);
 
-// Backward-compatible routes
-router.post("/sessions", controller.createGameSession);
-router.post("/sessions/join", controller.joinGameByCode);
-router.patch("/sessions/:sessionId/start", controller.startGame);
-router.post("/sessions/:sessionId/answer", controller.submitAnswer);
-router.patch("/sessions/:sessionId/finish", controller.finishGame);
-
 module.exports = router;

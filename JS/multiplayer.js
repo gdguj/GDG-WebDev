@@ -171,6 +171,25 @@
     throw new Error("تعذر تحديد اسم المستخدم. يرجى تسجيل الدخول مرة أخرى.");
   }
 
+  function getSignedInUserProfile() {
+    const raw = localStorage.getItem("gdgCurrentUser") || sessionStorage.getItem("gdgCurrentUser");
+    if (!raw) {
+      throw new Error("تعذر تحديد بيانات المستخدم. يرجى تسجيل الدخول مرة أخرى.");
+    }
+
+    try {
+      const user = JSON.parse(raw);
+      const name = String((user && user.name) || "").trim();
+      const email = String((user && user.email) || "").trim().toLowerCase();
+      if (!name || !email) {
+        throw new Error("تعذر تحديد بيانات المستخدم. يرجى تسجيل الدخول مرة أخرى.");
+      }
+      return { name, email };
+    } catch (error) {
+      throw new Error("تعذر تحديد بيانات المستخدم. يرجى تسجيل الدخول مرة أخرى.");
+    }
+  }
+
   function initHomePage() {
     const createCustomTopBtn = document.getElementById("createCustomTop");
     const jumpJoinBtn = document.getElementById("jumpJoin");
@@ -664,6 +683,7 @@
             session.gameSnapshot && session.gameSnapshot.source === "userGames"
               ? "user"
               : "template";
+          const profile = getSignedInUserProfile();
 
           const newSession = await api("/api/session/create", {
             method: "POST",
@@ -672,7 +692,8 @@
               gameSource: source,
               createdBy: {
                 userId: state.userId,
-                name: state.playerName || "لاعب",
+                name: profile.name,
+                email: profile.email,
               },
               settings: {
                 maxPlayers: session.settings && session.settings.maxPlayers ? session.settings.maxPlayers : 8,

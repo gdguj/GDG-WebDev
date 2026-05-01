@@ -35,6 +35,11 @@ function normalizeText(value) {
     .replace(/\s+/g, " ");
 }
 
+function normalizeEmail(value) {
+  const email = String(value || "").trim().toLowerCase();
+  return email || null;
+}
+
 function generateJoinCode(length) {
   let code = "";
   for (let i = 0; i < length; i += 1) {
@@ -171,6 +176,7 @@ async function createGameSession(payload) {
       {
         userId: creatorId,
         name: createdBy.name,
+        email: normalizeEmail(createdBy.email),
         score: 0,
         isReady: false,
       },
@@ -232,6 +238,7 @@ async function joinGameByCode(payload) {
   session.players.push({
     userId: toObjectId(player.userId, "player.userId"),
     name: player.name,
+    email: normalizeEmail(player.email),
     score: 0,
     isReady: Boolean(player.isReady),
   });
@@ -497,19 +504,24 @@ async function finishGame(payload) {
       players: session.players.map((player) => ({
         userId: player.userId || null,
         name: player.name,
+        email: normalizeEmail(player.email),
         score: player.score,
       })),
       winner: winnerPlayer
         ? {
             userId: winnerPlayer.userId,
             name: winnerPlayer.name,
+            email: normalizeEmail(winnerPlayer.email),
             score: winnerPlayer.score,
           }
         : {
             userId: null,
             name: "لا يوجد فائز",
+            email: null,
             score: 0,
           },
+      accountEmail: winnerPlayer ? normalizeEmail(winnerPlayer.email) : null,
+      source: "multiplayer",
       playedAt: session.finishedAt,
     }));
 
@@ -531,11 +543,28 @@ async function getLeaderboard(payload = {}) {
 
   pipeline.push({ $unwind: "$players" });
   pipeline.push({
-    $group: {
-      _id: {
-        userId: "$players.userId",
-        name: "$players.name",
+    $addFields: {
+      playerKey: {
+        $ifNull: [
+          "$players.email",
+          {
+            $concat: [
+              "legacy:",
+              { $ifNull: [{ $toString: "$players.userId" }, "unknown"] },
+              ":",
+              { $ifNull: ["$players.name", "لاعب"] },
+            ],
+          },
+        ],
       },
+    },
+  });
+  pipeline.push({
+    $group: {
+      _id: "$playerKey",
+      userId: { $max: "$players.userId" },
+      email: { $max: "$players.email" },
+      name: { $last: "$players.name" },
       totalScore: { $sum: "$players.score" },
       gamesPlayed: { $sum: 1 },
       bestSingleGame: { $max: "$players.score" },
@@ -544,8 +573,9 @@ async function getLeaderboard(payload = {}) {
   pipeline.push({
     $project: {
       _id: 0,
-      userId: "$_id.userId",
-      name: "$_id.name",
+      userId: "$userId",
+      email: "$email",
+      name: "$name",
       totalScore: 1,
       gamesPlayed: 1,
       bestSingleGame: 1,

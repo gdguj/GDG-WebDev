@@ -576,8 +576,32 @@ function nextRound() {
   loadQuestion();
 }
 
+async function persistScore(gameType, points, externalSessionId, metadata) {
+  try {
+    const token = localStorage.getItem('gdgAuthToken') || sessionStorage.getItem('gdgAuthToken');
+    if (!token) return;
+
+    await fetch('/api/scores/record', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        gameType,
+        points,
+        externalSessionId,
+        source: 'image_guessing_local',
+        metadata,
+      }),
+    });
+  } catch (error) {
+    console.error('Score persistence failed:', error);
+  }
+}
+
 /* SECTION 9 — GAME OVER */
-function showGameOver() {
+async function showGameOver() {
   clearInterval(STATE.timer);
   DOM.answer.disabled = true;
   DOM.submitBtn.style.display = 'none';
@@ -599,6 +623,13 @@ function showGameOver() {
     totalWords: STATE.shuffled.length,
     pointsPerAnswer: POINTS_PER_ANSWER
   };
+
+  await persistScore('image_guessing', resultPayload.winnerScore, `image-local-${Date.now()}`, {
+    winnerKey,
+    winnerName,
+    scoreA: STATE.scores.a,
+    scoreB: STATE.scores.b,
+  });
 
   sessionStorage.setItem('imageGameResult', JSON.stringify(resultPayload));
   window.location.href = 'Image-game-result-page.html';

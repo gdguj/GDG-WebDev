@@ -13,6 +13,12 @@ const playerSchema = new mongoose.Schema(
       required: true,
       trim: true,
     },
+    email: {
+      type: String,
+      default: null,
+      trim: true,
+      lowercase: true,
+    },
     score: {
       type: Number,
       default: 0,
