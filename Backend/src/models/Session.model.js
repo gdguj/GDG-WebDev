@@ -39,6 +39,10 @@ const SessionSchema = new mongoose.Schema(
   status: String,
   nowPlaying: String,
   turnEndsAt: Date,
+  finishedAt: {
+    type: Date,
+    default: null,
+  },
   teams: {
     green: { name: String, score: Number, words: Number },
     blue: { name: String, score: Number, words: Number }
@@ -50,7 +54,11 @@ const SessionSchema = new mongoose.Schema(
     lastMoveAt: Date
   }
 },
-{ timestamps: true }
+{
+  timestamps: true,
+  versionKey: false,
+  collection: "gamelobbies",
+}
 );
 
 SessionSchema.index(
@@ -58,4 +66,15 @@ SessionSchema.index(
   { expireAfterSeconds: 0, partialFilterExpression: { expiresAt: { $type: "date" } } }
 );
 
-module.exports = mongoose.model("Session", SessionSchema);
+SessionSchema.index(
+  { finishedAt: 1 },
+  {
+    expireAfterSeconds: 3600,
+    partialFilterExpression: {
+      status: { $in: ["finished", "closed", "abandoned"] },
+      finishedAt: { $type: "date" },
+    },
+  }
+);
+
+module.exports = mongoose.model("Session", SessionSchema, "gamelobbies");

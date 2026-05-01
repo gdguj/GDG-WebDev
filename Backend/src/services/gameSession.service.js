@@ -161,6 +161,7 @@ async function createGameSession(payload) {
     gameId: game._id,
     gameType: game.gameType,
     joinCode,
+    expiresAt: new Date(Date.now() + 60 * 60 * 1000),
     status: "waiting",
     createdBy: {
       userId: creatorId,
@@ -296,6 +297,7 @@ async function startGame(payload) {
   }
 
   session.status = "in-progress";
+  session.expiresAt = null;
   session.startedAt = new Date();
   session.currentState.currentQuestionIndex = 0;
   session.currentState.currentTurn = session.players[0].userId;

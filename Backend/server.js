@@ -9,19 +9,53 @@ const { initSocket, emitSessionEvent } = require("./src/realtime/socket");
 const gameSessionService = require("./src/services/gameSession.service");
 
 const PORT = process.env.PORT || 5000;
+const ALLOWED_COLLECTIONS = new Set([
+  "gameTemplates",
+  "gamelobbies",
+  "scores",
+  "userGames",
+]);
 
 mongoose.set("autoCreate", false);
 mongoose.set("autoIndex", false);
 
-// ================================
-// MongoDB Connection
-// ================================
-mongoose.connect(process.env.MONGO_URI).then(() => {
-  console.log('✅ MongoDB connected');
-}).catch(err => {
-  console.error('❌ MongoDB connection error:', err);
-  process.exit(1);
-});
+function getVisibleCollectionNames(collections) {
+  return collections
+    .map((entry) => String(entry.name || ""))
+    .filter((name) => name && !name.startsWith("system."));
+}
+
+async function enforceCollectionPolicy() {
+  const collections = await mongoose.connection.db
+    .listCollections({}, { nameOnly: true })
+    .toArray();
+
+  const existing = getVisibleCollectionNames(collections);
+  const existingSet = new Set(existing);
+
+  const disallowed = existing.filter((name) => !ALLOWED_COLLECTIONS.has(name));
+  const missing = Array.from(ALLOWED_COLLECTIONS).filter((name) => !existingSet.has(name));
+
+  if (disallowed.length || missing.length) {
+    const details = [
+      disallowed.length
+        ? `Collections not allowed: ${disallowed.join(", ")}`
+        : null,
+      missing.length
+        ? `Collections missing (must exist manually): ${missing.join(", ")}`
+        : null,
+    ]
+      .filter(Boolean)
+      .join(" | ");
+
+    throw new Error(`Mongo collection policy violation. ${details}`);
+  }
+
+  console.log(
+    `✅ Mongo collection policy enforced: ${Array.from(ALLOWED_COLLECTIONS).join(", "
+    )}`
+  );
+}
 
 // ================================
 // تقديم الملفات الثابتة (Frontend)
@@ -57,12 +91,27 @@ app.get("/", (req, res) => {
 // بدء السيرفر
 // ================================
 const server = http.createServer(app);
-initSocket(server);
-gameSessionService.setRealtimeEmitter(emitSessionEvent);
 
-server.listen(PORT, () => {
-  console.log(`🚀 Server running on http://localhost:${PORT}`);
-  console.log(`🎮 Survey Game: http://localhost:${PORT}/survey-game.html`);
-  console.log(`🖼️  Image Game: http://localhost:${PORT}/imageGame.html`);
-  console.log(`Letter Cell Game: http://localhost:${PORT}/LettercellGameLanding.html`);
-});
+async function startServer() {
+  try {
+    await mongoose.connect(process.env.MONGO_URI);
+    console.log("✅ MongoDB connected");
+
+    await enforceCollectionPolicy();
+
+    initSocket(server);
+    gameSessionService.setRealtimeEmitter(emitSessionEvent);
+
+    server.listen(PORT, () => {
+      console.log(`🚀 Server running on http://localhost:${PORT}`);
+      console.log(`🎮 Survey Game: http://localhost:${PORT}/survey-game.html`);
+      console.log(`🖼️  Image Game: http://localhost:${PORT}/imageGame.html`);
+      console.log(`Letter Cell Game: http://localhost:${PORT}/LettercellGameLanding.html`);
+    });
+  } catch (err) {
+    console.error("❌ Server startup blocked:", err.message || err);
+    process.exit(1);
+  }
+}
+
+startServer();

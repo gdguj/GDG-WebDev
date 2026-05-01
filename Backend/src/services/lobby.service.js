@@ -2,7 +2,7 @@ const Session = require("../models/Session.model");
 
 async function createSession(gameId) {
   const joinCode = Math.random().toString(36).substring(2, 8).toUpperCase();
-  const expiresAt = new Date(Date.now() + 2 * 60 * 60 * 1000);
+  const expiresAt = new Date(Date.now() + 60 * 60 * 1000);
 
   const newSession = await Session.create({
     sessionId: `lobby_${joinCode}`,

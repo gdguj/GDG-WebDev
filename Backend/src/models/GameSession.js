@@ -124,6 +124,10 @@ const gameSessionSchema = new mongoose.Schema(
       trim: true,
       index: true,
     },
+    expiresAt: {
+      type: Date,
+      default: null,
+    },
     status: {
       type: String,
       enum: ["waiting", "in-progress", "finished"],
@@ -193,16 +197,16 @@ const gameSessionSchema = new mongoose.Schema(
   },
   {
     versionKey: false,
-    collection: "sessions",
+    collection: "gamelobbies",
   }
 );
 
 gameSessionSchema.index(
   { finishedAt: 1 },
   {
-    expireAfterSeconds: 86400,
+    expireAfterSeconds: 3600,
     partialFilterExpression: { status: "finished", finishedAt: { $type: "date" } },
   }
 );
 
-module.exports = mongoose.model("GameSession", gameSessionSchema, "sessions");
+module.exports = mongoose.model("GameSession", gameSessionSchema, "gamelobbies");

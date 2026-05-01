@@ -7,6 +7,9 @@ exports.submitAnswer = async (sessionId, team, answer, letter, playerName) => {
         // 1. البحث عن الجلسة
         const session = await Session.findOne({ sessionId });
         if (!session) throw new Error("الجلسة غير موجودة!");
+        if (session.status === "finished") {
+            throw new Error("الجلسة منتهية");
+        }
 
         // 2. البحث عن الخلية بناءً على الحرف
         const cell = session.cells.find(c => c.letter === letter);
@@ -45,6 +48,25 @@ exports.submitAnswer = async (sessionId, team, answer, letter, playerName) => {
             
             if (!session.teams[team].words) session.teams[team].words = 0;
             session.teams[team].words += 1;
+        }
+
+        const playableCells = session.cells.filter(
+            (entry) => String(entry.letter || "").trim() && entry.status !== "hidden"
+        );
+        const allPlayableSolved =
+            playableCells.length > 0 && playableCells.every((entry) => entry.status === "correct");
+
+        if (allPlayableSolved) {
+            session.status = "finished";
+            session.finishedAt = new Date();
+
+            const greenScore = Number(session.teams?.green?.score || 0);
+            const blueScore = Number(session.teams?.blue?.score || 0);
+            if (greenScore === blueScore) {
+                session.winner = "draw";
+            } else {
+                session.winner = greenScore > blueScore ? "green" : "blue";
+            }
         }
 
         // 8. حفظ الجلسة المحدثة
