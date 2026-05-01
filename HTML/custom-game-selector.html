@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>اختيار نوع اللعبة الجديدة</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <script src="../JS/auth-guard.js"></script>
+  <style>
+    :root {
+      --g-blue: #1a73e8;
+      --g-red: #ea4335;
+      --g-yellow: #fbbc04;
+      --g-green: #34a853;
+      --text: #17324d;
+      --muted: #5f7891;
+    }
+
+    body {
+      margin: 0;
+      font-family: "Cairo", sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 8% 8%, rgba(26, 115, 232, 0.2), transparent 45%),
+        radial-gradient(circle at 92% 15%, rgba(251, 188, 4, 0.22), transparent 35%),
+        radial-gradient(circle at 86% 88%, rgba(52, 168, 83, 0.2), transparent 35%),
+        linear-gradient(125deg, #eef4ff 0%, #f5fbff 100%);
+      min-height: 100vh;
+    }
+
+    .shell {
+      width: min(1040px, 92%);
+      margin: 44px auto 64px;
+    }
+
+    .hero {
+      background: linear-gradient(125deg, #1a73e8, #4dabf7 40%, #34a853);
+      border-radius: 24px;
+      padding: 28px;
+      box-shadow: 0 18px 42px rgba(23, 50, 77, 0.18);
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero::before {
+      content: "";
+      position: absolute;
+      width: 230px;
+      height: 230px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(255, 255, 255, 0.45), rgba(255, 255, 255, 0));
+      left: -90px;
+      top: -95px;
+      pointer-events: none;
+    }
+
+    .hero h1 {
+      margin: 0;
+      color: #ffffff;
+      font-size: clamp(24px, 3vw, 36px);
+      position: relative;
+      z-index: 1;
+    }
+
+    .hero p {
+      margin: 10px 0 0;
+      color: rgba(255, 255, 255, 0.9);
+      font-size: 1.05rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    .cards {
+      margin-top: 56px;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 20px;
+    }
+
+    .card-link {
+      text-decoration: none;
+      color: inherit;
+      background: rgba(255, 255, 255, 0.9);
+      border: 1px solid rgba(26, 115, 232, 0.18);
+      border-radius: 20px;
+      padding: 22px;
+      box-shadow: 0 14px 30px rgba(23, 50, 77, 0.12);
+      transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card-link::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(110deg, rgba(26, 115, 232, 0), rgba(26, 115, 232, 0.08), rgba(52, 168, 83, 0.08), rgba(26, 115, 232, 0));
+      transform: translateX(-100%);
+      transition: transform 0.45s ease;
+      pointer-events: none;
+    }
+
+    .card-link:hover {
+      transform: translateY(-5px);
+      border-color: rgba(26, 115, 232, 0.4);
+      box-shadow: 0 20px 36px rgba(23, 50, 77, 0.18);
+    }
+
+    .card-link:hover::before {
+      transform: translateX(100%);
+    }
+
+    .card-link h2 {
+      margin: 0;
+      color: #11407d;
+      font-size: 22px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .card-link p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.8;
+      position: relative;
+      z-index: 1;
+    }
+
+    .card-icon {
+      font-size: 2rem;
+      line-height: 1;
+      position: relative;
+      z-index: 1;
+    }
+
+    .badge {
+      display: inline-block;
+      width: fit-content;
+      padding: 5px 11px;
+      border-radius: 999px;
+      background: rgba(26, 115, 232, 0.12);
+      color: #1456ad;
+      font-size: 12px;
+      font-weight: 800;
+      position: relative;
+      z-index: 1;
+    }
+
+    .back {
+      margin-top: 22px;
+      text-align: center;
+    }
+
+    .back a {
+      color: #114fb1;
+      font-weight: 700;
+      text-decoration: none;
+      background: rgba(255, 255, 255, 0.88);
+      border: 1px solid rgba(26, 115, 232, 0.24);
+      border-radius: 999px;
+      padding: 9px 16px;
+      display: inline-block;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .back a:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px rgba(26, 115, 232, 0.2);
+    }
+
+    @media (max-width: 900px) {
+      .cards {
+        grid-template-columns: 1fr;
+      }
+
+      .hero {
+        padding: 22px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <section class="hero">
+      <h1>اختر نوع اللعبة التي تريد إنشاؤها</h1>
+      <p>بعد اختيار النوع، عبّئ الأسئلة والأجوبة ثم اضغط حفظ.</p>
+    </section>
+
+    <section class="cards">
+      <a class="card-link" href="custom-image-game.html">
+        <span class="card-icon">🕹️</span>
+        <span class="badge" id="badgeImage" hidden>مقترحة لك</span>
+        <h2>لعبة الصور</h2>
+        <p>أنشئ لعبة تخمين تعتمد على صورتين وإجابة واحدة لكل سؤال.</p>
+      </a>
+
+      <a class="card-link" href="custom-letter-game.html">
+        <span class="card-icon">🎯</span>
+        <span class="badge" id="badgeLetter" hidden>مقترحة لك</span>
+        <h2>لعبة الحروف</h2>
+        <p>أضف الحرف مع السؤال والإجابة لبناء لعبة شبكة حروف خاصة بك.</p>
+      </a>
+
+      <a class="card-link" href="custom-survey-game.html">
+        <span class="card-icon">🏆</span>
+        <span class="badge" id="badgeSurvey" hidden>مقترحة لك</span>
+        <h2>لعبة الاستبيان</h2>
+        <p>أدخل سؤالاً وعدة إجابات مع نقاطها مثل Family Feud.</p>
+      </a>
+    </section>
+
+    <div class="back">
+      <a href="main page.html#games">العودة للألعاب</a>
+    </div>
+  </main>
+
+  <script>
+    (function setRecommendedGame() {
+      const params = new URLSearchParams(window.location.search);
+      const selected = String(params.get("game") || "").trim();
+      const map = {
+        image_guessing: "badgeImage",
+        letter_cells: "badgeLetter",
+        survey_game: "badgeSurvey",
+      };
+
+      if (!map[selected]) return;
+
+      const badge = document.getElementById(map[selected]);
+      if (badge) {
+        badge.hidden = false;
+      }
+    })();
+  </script>
+</body>
+</html>
