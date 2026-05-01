@@ -2,6 +2,47 @@ let currentSessionId = null; // معرف الجلسة الحالية
 const urlParams = new URLSearchParams(window.location.search);
 const customGameId = urlParams.get('id');
 
+function showPopup(message) {
+  // Remove existing popup if any
+  const existing = document.getElementById('custom-popup-overlay');
+  if (existing) existing.remove();
+
+  const overlay = document.createElement('div');
+  overlay.id = 'custom-popup-overlay';
+  overlay.style.cssText = `
+    position:fixed; inset:0; background:rgba(0,0,0,0.45);
+    display:flex; align-items:center; justify-content:center;
+    z-index:99999; font-family:'Cairo',sans-serif; direction:rtl;
+  `;
+
+  overlay.innerHTML = `
+    <div style="
+      background:#fff; border-radius:18px; padding:36px 40px;
+      max-width:380px; width:90%; text-align:center;
+      box-shadow:0 8px 40px rgba(0,0,0,0.18);
+      animation: popupIn .25s ease;
+    ">
+      <div style="font-size:2.2rem; margin-bottom:12px;">⚠️</div>
+      <p style="font-size:1.05rem; color:#333; font-weight:600; margin-bottom:24px; line-height:1.7;">${message}</p>
+      <button id="popup-ok-btn" style="
+        background:#0078BF; color:#fff; border:none;
+        padding:10px 36px; border-radius:10px; font-size:1rem;
+        font-family:'Cairo',sans-serif; font-weight:700; cursor:pointer;
+      ">حسناً</button>
+    </div>
+  `;
+
+  document.head.insertAdjacentHTML('beforeend', `
+    <style>
+      @keyframes popupIn { from { transform:scale(.85); opacity:0; } to { transform:scale(1); opacity:1; } }
+    </style>
+  `);
+
+  document.body.appendChild(overlay);
+  overlay.querySelector('#popup-ok-btn').addEventListener('click', () => overlay.remove());
+  overlay.addEventListener('click', (e) => { if (e.target === overlay) overlay.remove(); });
+}
+
 const scores = {
   blue:  { name: localStorage.getItem('blueTeamName') || 'Blue Team',     words: 0, pts: 0 },
   green: { name: localStorage.getItem('greenTeamName') || 'Green Team', words: 0,  pts: 0 }
@@ -130,7 +171,7 @@ async function loadQuestions() {
 // دالة لإنشاء اللوبي وعرض الكود للمستخدم
 async function startMultiplayer() {
     if (!customGameId) {
-        alert("عذراً، خاصية التحدي متاحة فقط للألعاب المنشأة");
+        showPopup("رمز الانضمام يظهر فقط في الألعاب المنشأة");
         return;
     }
 
