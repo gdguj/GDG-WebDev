@@ -63,6 +63,58 @@ const DOM = {
   timeupOverlay: document.getElementById('timeup-overlay'),
 };
 
+function showJoinPopup(message, type = 'info') {
+  const existing = document.getElementById('join-popup-overlay');
+  if (existing) existing.remove();
+
+  if (!document.getElementById('join-popup-style')) {
+    const style = document.createElement('style');
+    style.id = 'join-popup-style';
+    style.textContent = `
+      @keyframes joinPopupIn {
+        from { transform: scale(.9); opacity: 0; }
+        to { transform: scale(1); opacity: 1; }
+      }
+    `;
+    document.head.appendChild(style);
+  }
+
+  const icon = type === 'error' ? '⚠️' : type === 'success' ? '🎉' : 'ℹ️';
+
+  const overlay = document.createElement('div');
+  overlay.id = 'join-popup-overlay';
+  overlay.style.cssText = `
+    position: fixed; inset: 0; background: rgba(0,0,0,0.45);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 99999; font-family: 'Cairo', sans-serif; direction: rtl;
+  `;
+
+  overlay.innerHTML = `
+    <div style="
+      background:#fff; border-radius:18px; padding:34px 38px;
+      max-width:420px; width:92%; text-align:center;
+      box-shadow:0 8px 40px rgba(0,0,0,0.18);
+      animation: joinPopupIn .22s ease;
+    ">
+      <div style="font-size:2rem; margin-bottom:12px;">${icon}</div>
+      <p style="font-size:1.05rem; color:#333; font-weight:700; margin:0 0 22px; line-height:1.8;">${message}</p>
+      <button id="join-popup-ok-btn" style="
+        background:#0078BF; color:#fff; border:none;
+        padding:10px 34px; border-radius:10px; font-size:1rem;
+        font-family:'Cairo',sans-serif; font-weight:700; cursor:pointer;
+      ">حسناً</button>
+    </div>
+  `;
+
+  document.body.appendChild(overlay);
+
+  const close = () => overlay.remove();
+  overlay.querySelector('#join-popup-ok-btn').addEventListener('click', close);
+  overlay.addEventListener('click', (event) => {
+    if (event.target === overlay) close();
+  });
+}
+
 
 /* SECTION 4 — INIT */
 // function init() {
@@ -173,7 +225,7 @@ function loadQuestion() {
 // دالة لإنشاء اللوبي وعرض الكود للمستخدم
 async function startMultiplayer() {
     if (!customGameId) {
-        alert("عذراً، خاصية التحدي متاحة فقط للألعاب المنشأة");
+    showJoinPopup("عذراً، خاصية التحدي متاحة فقط للألعاب المنشأة", 'error');
         return;
     }
 
@@ -186,10 +238,12 @@ async function startMultiplayer() {
         const result = await response.json();
 
         if (result.success) {
-            alert(`كود التحدي الخاص بك: ${result.joinCode}\nأرسله لأصدقائك الآن!`);
+          showJoinPopup(`كود التحدي الخاص بك: ${result.joinCode}<br>أرسله لأصدقائك الآن!`, 'success');
+        } else {
+          showJoinPopup(result.message || "تعذر إنشاء كود الانضمام حالياً", 'error');
         }
     } catch (err) {
-        alert("فشل إنشاء كود الانضمام");
+        showJoinPopup("فشل إنشاء كود الانضمام", 'error');
     }
 }
 

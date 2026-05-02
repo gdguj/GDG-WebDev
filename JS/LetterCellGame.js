@@ -237,11 +237,12 @@ async function startMultiplayer() {
         const result = await response.json();
 
         if (result.success) {
-            // عرض الكود (ممكن تستخدمي SweetAlert أو المودال اللي سويناه)
-            alert(`كود التحدي الخاص بك: ${result.joinCode}\nأرسله لأصدقائك الآن!`);
+          showPopup(`كود التحدي الخاص بك: ${result.joinCode} — أرسله لأصدقائك الآن!`);
+        } else {
+          showPopup(result.message || "تعذر إنشاء كود الانضمام حالياً");
         }
     } catch (err) {
-        alert("فشل إنشاء كود الانضمام");
+        showPopup("فشل إنشاء كود الانضمام");
     }
 }
 

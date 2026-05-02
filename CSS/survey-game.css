@@ -8,7 +8,7 @@ body {
 }
 
 body {
-    font-family: Arial, sans-serif;
+    font-family: 'Cairo', sans-serif;
     overflow: auto;
 }
 
@@ -147,7 +147,8 @@ body {
 /* نص الإجابة */
 .answer-card .text {
     margin-top: 4px;
-    font-size: 14px;
+    font-size: 19px;
+    line-height: 1.25;
 }
 
 /* Input section */
