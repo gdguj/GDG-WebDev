@@ -251,8 +251,9 @@ body {
   font-size: 26px;
   font-weight: 800;
   color: #222;
-  margin-bottom: 12px;
+  margin-bottom: 22px;
   text-align: center;
+  font-family: 'Cairo', sans-serif;
 }
 
 .levels-nav {
@@ -296,6 +297,8 @@ body {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 10px;
+  min-height: 210px;
+  align-content: start;
 }
 
 .levels-dots {
