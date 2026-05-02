@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Image Guessing Game Final Page</title>
+  <title>نتيجة لعبة الصور</title>
 
   <!--fonts-->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -18,6 +18,7 @@
 </head>
 
 <body>
+  <div class="confetti-layer js-confetti-layer" aria-hidden="true"></div>
 
       <!-- ================= NAVBAR ================= -->
     <nav lang="ar" dir="rtl" class="bg-white shadow-sm">
@@ -37,34 +38,27 @@
         </div>
     </nav>
 
+  <div class="decorations"></div>
 
-
+  <!-- Clapping character -->
+  <img src="../Images/clapping.gif" class="clap-char" alt=""/>
 
   <!--result container-->
   <div class="result-div">
-    <div class="logo">
-      <img src="../images/google-logo.png" class="google-logo">
-    </div>
-
-    <div class="header-block">
-      <h1 class="header">
-      Image Guessing 
-      <span class="blue">G</span><span class="red">a</span><span class="yellow">m</span><span class="green">e</span>
-      </h1>
+    <div class="intro-section">
+      <div class="header-block">
+        <h1 class="header">مبرووووووووك!!</h1>
+      </div>
     </div>
 
     <div class="center-block">
       <h2 class="result-message js-result-message"></h2>
-      <p class="score">Winner Team: <span class="js-winner"></span></p>
-      <hr class="divider" />
-      <p class="score">Winner Score: <span class="js-score"></span> points</p>
-      <p class="stat"><span class="js-team-a-label">Team A</span> Points: <span class="js-score-a"></span></p>
-      <p class="stat"><span class="js-team-b-label">Team B</span> Points: <span class="js-score-b"></span></p>
+      <p class="score">الفريق الفائز: <span class="js-winner"></span></p>
+      <p class="score">النقاط الأعلى: <span class="js-score"></span> نقطة</p>
+      <p class="stat">نقاط <span class="js-team-a-label">الفريق الأول</span>: <span class="js-score-a"></span></p>
+      <p class="stat">نقاط <span class="js-team-b-label">الفريق الثاني</span>: <span class="js-score-b"></span></p>
     </div>
 
-    <h3 class="game-stat"><span class="info">ⓘ</span> Game Statistics</h3>
-    <p class="stat">correct words: <span class="js-correct"></span></p>
-    <p class="stat">Fastest Answer: <span class="js-time"></span>s</p>
   </div>
 
     <!--buttons container-->
@@ -72,21 +66,12 @@
     <div class="playAgain-div">
       <a href="imageGame.html">
         <button class="playAgain-button">
-        Play Again
+        العب مرة أخرى
         </button>
       </a>
 
     </div>
-
-    <div class="backHome-div">
-      <a href="main page.html">
-        <button class="backHome-button" >
-        Back to Home
-        </button>
-     </a>
-    </div>
   </div>
-  <div class="decorations"></div>
 
    <!-- ================= FOOTER ================= -->
     <footer lang="ar" dir="rtl" class="bg-[#403F41] text-gray-300 py-12 px-6">

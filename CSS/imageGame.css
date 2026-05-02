@@ -32,8 +32,7 @@ body {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-
-
+  overflow-y: auto;
 }
 
 
@@ -42,7 +41,7 @@ body {
   width: 100%;
   background: #fff;
   border-bottom: 1.5px solid var(--light-gray);
-  padding: 14px 32px 14px;
+  padding: 8px 32px;
   position: static;
   top: 0;
   z-index: 10;
@@ -53,7 +52,7 @@ body {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 10px;
+  margin-bottom: 5px;
 }
 
 .timer-label {
@@ -105,11 +104,11 @@ body {
 .content {
   width: 100%;
   max-width: 760px;
-  padding: 40px 20px 50px;
+  padding: 6px 20px 20px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 24px;
+  gap: 6px;
   margin: 0 auto;
 }
 
@@ -119,12 +118,12 @@ body {
   background: #fff;
   border: 1.5px solid var(--light-gray);
   border-radius: 16px;
-  padding: 52px 32px;
+  padding: 28px 32px;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 40px;
-  min-height: 245px;
+  min-height: 275px;
   box-shadow: 0 1px 8px rgba(0,0,0,.05);
   transition: border-color 0.3s, background 0.3s;
 }
@@ -161,7 +160,7 @@ body {
 
 
 
-.pic { width: 290px; height: 190px; object-fit: contain; }
+.pic { width: 290px; height: 215px; object-fit: contain; }
 
 
 
@@ -203,7 +202,7 @@ body {
   flex: 1;
   border: none;
   outline: none;
-  padding: 15px 20px;
+  padding: 9px 20px;
   font-size: 1rem;
   font-family: 'Nunito', sans-serif;
   font-weight: 600;
@@ -218,7 +217,7 @@ body {
 
 /* Hint button — matches active team color */
 .hint-btn {
-  background: var(--yellow);
+  background: var(--blue);
   border: none;
   color: #fff;
   padding: 0 22px;
@@ -230,11 +229,12 @@ body {
   align-items: center;
   gap: 7px;
   white-space: nowrap;
+  padding: 0 16px;
   transition: background .18s, opacity .18s;
 }
 
 .hint-btn:hover {
-  background: var(--yellow-hover);
+  background: var(--blue-hover);
 }
 
 .hint-btn.used {
@@ -264,9 +264,9 @@ body {
   background: var(--blue);
   color: #fff;
   border: none;
-  border-radius: 12px;
-  padding: 15px 72px;
-  font-size: 1.15rem;
+  border-radius: 10px;
+  padding: 10px 50px;
+  font-size: 1rem;
   font-family: 'Nunito', sans-serif;
   font-weight: 900;
   cursor: pointer;
@@ -293,16 +293,42 @@ body {
   opacity: .4;
   pointer-events: none;
 }
+
+.action-btns {
+  display: flex;
+  flex-direction: row;
+  gap: 250px;
+  align-items: center;
+  justify-content: center;
+}
+
+#submit-btn {
+  background: var(--green);
+  box-shadow: 0 3px 14px rgba(44,179,93,.28);
+}
+
+#submit-btn:hover {
+  background: var(--green-hover);
+}
+
+#show-answer-btn {
+  background: var(--yellow);
+  box-shadow: 0 3px 14px rgba(255,193,14,.28);
+}
+
+#show-answer-btn:hover {
+  background: var(--yellow-hover);
+}
 /* ── TEAM SCORE BARS ── */
 .teams-bar {
-  position: static;
-  width: 100%;
+  width: calc(100vw - 64px);
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 15px 30px; 
-  background: #fff;
-  border-top: 1px solid var(--light-gray);
+  padding: 0;
+  margin: 4px auto 6px;
+  background: transparent;
+  border: none;
   z-index: 30;
 }
 
@@ -311,15 +337,13 @@ body {
   align-items: stretch;
   border-radius: 8px;
   overflow: hidden;
-  font-size: 18px;
+  font-size: 13px;
   font-weight: 700;
   transition: all 0.3s ease;
-    width: 240px;  
-  height: 50px;  
-  
-  /* المظهر الافتراضي (الخامل) */
-  background: var(--bg); 
-  border: 2px solid transparent; 
+  width: 160px;
+  height: 30px;
+  background: var(--bg);
+  border: 2px solid transparent;
   opacity: 0.8;
 }
 
@@ -576,4 +600,61 @@ body {
   font-size: 0.92rem;
   color: #475569;
   text-align: center;
+}
+
+/* ── TIME-UP OVERLAY ── */
+.timeup-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  background: rgba(0,0,0,0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s;
+}
+
+.timeup-overlay.open {
+  opacity: 1;
+  pointer-events: all;
+}
+
+.timeup-panel {
+  background: #fff;
+  border-radius: 24px;
+  padding: 48px 64px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.18);
+  border: 3px solid var(--yellow);
+}
+
+.timeup-clock {
+  font-size: 6rem;
+  line-height: 1;
+  animation: shakeIt 0.4s infinite;
+}
+
+@keyframes shakeIt {
+  0%,100% { transform: rotate(0deg); }
+  25%     { transform: rotate(-15deg); }
+  75%     { transform: rotate(15deg); }
+}
+
+.timeup-title {
+  font-size: 2.4rem;
+  color: var(--red);
+  font-weight: 900;
+  margin: 0;
+}
+
+.timeup-subtitle {
+  font-size: 1rem;
+  color: #555;
+  font-weight: 600;
+  margin: 0;
 }

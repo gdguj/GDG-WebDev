@@ -1,81 +1,134 @@
 body{
-  font-family: 'Poppins', sans-serif !important;
-  font-size: 18px;
+  font-family: 'Cairo', 'Poppins', sans-serif !important;
+  font-size: 16px;
   margin: 0;
+  background: #ffffff;
+  color: #202124;
+  overflow-x: hidden;
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Clapping character */
+.clap-char {
+  position: absolute;
+  left: 140px;
+  top: 45%;
+  transform: translateY(-50%);
+  width: 160px;
+  z-index: 10;
+}
+
+.confetti-layer {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 2;
+}
+
+.confetti-piece {
+  position: absolute;
+  width: 10px;
+  height: 16px;
+  border-radius: 2px;
+  opacity: 0;
+  will-change: transform, opacity;
+  transform: translate(0, 0) rotate(0deg);
+  animation-name: confetti-burst;
+  animation-timing-function: cubic-bezier(0.15, 0.85, 0.2, 1);
+  animation-fill-mode: forwards;
+}
+
+@keyframes confetti-burst {
+  0% {
+    opacity: 1;
+    transform: translate(0, 0) rotate(0deg) scale(1);
+  }
+  20% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translate(var(--dx), var(--dy)) rotate(var(--rot)) scale(0.85);
+  }
 }
 
 .decorations{
-  height: 60px;
+  height: 24px;
   width: 100%;
   position: static;
   display: flex;
   justify-content: space-between;
-  margin-top: 65px;
+  margin-top: 0;
   background-image: url(../Images/google-themed.png);
-  background-size: 30% 100px;
+  background-size: 20% 54px;
   background-repeat: repeat-x;
-  background-position: 0 -35px;
+  background-position: 0 -16px;
 }
 
 button{
   border:2px solid #414042;
 }
 
+nav,
+.result-div,
+.buttons,
+.decorations,
+footer {
+  position: relative;
+  z-index: 1;
+}
+
 .buttons{
-  height: 95px;
+  min-height: 56px;
   width: 100%;
   position: static;
-  margin-top: 70px;
+  margin-top: 14px;
+  margin-bottom: 80px;
   display: flex;
   justify-content: center;
-  align-items: flex-end;
+  align-items: center;
   transition: opacity 0.15s;
 }
 
-.playAgain-button:hover ,.backHome-button:hover{
+.playAgain-button:hover{
   opacity: 0.95;
 }
 .playAgain-button:active{
   background-color: #3979e0;
 }
 
-.backHome-button:active{
-  background-color: rgb(242, 242, 242);
-}
-
-.backHome-div , .playAgain-div{
-  margin: auto;
-  margin-top: 40px;
-}
-
-.playAgain-button , .backHome-button{
-  width: 450px;
-  height:70px;
-  font-size:28px;
-  font-weight:800;
-  border-radius:14px;
-  cursor: pointer;
-}
+.playAgain-div{ margin: 0 auto; }
 
 .playAgain-button{
-  background-color: #3b82f6;
+  width: 210px;
+  height: 42px;
+  font-size: 16px;
+  font-weight:800;
+  border-radius:10px;
+  cursor: pointer;
+  background: linear-gradient(135deg, #4a8df6, #2f73dd);
   color: white;
-  margin-right: 100px;
+  margin-right: 0;
   border: none;
+  box-shadow: 0 6px 14px rgba(66, 133, 244, 0.28);
+  transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
 }
 
-.backHome-button{
-  background-color: white;
-  color: #414042;
-  margin-left: 35px;
+.playAgain-button:hover{
+  transform: translateY(-2px);
+  box-shadow: 0 9px 18px rgba(66, 133, 244, 0.35);
 }
 
 .logo{
-  width:100px;
+  width:62px;
   text-align: center;
   margin: 0 auto;
-  margin-bottom: 30px;
-  margin-top: 10px;
+  margin-bottom: 12px;
+  margin-top: 4px;
 }
 
 .google-logo{
@@ -84,22 +137,33 @@ button{
 }
 
 .result-div{
-  width: 600px;
-  margin: auto;
+  width: min(640px, 92%);
+  margin: 24px auto 0;
+  padding: 0 0 20px;
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.intro-section{
+  width: 100%;
+  text-align: center;
+  margin-bottom: 24px;
 }
 
 .header-block{
-  width: 370px;
+  width: 100%;
   text-align: center;
   margin: 0 auto;
-  position: relative;
-  bottom: 50px;
 }
 
 .header{
   text-align: center;
-  font-size: 25px;
-  font-weight: 700;
+  font-size: 32px;
+  font-weight: 800;
+  margin: 0;
+  letter-spacing: 0.3px;
 }
 
 .blue{color:#007ac0;}
@@ -108,37 +172,43 @@ button{
 .green{color: #2cb35d;}
 
 .result-message{
-  width: 430px;
+  width: 100%;
   text-align: center;
-  margin: 0 auto;
-  font-size: 55px;
-  position: relative;
-  bottom: 25px;
-  font-weight: 700;
+  margin: 0 auto 20px;
+  font-size: 38px;
+  font-weight: 800;
+  line-height: 1.28;
+  text-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+  animation: partyPop 0.6s ease;
+}
+
+@keyframes partyPop {
+  0% { transform: scale(0.95); opacity: 0.4; }
+  100% { transform: scale(1); opacity: 1; }
 }
 
 .divider{
   width: 100%;
-  margin:20px 0;
-  bottom: 35px;
-  position: relative;
+  margin: 14px 0;
+  border: none;
+  border-top: 1px solid #e6e8ee;
 }
 
 .score{
-  width: 300px;
+  width: 100%;
   text-align: center;
-  margin: 0 auto;
-  font-weight: bold;
-  bottom: 30px;
-  position: relative;
-  font-size: 23px;
-  padding-right:20px ;
+  margin: 0 auto 18px;
+  font-weight: 800;
+  font-size: 19px;
+  line-height: 1.75;
+  padding-right: 0;
 }
 
 .game-stat{
   color: grey;
-  margin-top:0;
+  margin-top: 2px;
   font-weight: 600;
+  font-size: 30px;
 }
 
 .info{
@@ -146,12 +216,47 @@ button{
 }
 
 .stat{
-  color: gray;
-  font-weight: 600;
+  color: #6b7280;
+  font-weight: 700;
+  font-size: 15px;
+  line-height: 1.95;
+  margin-top: 14px;
 }
 
 .center-block{
-  width: 600px;
+  width: 100%;
   margin: 0 auto;
   text-align: center;
+}
+
+@media (max-width: 768px) {
+  .result-div {
+    padding: 14px 12px 12px;
+    border-radius: 14px;
+    margin-top: 10px;
+  }
+
+  .header {
+    font-size: 26px;
+  }
+
+  .result-message {
+    font-size: 30px;
+  }
+
+  .score {
+    font-size: 17px;
+  }
+
+  .playAgain-button {
+    width: 190px;
+    height: 40px;
+    font-size: 15px;
+  }
+}
+
+footer {
+  margin-top: auto;
+  padding-top: 24px !important;
+  padding-bottom: 24px !important;
 }

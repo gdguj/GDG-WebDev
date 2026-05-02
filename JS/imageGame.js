@@ -56,10 +56,11 @@ const DOM = {
   teamBCard:   document.getElementById('team-b-card'),
   activeBadge: document.getElementById('active-team-badge'),
   bar: document.getElementById('bar'),
-hintBtn: document.getElementById('hint-btn'),
-overlay: document.getElementById('overlay'),
-hintText: document.getElementById('hint-text'),
-skipOverlay: document.getElementById('skip-overlay'),
+  hintBtn: document.getElementById('hint-btn'),
+  overlay: document.getElementById('overlay'),
+  hintText: document.getElementById('hint-text'),
+  skipOverlay: document.getElementById('skip-overlay'),
+  timeupOverlay: document.getElementById('timeup-overlay'),
 };
 
 
@@ -82,7 +83,7 @@ async function init() {
     DOM.teamBName.textContent = TEAM_NAMES.b;
     DOM.skipTeamA.textContent = TEAM_NAMES.a;
     DOM.skipTeamB.textContent = TEAM_NAMES.b;
-    DOM.activeBadge.textContent = 'Both Teams Can Answer';
+    DOM.activeBadge.textContent = 'كلا الفريقين يجيب';
 
     try {
         if (customGameId) {
@@ -143,8 +144,8 @@ function loadQuestion() {
   const q = STATE.shuffled[STATE.qi];
 
   // pic1 = يسار، pic2 = يمين — imageOne تظهر على اليمين
-  DOM.pic1.src = q.p2;
-  DOM.pic2.src = q.p1;
+  DOM.pic1.src = q.p1;
+  DOM.pic2.src = q.p2;
 
   // تنظيف الحقل والـ feedback
   DOM.answer.value         = '';
@@ -155,8 +156,11 @@ function loadQuestion() {
   DOM.submitBtn.style.display = 'block';
   DOM.submitBtn.disabled = false;
   DOM.showAnswerBtn.style.display = 'block';
+  DOM.showAnswerBtn.textContent = 'عرض الإجابة';
+  DOM.showAnswerBtn.onclick = showAnswer;
   DOM.answer.disabled = false;
   DOM.answer.focus();
+  hideTimeUpOverlay();
   STATE.hintUsed = false;
   DOM.hintBtn.classList.remove('used');
   DOM.hintBtn.style.display = 'inline-block';
@@ -224,15 +228,16 @@ function handleTimesUp() {
 
   STATE.answered = true;
   DOM.feedback.className = 'feedback skipped';
-  DOM.feedback.textContent = "⏰ Time's up!";
+  DOM.feedback.textContent = "";
   DOM.qcard.classList.add('times-up');
   DOM.submitBtn.style.display = 'none';
   DOM.hintBtn.style.display = 'none';
   DOM.answer.disabled = true;
+  showTimeUpOverlay();
   
   // Show Answer button: "Show Answer" when time's up
   DOM.showAnswerBtn.style.display = 'block';
-  DOM.showAnswerBtn.textContent = 'Show Answer';
+  DOM.showAnswerBtn.textContent = 'عرض الإجابة';
   DOM.showAnswerBtn.onclick = showAnswer;
   
   setTimeout(() => {
@@ -257,6 +262,16 @@ function closeHint(event) {
   DOM.overlay.classList.remove('open');
 }
 
+function showTimeUpOverlay() {
+  if (!DOM.timeupOverlay) return;
+  DOM.timeupOverlay.classList.add('open');
+  setTimeout(() => hideTimeUpOverlay(), 5000);
+}
+
+function hideTimeUpOverlay() {
+  if (!DOM.timeupOverlay) return;
+  DOM.timeupOverlay.classList.remove('open');
+}
 
 /* SECTION 7 —ANSWER CHECKING */
 function check() {
@@ -281,7 +296,7 @@ function handleCorrect() {
   STATE.answered = true;
 
   DOM.feedback.className   = 'feedback correct';
-  DOM.feedback.textContent = '✓ Correct!';
+  DOM.feedback.textContent = '✓ إجابة صحيحة!';
   DOM.qcard.classList.add('flash-correct');
   DOM.submitBtn.style.display = 'none';
   DOM.hintBtn.style.display = 'none';
@@ -299,7 +314,7 @@ function handleCorrect() {
 // غلط: بدون نقاط + إمكانية المحاولة مجددا أو التخلي
 function handleWrong() {
   DOM.feedback.className   = 'feedback wrong';
-  DOM.feedback.textContent = '✗ Wrong! Try again';
+  DOM.feedback.textContent = '✗ خطأ! حاول مرة أخرى';
   DOM.inputRow.classList.add('wrong-border');
   DOM.qcard.classList.add('flash-wrong');
   
@@ -309,7 +324,7 @@ function handleWrong() {
   
   // Show Answer button: "Show Answer" for wrong answers
   DOM.showAnswerBtn.style.display = 'block';
-  DOM.showAnswerBtn.textContent = 'Show Answer';
+  DOM.showAnswerBtn.textContent = 'عرض الإجابة';
   DOM.showAnswerBtn.onclick = showAnswer;
 
   setTimeout(() => {
@@ -326,6 +341,7 @@ DOM.answer.addEventListener('keydown', e => {
 
 /* SECTION 8 — SHOW ANSWER & NEXT ROUND */
 function showAnswer() {
+  hideTimeUpOverlay();
   STATE.pendingResolve = 'skip';
   openWhoAnsweredChooser('مين الي جاوب؟');
 }
@@ -357,7 +373,7 @@ function applySkipChoice(teamChoice) {
 
   if (STATE.pendingResolve === 'correct') {
     DOM.showAnswerBtn.style.display = 'block';
-    DOM.showAnswerBtn.textContent = 'Next Round';
+    DOM.showAnswerBtn.textContent = 'الجولة التالية';
     DOM.showAnswerBtn.onclick = nextRound;
   } else {
     revealCurrentAnswer();
@@ -379,7 +395,7 @@ function revealCurrentAnswer() {
   DOM.feedback.className = 'feedback correct';
   DOM.feedback.textContent = `الإجابة الصحيحة: ${answerText}`;
 
-  DOM.showAnswerBtn.textContent = 'Next Round';
+  DOM.showAnswerBtn.textContent = 'الجولة التالية';
   DOM.showAnswerBtn.onclick = nextRound;
 }
 
@@ -421,7 +437,7 @@ async function showGameOver() {
   
   const winnerKey = STATE.scores.a > STATE.scores.b ? 'a' :
                     STATE.scores.b > STATE.scores.a ? 'b' : 'tie';
-  const winnerName = winnerKey === 'tie' ? 'Tie' : TEAM_NAMES[winnerKey];
+  const winnerName = winnerKey === 'tie' ? 'تعادل' : TEAM_NAMES[winnerKey];
 
   const resultPayload = {
     winner: winnerName,
