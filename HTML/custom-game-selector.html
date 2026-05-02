@@ -4,95 +4,149 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>اختيار نوع اللعبة الجديدة</title>
+
   <script src="https://cdn.tailwindcss.com"></script>
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
-  <script src="../JS/auth-guard.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
   <style>
     :root {
-      --g-blue: #1a73e8;
+      --g-blue: #0078BF;
+      --g-blue-dark: #005f99;
       --g-red: #ea4335;
       --g-yellow: #fbbc04;
       --g-green: #34a853;
-      --text: #17324d;
-      --muted: #5f7891;
+      --dark: #232323;
+      --muted: #6b7280;
+      --soft: #f7f8fb;
     }
+
+    * { box-sizing: border-box; }
 
     body {
       margin: 0;
       font-family: "Cairo", sans-serif;
-      color: var(--text);
+      color: var(--dark);
       background:
-        radial-gradient(circle at 8% 8%, rgba(26, 115, 232, 0.2), transparent 45%),
-        radial-gradient(circle at 92% 15%, rgba(251, 188, 4, 0.22), transparent 35%),
-        radial-gradient(circle at 86% 88%, rgba(52, 168, 83, 0.2), transparent 35%),
-        linear-gradient(125deg, #eef4ff 0%, #f5fbff 100%);
+        radial-gradient(circle at 20% 10%, rgba(0, 120, 191, 0.08), transparent 32%),
+        radial-gradient(circle at 85% 18%, rgba(251, 188, 4, 0.09), transparent 28%),
+        radial-gradient(circle at 75% 85%, rgba(52, 168, 83, 0.08), transparent 30%),
+        #fbfbfd;
       min-height: 100vh;
     }
 
-    .shell {
-      width: min(1040px, 92%);
-      margin: 44px auto 64px;
+    nav {
+      background: rgba(255, 255, 255, 0.9);
+      backdrop-filter: blur(12px);
+    }
+
+    .selector-shell {
+      width: min(1120px, 92%);
+      margin: 58px auto 80px;
     }
 
     .hero {
-      background: linear-gradient(125deg, #1a73e8, #4dabf7 40%, #34a853);
-      border-radius: 24px;
-      padding: 28px;
-      box-shadow: 0 18px 42px rgba(23, 50, 77, 0.18);
+      min-height: 330px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .hero-content {
       text-align: center;
-      position: relative;
-      overflow: hidden;
+      max-width: 780px;
+      margin: 0 auto;
     }
 
-    .hero::before {
-      content: "";
-      position: absolute;
-      width: 230px;
-      height: 230px;
-      border-radius: 50%;
-      background: radial-gradient(circle, rgba(255, 255, 255, 0.45), rgba(255, 255, 255, 0));
-      left: -90px;
-      top: -95px;
-      pointer-events: none;
+    .hero-title {
+      font-size: clamp(34px, 4vw, 56px);
+      font-weight: 800;
+      line-height: 1.35;
+      margin: 0 0 18px;
+      color: #222;
     }
 
-    .hero h1 {
+    .brand-gdg {
+      font-family: "Poppins", sans-serif;
+      font-weight: 800;
+      letter-spacing: 1px;
+    }
+
+    .brand-gdg .g1 { color: var(--g-blue); }
+    .brand-gdg .d { color: var(--g-red); }
+    .brand-gdg .g2 { color: var(--g-yellow); }
+
+    .hero-actions {
+      display: flex;
+      gap: 14px;
+      margin: 10px 0 34px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    .hero-pill {
+      min-width: 170px;
+      text-align: center;
+      background: rgba(255, 255, 255, 0.75);
+      border: 1px solid rgba(0, 0, 0, 0.04);
+      box-shadow: 0 12px 28px rgba(17, 24, 39, 0.07);
+      border-radius: 16px;
+      padding: 12px 22px;
+      color: #3f3f46;
+      text-decoration: none;
+      font-weight: 700;
+      transition: 0.22s ease;
+    }
+
+    .hero-pill:hover {
+      transform: translateY(-3px);
+      color: var(--g-blue);
+      box-shadow: 0 16px 34px rgba(0, 120, 191, 0.14);
+    }
+
+    .hero-copy h2 {
+      margin: 0 0 18px;
+      font-size: clamp(26px, 3vw, 38px);
+      font-weight: 800;
+      line-height: 1.55;
+    }
+
+    .tone-dark { color: #222; }
+    .tone-blue { color: var(--g-blue); }
+    .tone-yellow { color: var(--g-yellow); }
+
+    .hero-copy p {
       margin: 0;
-      color: #ffffff;
-      font-size: clamp(24px, 3vw, 36px);
-      position: relative;
-      z-index: 1;
-    }
-
-    .hero p {
-      margin: 10px 0 0;
-      color: rgba(255, 255, 255, 0.9);
-      font-size: 1.05rem;
-      position: relative;
-      z-index: 1;
+      color: #737373;
+      font-size: 17px;
+      line-height: 1.9;
+      font-weight: 600;
     }
 
     .cards {
-      margin-top: 56px;
+      margin-top: 62px;
       display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 20px;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 26px;
     }
 
     .card-link {
       text-decoration: none;
       color: inherit;
-      background: rgba(255, 255, 255, 0.9);
-      border: 1px solid rgba(26, 115, 232, 0.18);
-      border-radius: 20px;
-      padding: 22px;
-      box-shadow: 0 14px 30px rgba(23, 50, 77, 0.12);
-      transition: transform 0.22s ease, box-shadow 0.22s ease, border-color 0.22s ease;
+      background: rgba(255, 255, 255, 0.74);
+      border: 1px solid rgba(0, 0, 0, 0.045);
+      border-radius: 24px;
+      padding: 28px;
+      min-height: 230px;
+      box-shadow: 0 18px 40px rgba(17, 24, 39, 0.07);
       display: flex;
       flex-direction: column;
-      gap: 10px;
+      justify-content: space-between;
+      transition: 0.25s ease;
       position: relative;
       overflow: hidden;
     }
@@ -101,52 +155,96 @@
       content: "";
       position: absolute;
       inset: 0;
-      background: linear-gradient(110deg, rgba(26, 115, 232, 0), rgba(26, 115, 232, 0.08), rgba(52, 168, 83, 0.08), rgba(26, 115, 232, 0));
-      transform: translateX(-100%);
-      transition: transform 0.45s ease;
-      pointer-events: none;
+      background: linear-gradient(120deg, transparent, rgba(255,255,255,0.75), transparent);
+      transform: translateX(110%);
+      transition: 0.45s ease;
     }
 
     .card-link:hover {
-      transform: translateY(-5px);
-      border-color: rgba(26, 115, 232, 0.4);
-      box-shadow: 0 20px 36px rgba(23, 50, 77, 0.18);
+      transform: translateY(-8px);
+      box-shadow: 0 24px 52px rgba(17, 24, 39, 0.11);
     }
 
     .card-link:hover::before {
-      transform: translateX(100%);
+      transform: translateX(-110%);
     }
 
+    .card-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: relative;
+      z-index: 1;
+      margin-bottom: 30px;
+    }
+
+    .card-icon {
+      width: 46px;
+      height: 46px;
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 19px;
+      box-shadow: 0 12px 22px rgba(0,0,0,0.07);
+    }
+
+    .image-card .card-icon {
+      color: var(--g-blue);
+      background: rgba(0, 120, 191, 0.12);
+    }
+
+    .letter-card .card-icon {
+      color: #d49a00;
+      background: rgba(251, 188, 4, 0.17);
+    }
+
+    .survey-card .card-icon {
+      color: var(--g-green);
+      background: rgba(52, 168, 83, 0.14);
+    }
+
+    .card-number {
+      font-family: "Poppins", sans-serif;
+      font-size: 18px;
+      font-weight: 800;
+    }
+
+    .image-card .card-number,
+    .image-card h2 { color: var(--g-blue); }
+
+    .letter-card .card-number,
+    .letter-card h2 { color: #d49a00; }
+
+    .survey-card .card-number,
+    .survey-card h2 { color: var(--g-green); }
+
     .card-link h2 {
-      margin: 0;
-      color: #11407d;
+      margin: 0 0 15px;
       font-size: 22px;
+      font-weight: 800;
       position: relative;
       z-index: 1;
     }
 
     .card-link p {
       margin: 0;
-      color: var(--muted);
-      line-height: 1.8;
-      position: relative;
-      z-index: 1;
-    }
-
-    .card-icon {
-      font-size: 2rem;
-      line-height: 1;
+      color: #6f7480;
+      font-size: 15px;
+      line-height: 1.9;
+      font-weight: 600;
       position: relative;
       z-index: 1;
     }
 
     .badge {
       display: inline-block;
+      margin-bottom: 10px;
       width: fit-content;
-      padding: 5px 11px;
+      padding: 5px 12px;
       border-radius: 999px;
-      background: rgba(26, 115, 232, 0.12);
-      color: #1456ad;
+      background: rgba(0, 120, 191, 0.1);
+      color: var(--g-blue);
       font-size: 12px;
       font-weight: 800;
       position: relative;
@@ -154,90 +252,154 @@
     }
 
     .back {
-      margin-top: 22px;
       text-align: center;
+      margin-top: 36px;
     }
 
     .back a {
-      color: #114fb1;
-      font-weight: 700;
-      text-decoration: none;
-      background: rgba(255, 255, 255, 0.88);
-      border: 1px solid rgba(26, 115, 232, 0.24);
-      border-radius: 999px;
-      padding: 9px 16px;
       display: inline-block;
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      text-decoration: none;
+      color: #444;
+      background: rgba(255, 255, 255, 0.75);
+      border: 1px solid rgba(0, 0, 0, 0.05);
+      box-shadow: 0 12px 28px rgba(17, 24, 39, 0.07);
+      border-radius: 16px;
+      padding: 12px 30px;
+      font-weight: 800;
+      transition: 0.22s ease;
     }
 
     .back a:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 10px 20px rgba(26, 115, 232, 0.2);
+      transform: translateY(-3px);
+      color: var(--g-blue);
+      box-shadow: 0 16px 34px rgba(0, 120, 191, 0.14);
     }
 
     @media (max-width: 900px) {
-      .cards {
-        grid-template-columns: 1fr;
-      }
-
-      .hero {
-        padding: 22px;
-      }
+      .cards { grid-template-columns: 1fr; }
     }
   </style>
 </head>
+
 <body>
-  <main class="shell">
+
+  <nav class="shadow-sm">
+    <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+      <img src="../Images/colorful-logo.png" class="h-10">
+
+      <div class="hidden md:flex gap-8 text-gray-600 font-semibold">
+        <a href="main page.html">الرئيسية</a>
+        <a href="main page.html#about">من نحن</a>
+        <a href="main page.html#goals">أهدافنا</a>
+        <a href="main page.html#games">الألعاب</a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="selector-shell">
+
     <section class="hero">
-      <h1>اختر نوع اللعبة التي تريد إنشاؤها</h1>
-      <p>بعد اختيار النوع، عبّئ الأسئلة والأجوبة ثم اضغط حفظ.</p>
+      <div class="hero-content">
+        <h1 class="hero-title">
+          اختر نوع لعبة
+          <span class="brand-gdg">
+            <span class="g1">G</span><span class="d">D</span><span class="g2">G</span>
+          </span>
+          <br>الجديدة
+        </h1>
+
+        <div class="hero-actions">
+          <a href="main page.html" class="hero-pill">الموقع الرئيسي</a>
+          <a href="main page.html#games" class="hero-pill">الألعاب</a>
+        </div>
+
+        <div class="hero-copy">
+          <h2>
+            <span class="tone-dark">اختر،</span>
+            <span class="tone-blue">صمّم،</span>
+            <span class="tone-yellow">شارك!</span>
+          </h2>
+          <p>بعد اختيار النوع، عبّئ الأسئلة والأجوبة ثم احفظ لعبتك وشاركها مع أصحابك.</p>
+        </div>
+      </div>
     </section>
 
     <section class="cards">
-      <a class="card-link" href="custom-image-game.html">
-        <span class="card-icon">🕹️</span>
-        <span class="badge" id="badgeImage" hidden>مقترحة لك</span>
+
+      <a class="card-link image-card" href="custom-image-game.html">
+        <div class="card-top">
+          <span class="card-icon"><i class="fa-solid fa-plus"></i></span>
+          <span class="card-number">01</span>
+        </div>
+
         <h2>لعبة الصور</h2>
         <p>أنشئ لعبة تخمين تعتمد على صورتين وإجابة واحدة لكل سؤال.</p>
       </a>
 
-      <a class="card-link" href="custom-letter-game.html">
-        <span class="card-icon">🎯</span>
-        <span class="badge" id="badgeLetter" hidden>مقترحة لك</span>
+      <a class="card-link letter-card" href="custom-letter-game.html">
+        <div class="card-top">
+          <span class="card-icon"><i class="fa-solid fa-plus"></i></span>
+          <span class="card-number">02</span>
+        </div>
+
         <h2>لعبة الحروف</h2>
         <p>أضف الحرف مع السؤال والإجابة لبناء لعبة شبكة حروف خاصة بك.</p>
       </a>
 
-      <a class="card-link" href="custom-survey-game.html">
-        <span class="card-icon">🏆</span>
-        <span class="badge" id="badgeSurvey" hidden>مقترحة لك</span>
+      <a class="card-link survey-card" href="custom-survey-game.html">
+        <div class="card-top">
+          <span class="card-icon"><i class="fa-solid fa-plus"></i></span>
+          <span class="card-number">03</span>
+        </div>
+
         <h2>لعبة الاستبيان</h2>
         <p>أدخل سؤالاً وعدة إجابات مع نقاطها مثل Family Feud.</p>
       </a>
+
     </section>
 
     <div class="back">
       <a href="main page.html#games">العودة للألعاب</a>
     </div>
+
   </main>
 
-  <script>
-    (function setRecommendedGame() {
-      const params = new URLSearchParams(window.location.search);
-      const selected = String(params.get("game") || "").trim();
-      const map = {
-        image_guessing: "badgeImage",
-        letter_cells: "badgeLetter",
-        survey_game: "badgeSurvey",
-      };
+  <footer lang="ar" dir="rtl" class="bg-[#403F41] text-gray-300 py-12 px-6 mt-20">
+    <div class="max-w-6xl mx-auto grid md:grid-cols-3 gap-10">
 
-      if (!map[selected]) return;
+      <div>
+        <img src="../Images/white-logo.png" class="w-64 h-auto mb-4 object-contain">
+        <p class="text-sm leading-6">
+          مجتمع عالمي مدعوم من Google Developers يهدف إلى تمكين الطلاب من خلال المعرفة التقنية وبناء الحلول.
+        </p>
+      </div>
 
-      const badge = document.getElementById(map[selected]);
-      if (badge) {
-        badge.hidden = false;
-      }
-    })();
-  </script>
+      <div>
+        <h4 class="font-bold mb-4">روابط سريعة</h4>
+        <ul class="space-y-2 text-sm">
+          <li><a href="main page.html">الرئيسية</a></li>
+          <li><a href="main page.html#about">من نحن</a></li>
+          <li><a href="main page.html#goals">أهدافنا</a></li>
+          <li><a href="main page.html#games">الألعاب</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <h4 class="font-bold mb-4">تواصل معنا</h4>
+        <div class="flex gap-6 text-xl">
+          <a href=""><i class="fa-brands fa-x-twitter"></i></a>
+          <a href=""><i class="fa-brands fa-linkedin"></i></a>
+        </div>
+        <br>
+        <p class="text-sm">gdscuj@gmail.com</p>
+      </div>
+
+    </div>
+
+    <div class="text-center text-sm text-gray-400 mt-10">
+      جميع الحقوق محفوظة © 2026 مجموعة مطوري قوقل
+    </div>
+  </footer>
+
 </body>
 </html>
