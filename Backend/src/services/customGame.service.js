@@ -1,7 +1,7 @@
 const mongoose = require("mongoose");
 const UserGame = require("../models/UserGame.model");
 
-function parseObjectId(id, fieldName) {
+function parseMongoId(id, fieldName) {
   if (!mongoose.Types.ObjectId.isValid(id)) {
     throw new Error(`${fieldName} is invalid`);
   }
@@ -9,8 +9,14 @@ function parseObjectId(id, fieldName) {
 }
 
 async function saveCustomGame(gamePayload) {
+  const rawUserId = String(gamePayload.createdBy.userId || "").trim();
+  const userIdValue = mongoose.Types.ObjectId.isValid(rawUserId)
+    ? new mongoose.Types.ObjectId(rawUserId)
+    : null;
+
   const createdBy = {
-    userId: parseObjectId(gamePayload.createdBy.userId, "createdBy.userId"),
+    userId: userIdValue,
+    accountId: rawUserId,
     name: gamePayload.createdBy.name,
     email: gamePayload.createdBy.email,
   };
@@ -30,17 +36,36 @@ async function saveCustomGame(gamePayload) {
 }
 
 async function findGameById(gameId) {
-  const parsedId = parseObjectId(gameId, "gameId");
+  const parsedId = parseMongoId(gameId, "gameId");
   return UserGame.findById(parsedId).lean();
 }
 
-async function findGamesByCreator(userId, options = {}) {
-  const parsedUserId = parseObjectId(userId, "createdBy.userId");
+async function findGamesByCreator(creator, options = {}) {
+  const userId = String((creator && creator.id) || "").trim();
+  const email = String((creator && creator.email) || "").trim().toLowerCase();
   const gameType = String(options.gameType || "").trim();
 
+  const creatorMatches = [];
+
+  if (userId) {
+    creatorMatches.push({ "createdBy.accountId": userId });
+
+    if (mongoose.Types.ObjectId.isValid(userId)) {
+      creatorMatches.push({ "createdBy.userId": new mongoose.Types.ObjectId(userId) });
+    }
+  }
+
+  if (email) {
+    creatorMatches.push({ "createdBy.email": email });
+  }
+
+  if (!creatorMatches.length) {
+    throw new Error("createdBy.accountId is invalid");
+  }
+
   const query = {
-    "createdBy.userId": parsedUserId,
     isCustom: true,
+    $or: creatorMatches,
   };
 
   if (gameType) {

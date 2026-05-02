@@ -2,10 +2,11 @@ let currentSessionId = null; // معرف الجلسة الحالية
 const urlParams = new URLSearchParams(window.location.search);
 const customGameId = urlParams.get('id');
 const TEMPLATE_GAME_TYPE = 'image_guessing';
+const _urlPlayerTeam = String(urlParams.get('team') || '').toUpperCase();
 
-
-const GAME_TIME = 120;
-const POINTS_PER_ANSWER = 2;
+// قراءة أسماء الفرق من URL (إذا جاء من اللوبي) وإلا من localStorage
+const _urlTeamA = urlParams.get('teamA');
+const _urlTeamB = urlParams.get('teamB');
 
 function readTeamName(key, fallback) {
   const raw = localStorage.getItem(key);
@@ -15,9 +16,12 @@ function readTeamName(key, fallback) {
 }
 
 const TEAM_NAMES = {
-  a: readTeamName('imageGameTeamNameA', 'Team A'),
-  b: readTeamName('imageGameTeamNameB', 'Team B')
+  a: _urlTeamA ? decodeURIComponent(_urlTeamA) : readTeamName('imageGameTeamNameA', 'أ'),
+  b: _urlTeamB ? decodeURIComponent(_urlTeamB) : readTeamName('imageGameTeamNameB', 'ب')
 };
+
+const GAME_TIME = 120;
+const POINTS_PER_ANSWER = 2;
 
 
 /* SECTION 2 — STATE */
@@ -31,6 +35,11 @@ const STATE = {
   answered: false,
   correctCount: 0,
   pendingResolve: null,
+  syncTimer: null,
+  syncingState: false,
+  submittingAnswer: false,
+  gameEnded: false,
+  playerTeam: null,
 };
 
 
@@ -137,7 +146,11 @@ async function init() {
     DOM.skipTeamB.textContent = TEAM_NAMES.b;
     DOM.activeBadge.textContent = 'كلا الفريقين يجيب';
 
-    try {
+    if (customGameId) {
+    sessionStorage.setItem('imageGameCustomId', customGameId);
+  }
+
+  try {
         if (customGameId) {
             // حالة اللعبة المخصصة
             console.log("Loading Custom Image Game:", customGameId);
@@ -173,6 +186,12 @@ async function init() {
             DOM.hintBtn.style.display = 'none';
             DOM.answer.disabled = true;
             return;
+    }
+
+    if (_lobbyJoinCode) {
+      await resolveLobbyPlayerTeam();
+      await startLobbySync();
+      return;
     }
 
     loadQuestion();
@@ -221,30 +240,143 @@ function loadQuestion() {
 }
 
 
-//هنا الكود الي بينشأ رمز الانضمام 
-// دالة لإنشاء اللوبي وعرض الكود للمستخدم
-async function startMultiplayer() {
-    if (!customGameId) {
-    showJoinPopup("عذراً، خاصية التحدي متاحة فقط للألعاب المنشأة", 'error');
-        return;
+// عرض كود الانضمام الموجود من URL (لا ينشئ جديد)
+const _lobbyJoinCode = urlParams.get('joinCode');
+
+function applyLobbyState(sharedState, forceReload = false) {
+  if (!sharedState) return;
+
+  const nextQi = Number(sharedState.questionIndex || 0);
+  const scoreA = Number(sharedState.scoreA || 0);
+  const scoreB = Number(sharedState.scoreB || 0);
+
+  STATE.scores.a = scoreA;
+  STATE.scores.b = scoreB;
+  STATE.correctCount = Number(sharedState.correctCount || 0);
+  DOM.scoreA.textContent = scoreA;
+  DOM.scoreB.textContent = scoreB;
+
+  if (Boolean(sharedState.finished) || nextQi >= STATE.shuffled.length) {
+    STATE.qi = nextQi;
+    if (!STATE.gameEnded) {
+      STATE.gameEnded = true;
+      showGameOver();
+    }
+    return;
+  }
+
+  if (forceReload || nextQi !== STATE.qi) {
+    STATE.qi = nextQi;
+    loadQuestion();
+  }
+}
+
+async function fetchLobbyState(forceReload = false) {
+  if (!_lobbyJoinCode || STATE.syncingState) return;
+
+  STATE.syncingState = true;
+  try {
+    const res = await fetch('/api/lobby/game-state/' + encodeURIComponent(_lobbyJoinCode));
+    const data = await res.json();
+    if (data && data.success && data.state) {
+      applyLobbyState(data.state, forceReload);
+    }
+  } catch (_) {
+    DOM.feedback.className = 'feedback wrong';
+    DOM.feedback.textContent = 'تعذر مزامنة اللعبة. تأكد من إعادة تشغيل السيرفر.';
+  } finally {
+    STATE.syncingState = false;
+  }
+}
+
+async function startLobbySync() {
+  await fetchLobbyState(true);
+  clearInterval(STATE.syncTimer);
+  STATE.syncTimer = setInterval(() => fetchLobbyState(false), 900);
+}
+
+async function submitLobbyAnswer(team, rawInput) {
+  if (!_lobbyJoinCode || STATE.submittingAnswer || STATE.gameEnded) return;
+
+  const payloadAnswer = String(rawInput || '').trim();
+  if (!payloadAnswer) return;
+
+  STATE.submittingAnswer = true;
+  try {
+    const res = await fetch('/api/lobby/game-answer', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        code: _lobbyJoinCode,
+        team: String(team || '').toUpperCase(),
+        answer: payloadAnswer,
+        questionIndex: STATE.qi,
+      }),
+    });
+    const data = await res.json();
+
+    if (!data || !data.success) {
+      DOM.feedback.className = 'feedback wrong';
+      DOM.feedback.textContent = (data && data.message) ? data.message : 'تعذر إرسال الإجابة';
+      return;
     }
 
-    try {
-        const response = await fetch('/api/lobby/create', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ gameId: customGameId })
-        });
-        const result = await response.json();
-
-        if (result.success) {
-          showJoinPopup(`كود التحدي الخاص بك: ${result.joinCode}<br>أرسله لأصدقائك الآن!`, 'success');
-        } else {
-          showJoinPopup(result.message || "تعذر إنشاء كود الانضمام حالياً", 'error');
-        }
-    } catch (err) {
-        showJoinPopup("فشل إنشاء كود الانضمام", 'error');
+    if (data.stale) {
+      applyLobbyState(data.state, true);
+      return;
     }
+
+    if (data.isCorrect) {
+      DOM.feedback.className = 'feedback correct';
+      DOM.feedback.textContent = '✓ إجابة صحيحة!';
+      DOM.answer.value = '';
+      applyLobbyState(data.state, true);
+      return;
+    }
+
+    handleWrong();
+  } catch (_) {
+    DOM.feedback.className = 'feedback wrong';
+    DOM.feedback.textContent = 'تعذر إرسال الإجابة. تأكد من تشغيل السيرفر.';
+  } finally {
+    STATE.submittingAnswer = false;
+  }
+}
+
+async function requestLobbyNextQuestion() {
+  if (!_lobbyJoinCode || STATE.gameEnded) return;
+
+  try {
+    const res = await fetch('/api/lobby/game-next', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        code: _lobbyJoinCode,
+        questionIndex: STATE.qi,
+      }),
+    });
+    const data = await res.json();
+    if (data && data.success && data.state) {
+      applyLobbyState(data.state, true);
+    }
+  } catch (_) {
+  }
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+  const btn = document.getElementById('multiplayerBtn');
+  if (!btn) return;
+  if (!_lobbyJoinCode) {
+    btn.disabled = true;
+    btn.style.opacity = '0.5';
+    btn.style.cursor = 'not-allowed';
+    btn.title = 'هذه اللعبة ليست من لوبي';
+  }
+});
+
+function startMultiplayer() {
+  if (!_lobbyJoinCode) return;
+  showJoinPopup(`كود الانضمام: <strong>${_lobbyJoinCode}</strong><br>أرسله لأصدقائك الآن!`, 'success');
 }
 
 function resetTimer() {
@@ -328,25 +460,35 @@ function hideTimeUpOverlay() {
 }
 
 /* SECTION 7 —ANSWER CHECKING */
-function check() {
+function check(answeringTeam) {
   // Only prevent check if answer is already submitted/confirmed
   if (STATE.answered) return;
-  
+
   const input = DOM.answer.value.trim().toLowerCase();
   if (!input) return;
+
+  if (_lobbyJoinCode) {
+    if (!STATE.playerTeam) {
+      DOM.feedback.className = 'feedback wrong';
+      DOM.feedback.textContent = 'تعذر تحديد فريقك من اللوبي';
+      return;
+    }
+    submitLobbyAnswer(STATE.playerTeam, input);
+    return;
+  }
 
   const q       = STATE.shuffled[STATE.qi];
   const isRight = q.answers.some(a => a.toLowerCase() === input);
 
   if (isRight) {
-    handleCorrect();
+    handleCorrect(answeringTeam);
   } else {
     handleWrong();
   }
 }
 
 // صح: أضف نقاط
-function handleCorrect() {
+function handleCorrect(answeringTeam) {
   STATE.answered = true;
 
   DOM.feedback.className   = 'feedback correct';
@@ -357,8 +499,21 @@ function handleCorrect() {
   DOM.answer.disabled = true;
   clearInterval(STATE.timer);
 
-  STATE.pendingResolve = 'correct';
-  openWhoAnsweredChooser('مين جاوب الإجابة الصحيحة؟');
+  if (_lobbyJoinCode && (answeringTeam === 'a' || answeringTeam === 'b')) {
+    // في وضع اللوبي: الفريق الذي ضغط هو الذي يأخذ النقاط مباشرة
+    STATE.scores[answeringTeam] += POINTS_PER_ANSWER;
+    STATE.correctCount += 1;
+    DOM.scoreA.textContent = STATE.scores.a;
+    DOM.scoreB.textContent = STATE.scores.b;
+    showToast(`${TEAM_NAMES[answeringTeam]} +${POINTS_PER_ANSWER}`);
+    spawnConfetti();
+    DOM.showAnswerBtn.style.display = 'block';
+    DOM.showAnswerBtn.textContent = 'الجولة التالية';
+    DOM.showAnswerBtn.onclick = nextRound;
+  } else {
+    STATE.pendingResolve = 'correct';
+    openWhoAnsweredChooser('مين جاوب الإجابة الصحيحة؟');
+  }
 
   setTimeout(() => {
     DOM.qcard.classList.remove('flash-correct');
@@ -397,6 +552,11 @@ DOM.answer.addEventListener('keydown', e => {
 function showAnswer() {
   hideTimeUpOverlay();
   STATE.pendingResolve = 'skip';
+  if (_lobbyJoinCode) {
+    // في وضع اللوبي: تخطّي السؤال يكون مشتركاً للجميع
+    requestLobbyNextQuestion();
+    return;
+  }
   openWhoAnsweredChooser('مين الي جاوب؟');
 }
 
@@ -454,6 +614,10 @@ function revealCurrentAnswer() {
 }
 
 function nextRound() {
+  if (_lobbyJoinCode) {
+    requestLobbyNextQuestion();
+    return;
+  }
   STATE.qi++;
   loadQuestion();
 }
@@ -485,6 +649,7 @@ async function persistScore(gameType, points, externalSessionId, metadata) {
 /* SECTION 9 — GAME OVER */
 async function showGameOver() {
   clearInterval(STATE.timer);
+  clearInterval(STATE.syncTimer);
   DOM.answer.disabled = true;
   DOM.submitBtn.style.display = 'none';
   DOM.showAnswerBtn.style.display = 'none';
@@ -513,7 +678,13 @@ async function showGameOver() {
     scoreB: STATE.scores.b,
   });
 
+  resultPayload.customGameId = customGameId || null;
   sessionStorage.setItem('imageGameResult', JSON.stringify(resultPayload));
+  // حفظ رابط إعادة اللعب → يرجع للوبي لإنشاء غرفة جديدة
+  const playAgainUrl = customGameId
+    ? 'game-lobby.html?gameId=' + encodeURIComponent(customGameId) + '&gameType=image_guessing&role=host'
+    : 'my-games.html';
+  sessionStorage.setItem('imageGamePlayAgainUrl', playAgainUrl);
   window.location.href = 'Image-game-result-page.html';
 }
 
@@ -608,4 +779,43 @@ async function loadTemplateQuestions() {
     hint:    q.hint || '',
     pts:     4,
   })).filter(isValidQuestion);
+}
+
+function getCurrentPlayerName() {
+  const userRaw = localStorage.getItem('gdgCurrentUser') || sessionStorage.getItem('gdgCurrentUser');
+  if (!userRaw) return '';
+
+  try {
+    const user = JSON.parse(userRaw);
+    return String((user && user.name) || '').trim();
+  } catch (_) {
+    return '';
+  }
+}
+
+async function resolveLobbyPlayerTeam() {
+  if (!_lobbyJoinCode) return;
+
+  if (_urlPlayerTeam === 'A' || _urlPlayerTeam === 'B') {
+    STATE.playerTeam = _urlPlayerTeam;
+    const urlTeamLabel = _urlPlayerTeam === 'A' ? TEAM_NAMES.a : TEAM_NAMES.b;
+    DOM.activeBadge.textContent = `فريقك: ${urlTeamLabel}`;
+    return;
+  }
+
+  const playerName = getCurrentPlayerName();
+  if (!playerName) return;
+
+  try {
+    const res = await fetch('/api/lobby/info/' + encodeURIComponent(_lobbyJoinCode));
+    const data = await res.json();
+    if (!data || !data.success) return;
+
+    const me = (data.players || []).find((p) => String(p.name || '').trim() === playerName);
+    if (me && (me.team === 'A' || me.team === 'B')) {
+      STATE.playerTeam = me.team;
+      const teamLabel = me.team === 'A' ? TEAM_NAMES.a : TEAM_NAMES.b;
+      DOM.activeBadge.textContent = `فريقك: ${teamLabel}`;
+    }
+  } catch (_) {}
 }

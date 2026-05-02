@@ -52,6 +52,27 @@ const SessionSchema = new mongoose.Schema(
   stats: {
     totalWords: Number,
     lastMoveAt: Date
+  },
+  // حقول اللوبي للألعاب المخصصة
+  teamNameA: { type: String, default: 'أ' },
+  teamNameB: { type: String, default: 'ب' },
+  hostName: { type: String, default: '' },
+  lobbyPlayers: [{
+    name: { type: String, required: true },
+    team: { type: String, enum: ['A', 'B'], required: true },
+    joinedAt: { type: Date, default: Date.now },
+    _id: false
+  }],
+  realtimePlay: {
+    questionIndex: { type: Number, default: 0 },
+    scoreA: { type: Number, default: 0 },
+    scoreB: { type: Number, default: 0 },
+    correctCount: { type: Number, default: 0 },
+    totalQuestions: { type: Number, default: 0 },
+    finished: { type: Boolean, default: false },
+    revision: { type: Number, default: 0 },
+    lastWinnerTeam: { type: String, enum: ['A', 'B', ''], default: '' },
+    lastAction: { type: String, enum: ['none', 'correct', 'skip'], default: 'none' }
   }
 },
 {

@@ -2,6 +2,10 @@ let currentSessionId = null; // معرف الجلسة الحالية
 const urlParams = new URLSearchParams(window.location.search);
 const customGameId = urlParams.get('id');
 
+// قراءة أسماء الفرق من URL (من اللوبي) وإلا localStorage
+const _urlTeamA = urlParams.get('teamA');
+const _urlTeamB = urlParams.get('teamB');
+
 function showPopup(message) {
   const existing = document.getElementById('custom-popup-overlay');
   if (existing) existing.remove();
@@ -45,8 +49,8 @@ function showPopup(message) {
 }
 
 const scores = {
-  blue: { name: localStorage.getItem('blueTeamName') || 'الفريق الازرق', words: 0, pts: 0 },
-  green: { name: localStorage.getItem('greenTeamName') || 'الفريق الاخضر', words: 0, pts: 0 }
+  blue: { name: (_urlTeamA ? decodeURIComponent(_urlTeamA) : localStorage.getItem('blueTeamName')) || 'أ', words: 0, pts: 0 },
+  green: { name: (_urlTeamB ? decodeURIComponent(_urlTeamB) : localStorage.getItem('greenTeamName')) || 'ب', words: 0, pts: 0 }
 };
 
 function updateScoreBar() {
@@ -220,30 +224,23 @@ async function loadQuestions() {
   }
 }
 
-//هنا الكود الي بينشأ رمز الانضمام 
-// دالة لإنشاء اللوبي وعرض الكود للمستخدم
-async function startMultiplayer() {
-    if (!customGameId) {
-        showPopup("رمز الانضمام يظهر فقط في الألعاب المنشأة");
-        return;
-    }
+// عرض كود الانضمام الموجود من URL (لا ينشئ جديد)
+const _lobbyJoinCode = urlParams.get('joinCode');
 
-    try {
-        const response = await fetch('/api/lobby/create', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ gameId: customGameId })
-        });
-        const result = await response.json();
+window.addEventListener('DOMContentLoaded', () => {
+  const btn = document.getElementById('multiplayerBtn');
+  if (!btn) return;
+  if (!_lobbyJoinCode) {
+    btn.disabled = true;
+    btn.style.opacity = '0.5';
+    btn.style.cursor = 'not-allowed';
+    btn.title = 'هذه اللعبة ليست من لوبي';
+  }
+});
 
-        if (result.success) {
-          showPopup(`كود التحدي الخاص بك: ${result.joinCode} — أرسله لأصدقائك الآن!`);
-        } else {
-          showPopup(result.message || "تعذر إنشاء كود الانضمام حالياً");
-        }
-    } catch (err) {
-        showPopup("فشل إنشاء كود الانضمام");
-    }
+function startMultiplayer() {
+  if (!_lobbyJoinCode) return;
+  showPopup(`كود الانضمام: ${_lobbyJoinCode} — أرسله لأصدقائك الآن!`);
 }
 
 

@@ -6,26 +6,26 @@ async function createGame(req, res, next) {
       gameType,
       title,
       description = "",
-      createdBy,
       data,
       questions,
     } = req.body;
 
+    const authUser = req.authUser;
     const normalizedData = data || (Array.isArray(questions) ? { questions } : null);
 
     if (
       !gameType ||
       !title ||
-      !createdBy ||
-      !createdBy.userId ||
-      !createdBy.name ||
-      !createdBy.email ||
+      !authUser ||
+      !authUser.id ||
+      !authUser.name ||
+      !authUser.email ||
       !normalizedData
     ) {
       return res.status(400).json({
         success: false,
         message:
-          'gameType, title, createdBy(userId,name,email), and data are required.'
+          'gameType, title, and data are required. Must be authenticated.'
       });
     }
 
@@ -33,7 +33,11 @@ async function createGame(req, res, next) {
       gameType,
       title,
       description,
-      createdBy,
+      createdBy: {
+        userId: authUser.id,
+        name: authUser.name,
+        email: authUser.email,
+      },
       data: normalizedData,
     });
 
@@ -77,17 +81,23 @@ async function getGameById(req, res, next) {
 
 async function getMyGames(req, res, next) {
   try {
-    const authUserId = req.authUser && req.authUser.id;
+    const authUser = req.authUser;
     const gameType = String(req.query.gameType || "").trim();
 
-    if (!authUserId) {
+    if (!authUser || !authUser.id) {
       return res.status(401).json({
         success: false,
         message: "يجب تسجيل الدخول أولاً.",
       });
     }
 
-    const games = await customGameService.findGamesByCreator(authUserId, { gameType });
+    const games = await customGameService.findGamesByCreator(
+      {
+        id: authUser.id,
+        email: authUser.email,
+      },
+      { gameType }
+    );
 
     return res.status(200).json({
       success: true,

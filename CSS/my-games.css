@@ -184,7 +184,7 @@ body {
   gap: 8px;
 }
 
-.btn-join-code {
+.btn-play {
   flex: 1;
   padding: 8px 12px;
   background: var(--brand);
@@ -197,7 +197,7 @@ body {
   transition: background-color 0.2s ease;
 }
 
-.btn-join-code:hover {
+.btn-play:hover {
   background: #155ab8;
 }
 

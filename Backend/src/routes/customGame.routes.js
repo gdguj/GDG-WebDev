@@ -4,7 +4,7 @@ const { requireAuth } = require('../middlewares/auth.middleware');
 
 const router = express.Router();
 
-router.post('/', createGame);
+router.post('/', requireAuth, createGame);
 router.get('/community', getCommunityGames);
 router.get('/mine', requireAuth, getMyGames);
 router.get('/:gameId', getGameById);

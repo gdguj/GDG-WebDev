@@ -242,14 +242,8 @@
         // تخزين البيانات عشان اللعبة تقرأها
         storeSession(result); 
 
-        // تحديد الصفحة بناءً على نوع اللعبة (gameType)
-        let targetPage = "";
-        if (result.gameType === "letter_cells") targetPage = "LetterCellGame.html";
-        else if (result.gameType === "image_guessing") targetPage = "imageGame.html";
-        else if (result.gameType === "survey_game") targetPage = "survey-game.html";
-
-        // التوجيه لصفحة اللعبة مع تمرير الـ ID والكود في الرابط
-        window.location.href = `${targetPage}?id=${result.gameId}&joinCode=${joinCode}`;
+        // التوجيه لغرفة اللوبي (اختيار الفريق) بدلاً من الدخول المباشر للعبة
+        window.location.href = `game-lobby.html?code=${encodeURIComponent(joinCode)}&role=player`;
 
       } catch (error) {
         setMessage(error.message, true);

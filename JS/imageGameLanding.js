@@ -11,11 +11,9 @@ let allTemplates      = [];
 let currentPage       = 0;
 let selectedTemplateId = null;
 
-/* ── أسماء محفوظة ── */
-const savedA = localStorage.getItem('imageGameTeamNameA');
-const savedB = localStorage.getItem('imageGameTeamNameB');
-if (savedA) teamAInput.value = savedA;
-if (savedB) teamBInput.value = savedB;
+/* ── الافتراضي دائماً أ و ب ── */
+teamAInput.value = 'أ';
+teamBInput.value = 'ب';
 
 /* ── زر البداية ── */
 function updateStartBtn() {

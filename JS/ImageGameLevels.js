@@ -16,10 +16,9 @@ function updateStartState() {
   startBtn.disabled = !(hasDifficulty && hasTeamA && hasTeamB);
 }
 
-const savedA = localStorage.getItem('imageGameTeamNameA');
-const savedB = localStorage.getItem('imageGameTeamNameB');
-if (savedA) teamANameInput.value = savedA;
-if (savedB) teamBNameInput.value = savedB;
+/* الافتراضي دائما أ و ب */
+teamANameInput.value = 'أ';
+teamBNameInput.value = 'ب';
 
 teamANameInput.addEventListener('input', updateStartState);
 teamBNameInput.addEventListener('input', updateStartState);

@@ -22,8 +22,14 @@ const userGameSchema = new mongoose.Schema(
     },
     createdBy: {
       userId: {
-        type: mongoose.Schema.Types.ObjectId,
+        type: mongoose.Schema.Types.Mixed,
+        default: null,
+      },
+      accountId: {
+        type: String,
         required: true,
+        trim: true,
+        index: true,
       },
       name: {
         type: String,

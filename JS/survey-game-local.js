@@ -6,6 +6,9 @@
 let currentSessionId = null; // معرف الجلسة الحالية 
 const urlParams = new URLSearchParams(window.location.search);
 const customGameId = urlParams.get('id');
+// أسماء الفرق من URL (من اللوبي)
+const _surveyTeamA = urlParams.get('teamA') ? decodeURIComponent(urlParams.get('teamA')) : 'أ';
+const _surveyTeamB = urlParams.get('teamB') ? decodeURIComponent(urlParams.get('teamB')) : 'ب';
 const FAMILY_FEUD_API_BASE = "http://localhost:5000/api/family-feud";
 
 // -------------------------------
@@ -57,7 +60,7 @@ async function persistScore(gameType, points, externalSessionId, metadata) {
 let roundHistory = [];
 
 function getTeamLabel(teamKey) {
-  return teamKey === "team1" ? "الفريق أ" : "الفريق ب";
+  return teamKey === "team1" ? _surveyTeamA : _surveyTeamB;
 }
 
 function getStarterTeamFromNavigation() {
@@ -165,28 +168,23 @@ function showJoinPopup(message, type = 'info') {
   });
 }
 
-async function startMultiplayer() {
-    if (!customGameId) {
-        showJoinPopup("عذراً، خاصية التحدي متاحة فقط للألعاب المنشأة", 'error');
-        return;
-    }
+// عرض كود الانضمام الموجود من URL (لا ينشئ جديد)
+const _lobbyJoinCode = urlParams.get('joinCode');
 
-    try {
-        const response = await fetch('/api/lobby/create', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ gameId: customGameId })
-        });
-        const result = await response.json();
+window.addEventListener('DOMContentLoaded', () => {
+  const btn = document.getElementById('multiplayerBtn');
+  if (!btn) return;
+  if (!_lobbyJoinCode) {
+    btn.disabled = true;
+    btn.style.opacity = '0.5';
+    btn.style.cursor = 'not-allowed';
+    btn.title = 'هذه اللعبة ليست من لوبي';
+  }
+});
 
-        if (result.success) {
-          showJoinPopup(`كود التحدي الخاص بك: ${result.joinCode}<br>أرسله لأصدقائك الآن!`, 'success');
-        } else {
-          showJoinPopup(result.message || "تعذر إنشاء كود الانضمام حالياً", 'error');
-        }
-    } catch (err) {
-        showJoinPopup("فشل إنشاء كود الانضمام", 'error');
-    }
+function startMultiplayer() {
+  if (!_lobbyJoinCode) return;
+  showJoinPopup(`كود الانضمام: <strong>${_lobbyJoinCode}</strong><br>أرسله لأصدقائك الآن!`, 'success');
 }
 
 

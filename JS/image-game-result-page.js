@@ -4,8 +4,8 @@ function getResultData() {
     return {
       winner: 'تعادل',
       winnerKey: 'tie',
-      teamNameA: 'الفريق الأول',
-      teamNameB: 'الفريق الثاني',
+      teamNameA: 'أ',
+      teamNameB: 'ب',
       score: 0,
       scoreA: 0,
       scoreB: 0,
@@ -17,11 +17,11 @@ function getResultData() {
 
   try {
     const parsed = JSON.parse(raw);
-    const teamNameA = parsed.teamNameA || 'الفريق الأول';
-    const teamNameB = parsed.teamNameB || 'الفريق الثاني';
+    const teamNameA = parsed.teamNameA || 'أ';
+    const teamNameB = parsed.teamNameB || 'ب';
     const inferredWinnerKey = parsed.winnerKey ||
-      (parsed.winner === teamNameA || parsed.winner === 'Team A' || parsed.winner === 'الفريق الأول' ? 'a' :
-      parsed.winner === teamNameB || parsed.winner === 'Team B' || parsed.winner === 'الفريق الثاني' ? 'b' : 'tie');
+      (parsed.winner === teamNameA || parsed.winner === 'Team A' || parsed.winner === 'الفريق الأول' || parsed.winner === 'أ' ? 'a' :
+      parsed.winner === teamNameB || parsed.winner === 'Team B' || parsed.winner === 'الفريق الثاني' || parsed.winner === 'ب' ? 'b' : 'tie');
 
     return {
       winner: parsed.winner || 'تعادل',
@@ -39,8 +39,8 @@ function getResultData() {
     return {
       winner: 'تعادل',
       winnerKey: 'tie',
-      teamNameA: 'الفريق الأول',
-      teamNameB: 'الفريق الثاني',
+      teamNameA: 'أ',
+      teamNameB: 'ب',
       score: 0,
       scoreA: 0,
       scoreB: 0,
@@ -71,6 +71,7 @@ teamBLabelElement.innerText = result.teamNameB;
 if (correctElement) correctElement.innerText = result.correct;
 if (timeElement) timeElement.innerText = result.time;
 winnerElement.innerText = result.winner;
+
 setResultMessage();
 launchConfettiBursts();
 

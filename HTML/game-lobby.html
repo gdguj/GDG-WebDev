@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>غرفة اللعبة</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Cairo', sans-serif;
+      background: #f0f4f8;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px 16px;
+    }
+    .lobby-card {
+      background: #fff;
+      border-radius: 20px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.10);
+      width: 100%;
+      max-width: 600px;
+      padding: 36px 32px;
+    }
+    h1 { font-size: 1.7rem; font-weight: 800; color: #1a1a2e; margin-bottom: 6px; }
+    .subtitle { color: #666; margin-bottom: 28px; font-size: 0.95rem; }
+
+    /* ── Setup Form (host step 1) ── */
+    #setupSection label { font-weight: 700; color: #333; display: block; margin-bottom: 6px; }
+    .team-inputs { display: flex; gap: 16px; margin-bottom: 20px; }
+    .team-inputs .field { flex: 1; }
+    .team-inputs input {
+      width: 100%; padding: 10px 14px;
+      border: 2px solid #e0e0e0; border-radius: 10px;
+      font-family: 'Cairo', sans-serif; font-size: 1rem;
+      outline: none; transition: border-color .2s;
+    }
+    .team-inputs input:focus { border-color: #0078BF; }
+    .btn-primary {
+      width: 100%; padding: 13px;
+      background: #0078BF; color: #fff;
+      border: none; border-radius: 12px;
+      font-family: 'Cairo', sans-serif; font-size: 1.05rem; font-weight: 700;
+      cursor: pointer; transition: background .2s;
+    }
+    .btn-primary:hover { background: #005fa3; }
+    .btn-primary:disabled { background: #a0c4e0; cursor: not-allowed; }
+
+    /* ── Lobby Room ── */
+    #lobbySection { display: none; }
+    .code-box {
+      background: #f0f7ff;
+      border: 2px dashed #0078BF;
+      border-radius: 14px;
+      padding: 18px 24px;
+      text-align: center;
+      margin-bottom: 24px;
+    }
+    .code-box p { color: #555; font-size: 0.9rem; margin-bottom: 8px; }
+    .code-big { font-size: 2.6rem; font-weight: 800; color: #0078BF; letter-spacing: 6px; }
+    .copy-btn {
+      background: transparent; border: 2px solid #0078BF; color: #0078BF;
+      border-radius: 8px; padding: 6px 20px; font-family: 'Cairo', sans-serif;
+      font-size: 0.9rem; font-weight: 700; cursor: pointer; margin-top: 10px;
+      transition: all .2s;
+    }
+    .copy-btn:hover { background: #0078BF; color: #fff; }
+
+    .teams-grid { display: flex; gap: 16px; margin-bottom: 20px; }
+    .team-col {
+      flex: 1; background: #f8f9fa; border-radius: 14px;
+      padding: 16px; min-height: 120px;
+    }
+    .team-col h3 { font-size: 1rem; font-weight: 700; margin-bottom: 10px; }
+    .team-col.a h3 { color: #0078BF; }
+    .team-col.b h3 { color: #e74c3c; }
+    .player-chip {
+      background: #fff; border-radius: 8px; padding: 6px 10px;
+      font-size: 0.88rem; color: #333; margin-bottom: 6px;
+      border: 1px solid #e0e0e0;
+    }
+    .empty-team { color: #aaa; font-size: 0.85rem; }
+    .count-badge {
+      font-size: 0.78rem; color: #888; margin-right: 6px; font-weight: 400;
+    }
+
+    .lobby-status { color: #555; font-size: 0.9rem; margin-bottom: 16px; text-align: center; }
+    .btn-start {
+      width: 100%; padding: 14px;
+      background: #2cb35d; color: #fff;
+      border: none; border-radius: 12px;
+      font-family: 'Cairo', sans-serif; font-size: 1.1rem; font-weight: 700;
+      cursor: pointer; transition: background .2s;
+    }
+    .btn-start:hover { background: #22994f; }
+    .btn-start:disabled { background: #a0d4b4; cursor: not-allowed; }
+
+    /* ── Player: Team Selection ── */
+    #joinSection { display: none; }
+    #waitSection { display: none; }
+
+    .team-choice-grid { display: flex; gap: 16px; margin: 20px 0; }
+    .team-choice-btn {
+      flex: 1; padding: 20px 10px;
+      border-radius: 16px; border: 3px solid transparent;
+      font-family: 'Cairo', sans-serif; font-size: 1.05rem; font-weight: 700;
+      cursor: pointer; transition: all .2s; background: #f8f9fa;
+    }
+    .team-choice-btn.a { color: #0078BF; border-color: #0078BF; }
+    .team-choice-btn.b { color: #e74c3c; border-color: #e74c3c; }
+    .team-choice-btn.a:hover, .team-choice-btn.a.selected { background: #0078BF; color: #fff; }
+    .team-choice-btn.b:hover, .team-choice-btn.b.selected { background: #e74c3c; color: #fff; }
+    .team-choice-btn .team-count { font-size: 0.8rem; font-weight: 400; margin-top: 4px; opacity: .85; }
+
+    .name-field { margin-bottom: 16px; }
+    .name-field label { font-weight: 700; color: #333; display: block; margin-bottom: 6px; }
+    .name-field input {
+      width: 100%; padding: 10px 14px;
+      border: 2px solid #e0e0e0; border-radius: 10px;
+      font-family: 'Cairo', sans-serif; font-size: 1rem; outline: none;
+    }
+    .name-field input:focus { border-color: #0078BF; }
+
+    .wait-icon { font-size: 3rem; text-align: center; margin-bottom: 10px; }
+    .wait-msg { text-align: center; color: #555; }
+    .wait-team-badge {
+      display: inline-block; padding: 6px 20px;
+      border-radius: 20px; font-weight: 700; margin-top: 12px;
+    }
+    .wait-team-badge.A { background: #e0f0ff; color: #0078BF; }
+    .wait-team-badge.B { background: #ffe0df; color: #e74c3c; }
+
+    #lobbyMsg { color: #e74c3c; font-size: 0.9rem; text-align: center; margin-top: 10px; min-height: 20px; }
+  </style>
+</head>
+<body>
+  <div class="lobby-card">
+    <h1 id="lobbyTitle">غرفة اللعبة</h1>
+    <p class="subtitle" id="lobbySubtitle">جهّز اللعبة وشارك الكود مع أصدقائك</p>
+
+    <!-- HOST: Step 1 - Team Setup -->
+    <div id="setupSection" style="display:none;">
+      <div class="team-inputs">
+        <div class="field">
+          <label for="inputTeamA">اسم الفريق الأول</label>
+          <input id="inputTeamA" type="text" maxlength="20" value="أ" placeholder="أ">
+        </div>
+        <div class="field">
+          <label for="inputTeamB">اسم الفريق الثاني</label>
+          <input id="inputTeamB" type="text" maxlength="20" value="ب" placeholder="ب">
+        </div>
+      </div>
+      <button id="createLobbyBtn" class="btn-primary">إنشاء غرفة ومشاركة الكود</button>
+    </div>
+
+    <!-- HOST: Step 2 - Lobby Room -->
+    <div id="lobbySection">
+      <div class="code-box">
+        <p>شارك هذا الكود مع أصدقائك للانضمام</p>
+        <div id="codeDisplay" class="code-big">------</div>
+        <button id="copyCodeBtn" class="copy-btn">نسخ الكود</button>
+      </div>
+      <div class="teams-grid">
+        <div class="team-col a">
+          <h3 id="teamAHeader">الفريق أ <span class="count-badge">(0/4)</span></h3>
+          <div id="teamAPlayers"><span class="empty-team">لا أحد بعد</span></div>
+        </div>
+        <div class="team-col b">
+          <h3 id="teamBHeader">الفريق ب <span class="count-badge">(0/4)</span></h3>
+          <div id="teamBPlayers"><span class="empty-team">لا أحد بعد</span></div>
+        </div>
+      </div>
+      <p class="lobby-status" id="lobbyStatusMsg">في انتظار انضمام اللاعبين...</p>
+      <button id="startGameBtn" class="btn-start">ابدأ اللعبة</button>
+    </div>
+
+    <!-- PLAYER: Team Selection -->
+    <div id="joinSection">
+      <div class="name-field">
+        <label for="playerNameInput">اسمك</label>
+        <input id="playerNameInput" type="text" maxlength="20" placeholder="اكتب اسمك...">
+      </div>
+      <p style="font-weight:700; color:#333; margin-bottom:4px;">اختر فريقك:</p>
+      <div class="team-choice-grid">
+        <button id="choiceA" class="team-choice-btn a">
+          <div id="choiceAName">الفريق أ</div>
+          <div class="team-count" id="choiceACount">0 / 4 لاعبين</div>
+        </button>
+        <button id="choiceB" class="team-choice-btn b">
+          <div id="choiceBName">الفريق ب</div>
+          <div class="team-count" id="choiceBCount">0 / 4 لاعبين</div>
+        </button>
+      </div>
+      <button id="joinTeamBtn" class="btn-primary" disabled>انضم للفريق</button>
+    </div>
+
+    <!-- PLAYER: Waiting -->
+    <div id="waitSection">
+      <div class="wait-icon">⏳</div>
+      <p class="wait-msg">تم الانضمام! في انتظار المضيف ليبدأ اللعبة...</p>
+      <div style="text-align:center;">
+        <span id="waitTeamBadge" class="wait-team-badge A">الفريق أ</span>
+      </div>
+    </div>
+
+    <p id="lobbyMsg"></p>
+  </div>
+
+  <script src="../JS/game-lobby.js"></script>
+</body>
+</html>

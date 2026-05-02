@@ -86,17 +86,20 @@
           '<div>تاريخ الإنشاء: ' + escapeHtml(createdAt) + '</div>' +
         '</div>' +
         '<div class="game-actions">' +
-          '<button class="btn-join-code" data-game-id="' + escapeHtml(String(game._id || "")) + '">كود الانضمام</button>' +
+          '<button class="btn-play" data-game-id="' + escapeHtml(String(game._id || "")) + '" data-game-type="' + escapeHtml(String(game.gameType || "")) + '">العب</button>' +
         '</div>';
 
       gamesGrid.appendChild(card);
       
-      const joinCodeBtn = card.querySelector('.btn-join-code');
-      if (joinCodeBtn) {
-        joinCodeBtn.addEventListener('click', function(e) {
+      const playBtn = card.querySelector('.btn-play');
+      if (playBtn) {
+        playBtn.addEventListener('click', function(e) {
           e.stopPropagation();
           const gameId = this.getAttribute('data-game-id');
-          showJoinCodeModal(gameId);
+          const gameType = this.getAttribute('data-game-type');
+          // انتقل لغرفة اللعبة (لوبي) بدلاً من الدخول المباشر
+          window.location.href = 'game-lobby.html?gameId=' + encodeURIComponent(gameId)
+            + '&gameType=' + encodeURIComponent(gameType) + '&role=host';
         });
       }
     });

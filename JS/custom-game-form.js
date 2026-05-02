@@ -72,11 +72,6 @@
       gameType,
       title,
       description,
-      createdBy: {
-        userId: auth.user.id,
-        name: auth.user.name,
-        email: auth.user.email,
-      },
       data,
     };
 
@@ -98,9 +93,9 @@
         throw new Error(result.message || "فشل حفظ اللعبة.");
       }
 
-      showStatus("تم حفظ اللعبة بنجاح. رقم اللعبة: " + result.gameId, "success");
+      showStatus("تم حفظ اللعبة بنجاح", "success");
     } catch (error) {
-      showStatus(error.message || "حدث خطأ أثناء الحفظ.", "error");
+      showStatus(normalizeSaveError(error.message), "error");
     } finally {
       saveGameBtn.disabled = false;
       saveGameBtn.textContent = "حفظ اللعبة";
@@ -419,5 +414,26 @@
   function clearStatus() {
     saveStatus.textContent = "";
     saveStatus.className = "status";
+  }
+
+  function normalizeSaveError(message) {
+    const raw = String(message || "").trim();
+
+    if (!raw) {
+      return "حدث خطأ أثناء حفظ اللعبة. حاولي مرة أخرى.";
+    }
+
+    if (
+      raw.includes("createdBy.userId is invalid") ||
+      raw.includes("createdBy.accountId is invalid")
+    ) {
+      return "تعذر حفظ اللعبة بسبب مشكلة في بيانات الحساب. سجلي خروج ثم ادخلي مرة أخرى.";
+    }
+
+    if (raw.includes("Must be authenticated") || raw.includes("401")) {
+      return "يجب تسجيل الدخول أولاً قبل حفظ اللعبة.";
+    }
+
+    return raw;
   }
 })();
