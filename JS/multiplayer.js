@@ -723,28 +723,92 @@
   async function initLeaderboardPage() {
     const rows = document.getElementById("leaderboardRows");
     const typeFilter = document.getElementById("leaderboardType");
+    const topName = document.getElementById("leaderboardTopName");
+    const topScore = document.getElementById("leaderboardTopScore");
+    const topCard = document.getElementById("leaderboardTopCard");
+
+    const gameLabels = {
+      image_guessing: "لعبة الصور",
+      letter_cells: "خلية الحروف",
+      survey_game: "فاميلي فيود",
+    };
+
+    function gameLabelForType(type) {
+      const key = String(type || "").trim();
+      return gameLabels[key] || "كل الألعاب";
+    }
+
+    function makeHandle(entry, rank) {
+      const email = String(entry && entry.email ? entry.email : "").trim();
+      if (email.includes("@")) {
+        return "@" + email.split("@")[0];
+      }
+      return "@player_" + String(rank).padStart(2, "0");
+    }
+
+    function updateTopCard(board) {
+      if (!topName || !topScore || !topCard) return;
+
+      if (!Array.isArray(board) || board.length === 0) {
+        topName.textContent = "—";
+        topScore.textContent = "0";
+        topCard.classList.add("is-empty");
+        return;
+      }
+
+      const topEntry = board[0];
+      topName.textContent = topEntry.name || "لاعب";
+      topScore.textContent = new Intl.NumberFormat("en-US").format(Number(topEntry.totalScore || 0));
+      topCard.classList.remove("is-empty");
+    }
+
+    function makeRow(entry, index) {
+      const rank = String(index + 1).padStart(2, "0");
+      const name = escapeHtml(entry.name || "لاعب");
+      const score = new Intl.NumberFormat("en-US").format(Number(entry.totalScore || 0));
+      const gameType = gameLabelForType(entry.gameType);
+      const avatar = name.charAt(0);
+      const handle = escapeHtml(makeHandle(entry, index + 1));
+
+      return (
+        '<div class="score-row" data-rank="' + rank + '">' +
+          '<div class="leaderboard-rank-badge">' + rank + '</div>' +
+          '<div class="leaderboard-player-cell">' +
+            '<div class="leaderboard-avatar" aria-hidden="true">' + avatar + '</div>' +
+            '<div class="leaderboard-player-text">' +
+              '<strong class="leaderboard-player-name">' + name + '</strong>' +
+              '<span class="leaderboard-player-handle">' + handle + '</span>' +
+            '</div>' +
+          '</div>' +
+          '<div class="leaderboard-game-pill">' + gameType + '</div>' +
+          '<strong class="leaderboard-score-value">' + score + '</strong>' +
+        '</div>'
+      );
+    }
 
     async function load() {
       try {
         const type = String(typeFilter.value || "").trim();
-        const query = type ? "?gameType=" + encodeURIComponent(type) : "";
+        const query = type
+          ? "?gameType=" + encodeURIComponent(type) + "&limit=10"
+          : "?limit=10";
         const board = await api("/api/leaderboard" + query);
 
+        setMessage("", false);
         rows.innerHTML = "";
-        board.forEach((entry, index) => {
-          const row = document.createElement("div");
-          row.className = "score-row";
-          row.innerHTML =
-            '<span>#' + (index + 1) + ' ' + escapeHtml(entry.name || "لاعب") + '</span>' +
-            '<strong>' + Number(entry.totalScore || 0) + '</strong>';
-          rows.appendChild(row);
-        });
 
         if (!board.length) {
           rows.innerHTML = '<div class="small">لا توجد نتائج بعد.</div>';
+          updateTopCard([]);
+          return;
         }
+
+        rows.innerHTML = board.slice(0, 10).map(makeRow).join("");
+        updateTopCard(board);
       } catch (error) {
         setMessage(error.message, true);
+        rows.innerHTML = '<div class="small">تعذر تحميل البيانات حالياً.</div>';
+        updateTopCard([]);
       }
     }
 

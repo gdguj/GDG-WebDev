@@ -54,5 +54,34 @@ const backHomeButton = document.getElementById('back-home-btn');
 if (backHomeButton) {
   backHomeButton.addEventListener('click', () => {
     window.location.href = 'main page.html';
+
+  async function saveScore() {
+    const token = localStorage.getItem('gdgAuthToken');
+    if (!token) return;
+
+    try {
+      await fetch('/api/scores/record', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          gameType: 'letter_cells',
+          points: result.winnerScore,
+          source: 'local',
+          metadata: {
+            winnerName: result.winnerName,
+            blueScore: result.blue.pts,
+            greenScore: result.green.pts
+          }
+        })
+      });
+    } catch (err) {
+      console.error('saveScore error:', err);
+    }
+  }
+
+  saveScore();
   });
 }
