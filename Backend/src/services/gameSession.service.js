@@ -125,6 +125,11 @@ async function listTemplateGames(payload = {}) {
     .lean();
 }
 
+async function getTemplateById(templateId) {
+  const parsedId = toObjectId(templateId, "templateId");
+  return GameTemplate.findById(parsedId).lean();
+}
+
 async function listUserGames(payload = {}) {
   const gameType = String(payload.gameType || "").trim();
   const query = {};
@@ -592,6 +597,7 @@ function setRealtimeEmitter(emitter) {
 }
 
 module.exports = {
+  getTemplateById,
   createGameSession,
   getSessionById,
   joinGameByCode,

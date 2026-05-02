@@ -1,206 +1,7 @@
 let currentSessionId = null; // معرف الجلسة الحالية 
 const urlParams = new URLSearchParams(window.location.search);
 const customGameId = urlParams.get('id');
-/* 
-   SECTION 1 — QUESTIONS
-   ─────────────────────────────────────────
-   كل سؤال:
-     p1, p2   : مسار الصورة نسبي من مكان الـ HTML
-     answers  : الإجابات المقبولة (lowercase)
-     pts      : النقاط عند الإجابة الصحيحة
- */
-const QUESTIONS = [
-  {
-    p1: "../Images/imageGamePics/pic1-1.png",
-    p2: "../images/imageGamePics/pic1-2.png",
-    answers: ["كشري"],
-    hint:"اكله مصرية",
-    pts: 4
-  },
-  {
-    p1: "../Images/imageGamePics/pic2-2.png",
-    p2: "../images/imageGamePics/pic2-1.png",
-    answers: ["برجر"],
-    hint:"وجبة سريعة",
-    pts: 4
-  },
-  {
-    p1: "../images/imageGamePics/pic3-2.png",
-    p2: "../images/imageGamePics/pic3-1.png",
-    answers: ["سردين"],
-    hint:" في البحر ",
-    pts: 4
-  },
-  {
-    p1: "../images/imageGamePics/pic4-1.png",
-    p2: "../images/imageGamePics/pic4-2.png",
-    answers: ["بطريق"],
-    hint:"حيوان ",
-    pts: 4
-  },
-  {
-    p1: "../images/imageGamePics/pic5-1.png",
-    p2: "../images/imageGamePics/pic5-2.png",
-    answers: ["دحدر"],
-    hint:" توكل",
-    pts: 4
-  },
-   {
-    p1: "../Images/imageGamePics/pic6-2.png",
-    p2: "../images/imageGamePics/pic6-1.png",
-    answers: ["برعصي"],
-    hint:" زاحف",
-    pts: 4
-  },
-  {
-    p1: "../Images/imageGamePics/pic7-1.png",
-    p2: "../images/imageGamePics/pic7-2.png",
-    answers: ["ام القرى","أم القرى"],
-    hint:"مكه",
-    pts: 4
-  },
-  {
-    p1: "../images/imageGamePics/pic8-2.png",
-    p2: "../images/imageGamePics/pic8-1.png",
-    answers: ["طبرجل"],
-    hint:"مدينة سعوديه",
-    pts: 4
-  },
-  {
-    p1: "../images/imageGamePics/pic9.png",
-    p2: "../images/imageGamePics/pic9.png",
-    answers: ["بيكان"],
-    hint:" مكسرات",
-    pts: 4
-  },
-  {
-    p1: "../images/imageGamePics/pic10-2.png",
-    p2: "../images/imageGamePics/pic10-1.png",
-    answers: ["حكماء"],
-    hint:"نصيحة",
-    pts: 4
-  },
-  {
-    p1: "../images/imageGamePics/pic11-2.png",
-    p2: "../images/imageGamePics/pic11-1.png",
-    answers: ["فيتنام"],
-    hint:"دولة ",
-    pts: 4
-  },
-  {
-    p1: "../images/imageGamePics/pic12-2.png",
-    p2: "../images/imageGamePics/pic12-1.png",
-    answers: ["بروتين"],
-    hint:" عضلات",
-    pts: 4
-  },
-  {
-    p1: "../images/imageGamePics/pic13-2.png",
-    p2: "../images/imageGamePics/pic13-1.png",
-    answers: ["المثل الاسباني"],
-    hint:"",
-    pts: 4
-  },
-  {
-    p1: "../images/imageGamePics/pic14-2.png",
-    p2: "../images/imageGamePics/pic14-1.png",
-    answers: ["ليمون"],
-    hint:"فاكهة ",
-    pts: 4
-  },
-  {
-    p1: "../images/imageGamePics/pic15-2.png",
-    p2: "../images/imageGamePics/pic15-1.png",
-    answers: ["قصدير"],
-    hint:"تغليف",
-    pts: 4
-  },
-  {
-    p1: "../images/imageGamePics/pic16-2.png",
-    p2: "../images/imageGamePics/pic16-1.png",
-    answers: ["استنفار"],
-    hint:"حالة طوارئ",
-    pts: 4
-  },
-   {
-    p1: "../images/imageGamePics/pic17-2.png",
-    p2: "../images/imageGamePics/pic17-1.png",
-    answers: ["بستان"],
-    hint:"ورد",
-    pts: 4
-  },
-  {
-    p1: "../images/imageGamePics/pic18-2.png",
-    p2: "../images/imageGamePics/pic18-1.png",
-    answers: ["مركبة"],
-    hint:"وسيلة نقل",
-    pts: 4
-  },
-  
-  {
-    p1: "../images/imageGamePics/pic19-2.png",
-    p2: "../images/imageGamePics/pic19-1.png",
-    answers: ["جامعة الاميرات","جامعة الاميرة نورة"],
-    hint:"مقر تعليمي",
-    pts: 4
-  },
-  {
-    p1: "../images/imageGamePics/pic20-1.png",
-    p2: "../images/imageGamePics/pic20-2.png",
-    answers: ["قطايف"],
-    hint:"أكلة شعبية في رمضان",
-    pts: 4
-  },
-   {
-    p1: "../images/imageGamePics/pic21-2.png",
-    p2: "../images/imageGamePics/pic21-1.png",
-    answers: ["سنووايت"],
-    hint:"اميرة ديزني",
-    pts: 4
-  },
-  {
-    p1: "../images/imageGamePics/pic22-2.png",
-    p2: "../images/imageGamePics/pic22-1.png",
-    answers: ["صندوق"],
-    hint:"تخزين",
-    pts: 4
-  },
-  {
-    p1: "../images/imageGamePics/pic23-2.png",
-    p2: "../images/imageGamePics/pic23-1.png",
-    answers: ["صومال"],
-    hint:"دولة ",
-    pts: 4
-  },
-  {
-    p1: "../images/imageGamePics/pic24-2.png",
-    p2: "../images/imageGamePics/pic24-1.png",
-    answers: ["ابها"],
-    hint:"مدينة",
-    pts: 4
-  },
-    {
-    p1: "../images/imageGamePics/pic25-2.png",
-    p2: "../images/imageGamePics/pic25-1.png",
-    answers: ["زورق"],
-    hint:"بحر",
-    pts: 4
-  },
-  {
-    p1: "../images/imageGamePics/pic26-2.png",
-    p2: "../images/imageGamePics/pic26-1.png",
-    answers: ["اناناس"],
-    hint:"فاكهة",
-    pts: 4
-  },
-  {
-    p1: "../images/imageGamePics/pic27-2.png",
-    p2: "../images/imageGamePics/pic27-1.png",
-    answers: ["كأس العالم","كاس العالم"],
-    hint:"بطولة عالمية",
-    pts: 4
-  },
-];
+const TEMPLATE_GAME_TYPE = 'image_guessing';
 
 
 const GAME_TIME = 120;
@@ -264,7 +65,7 @@ skipOverlay: document.getElementById('skip-overlay'),
 
 /* SECTION 4 — INIT */
 // function init() {
-//   STATE.shuffled = shuffle([...QUESTIONS]);
+//   STATE.shuffled = [];
 //   DOM.teamAName.textContent = TEAM_NAMES.a;
 //   DOM.teamBName.textContent = TEAM_NAMES.b;
 //   DOM.skipTeamA.textContent = TEAM_NAMES.a;
@@ -299,16 +100,26 @@ async function init() {
                     hint: q.hint || "",
                     pts: 4
                 }));
-                STATE.shuffled = shuffle(customQuestions);
+                STATE.shuffled = customQuestions.filter(isValidQuestion);
             }
         } else {
-            // الحالة العادية: خلط الأسئلة الثابتة
-            STATE.shuffled = shuffle([...QUESTIONS]);
+              // الحالة العادية: جلب قالب لعبة الصور من Mongo (روابط Cloudinary)
+              STATE.shuffled = await loadTemplateQuestions();
         }
     } catch (error) {
         console.error(" Error loading questions:", error);
-        // لضمان عدم توقف اللعبة، نستخدم الأسئلة الثابتة كخيار احتياطي
-        STATE.shuffled = shuffle([...QUESTIONS]);
+            STATE.shuffled = [];
+          }
+
+          if (!STATE.shuffled.length) {
+            DOM.feedback.className = 'feedback wrong';
+            DOM.feedback.textContent = 'لا توجد أسئلة للعبة الصور في MongoDB حالياً.';
+            DOM.submitBtn.disabled = true;
+            DOM.submitBtn.style.display = 'none';
+            DOM.showAnswerBtn.style.display = 'none';
+            DOM.hintBtn.style.display = 'none';
+            DOM.answer.disabled = true;
+            return;
     }
 
     loadQuestion();
@@ -331,8 +142,9 @@ function loadQuestion() {
 
   const q = STATE.shuffled[STATE.qi];
 
-  DOM.pic1.src = q.p1;
-  DOM.pic2.src = q.p2;
+  // pic1 = يسار، pic2 = يمين — imageOne تظهر على اليمين
+  DOM.pic1.src = q.p2;
+  DOM.pic2.src = q.p1;
 
   // تنظيف الحقل والـ feedback
   DOM.answer.value         = '';
@@ -667,4 +479,63 @@ function shuffle(arr) {
     [a[i], a[j]] = [a[j], a[i]];
   }
   return a;
+}
+
+function isValidQuestion(q) {
+  if (!q) return false;
+  const answers = Array.isArray(q.answers) ? q.answers : [];
+  return Boolean(q.p1 && q.p2 && answers.length);
+}
+
+async function loadTemplateQuestions() {
+  const templateId = localStorage.getItem('imageGameTemplateId');
+
+  if (templateId) {
+    /* جلب المرحلة المختارة بالـ ID */
+    const response = await fetch(`/api/games/templates/${encodeURIComponent(templateId)}`);
+    const result   = await response.json();
+
+    if (!response.ok || !result.success) {
+      throw new Error(result.message || 'Template fetch failed');
+    }
+
+    const tpl = result.data;
+    const rawQuestions = tpl && tpl.data && Array.isArray(tpl.data.questions)
+      ? tpl.data.questions
+      : [];
+
+    return rawQuestions.map((q) => ({
+      p1:      q.imageOne || q.p1 || '',
+      p2:      q.imageTwo || q.p2 || '',
+      answers: Array.isArray(q.answers) ? q.answers.filter(Boolean) : (q.answer ? [q.answer] : []),
+      hint:    q.hint || '',
+      pts:     4,
+    })).filter(isValidQuestion);
+  }
+
+  /* fallback: أول قالب image_guessing في الداتابيس */
+  const response = await fetch(`/api/games/templates?gameType=${encodeURIComponent(TEMPLATE_GAME_TYPE)}`);
+  const result   = await response.json();
+
+  if (!response.ok || !result.success) {
+    throw new Error(result.message || 'Template fetch failed');
+  }
+
+  const templates = Array.isArray(result.data) ? result.data : [];
+  if (!templates.length) {
+    return [];
+  }
+
+  const latestTemplate = templates[0];
+  const rawQuestions = latestTemplate && latestTemplate.data && Array.isArray(latestTemplate.data.questions)
+    ? latestTemplate.data.questions
+    : [];
+
+  return rawQuestions.map((q) => ({
+    p1:      q.imageOne || q.p1 || '',
+    p2:      q.imageTwo || q.p2 || '',
+    answers: Array.isArray(q.answers) ? q.answers.filter(Boolean) : (q.answer ? [q.answer] : []),
+    hint:    q.hint || '',
+    pts:     4,
+  })).filter(isValidQuestion);
 }

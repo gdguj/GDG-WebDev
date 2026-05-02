@@ -9,6 +9,7 @@ const authRoutes = require("./routes/auth.routes");
 const scoreRoutes = require("./routes/score.routes");
 const errorMiddleware = require("./middlewares/error.middleware");
 const lobbyRoutes = require('./routes/lobby.routes');
+const uploadRoutes = require("./routes/upload.routes");
 
 
 const app = express();
@@ -34,6 +35,7 @@ app.use("/", gameSessionRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/scores", scoreRoutes);
 app.use('/api/lobby', lobbyRoutes);
+app.use("/api/uploads", uploadRoutes);
 
 // Error middleware
 app.use(errorMiddleware);

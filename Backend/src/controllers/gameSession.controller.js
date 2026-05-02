@@ -85,6 +85,19 @@ async function getTemplateGames(req, res, next) {
   }
 }
 
+async function getTemplateById(req, res, next) {
+  try {
+    const { id } = req.params;
+    const template = await service.getTemplateById(id);
+    if (!template) {
+      return res.status(404).json({ success: false, message: 'المرحلة غير موجودة.' });
+    }
+    return res.status(200).json({ success: true, data: template });
+  } catch (error) {
+    return next(error);
+  }
+}
+
 async function getUserGames(req, res, next) {
   try {
     const games = await service.listUserGames(req.query);
@@ -104,5 +117,6 @@ module.exports = {
   getLeaderboard,
   getSession,
   getTemplateGames,
+  getTemplateById,
   getUserGames,
 };

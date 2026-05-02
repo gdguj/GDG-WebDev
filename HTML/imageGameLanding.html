@@ -40,16 +40,18 @@
       <img src="../images/Corner-Left.png" class="corner corner-left" alt="">
       <img src="../images/Corner-Right.png" class="corner corner-right" alt="">
 
-      <h1 class="title">خمّن <span style="color:#4285F4">ا</span><span style="color:#EA4335">ل</span><span style="color:#FBBC05">ك</span><span style="color:#34A853">لمة</span></h1>
-      <p class="subtitle">ادمج الصورتين وخمّن الكلمة</p>
-
-      <div class="images-row">
-        <img src="../images/guessImage.png" class="game-image">
-        <div class="symbol">+</div>
-        <img src="../images/guessImage.png" class="game-image">
-        <div class="symbol">=</div>
-        <div class="symbol">?</div>
-    </div>
+        <!-- اختيار المرحلة -->
+        <div class="level-section">
+          <h2 class="level-heading">اختر المرحلة</h2>
+          <div class="levels-nav">
+            <button id="levelsPrev" class="levels-arrow" aria-label="السابق">&#8249;</button>
+            <div id="levelsGrid" class="levels-grid">
+              <div class="levels-loading">جاري تحميل المراحل...</div>
+            </div>
+            <button id="levelsNext" class="levels-arrow" aria-label="التالي">&#8250;</button>
+          </div>
+          <div id="levelsDots" class="levels-dots"></div>
+        </div>
 
         <div class="team-setup" aria-label="Team setup">
             <div class="team-field">
@@ -63,7 +65,7 @@
         </div>
 
     <div class="buttons-group">
-            <button class="play-btn" id="imageGameStartBtn">ابدأ اللعبة</button>
+            <button class="play-btn" id="imageGameStartBtn" disabled>ابدأ اللعبة</button>
     </div>
 
     </div>

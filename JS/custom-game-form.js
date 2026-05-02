@@ -28,6 +28,21 @@
     updateCounter();
   });
 
+  questionsContainer.addEventListener("click", async (event) => {
+    const uploadBtn = event.target.closest("[data-upload-target]");
+    if (!uploadBtn) {
+      return;
+    }
+
+    const targetField = String(uploadBtn.dataset.uploadTarget || "").trim();
+    const questionItem = uploadBtn.closest(".question-item");
+    if (!questionItem || !targetField) {
+      return;
+    }
+
+    await uploadImageForField(questionItem, targetField, uploadBtn);
+  });
+
   saveGameBtn.addEventListener("click", async () => {
     clearStatus();
 
@@ -238,6 +253,73 @@
   function getValue(scope, fieldName) {
     const element = scope.querySelector('[data-field="' + fieldName + '"]');
     return String((element && element.value) || "").trim();
+  }
+
+  async function uploadImageForField(questionItem, fieldName, uploadBtn) {
+    const fileInput = questionItem.querySelector('[data-upload-file="' + fieldName + '"]');
+    const urlInput = questionItem.querySelector('[data-field="' + fieldName + '"]');
+    const statusSlot = questionItem.querySelector('[data-upload-status="' + fieldName + '"]');
+
+    if (!fileInput || !urlInput) {
+      return;
+    }
+
+    const selectedFile = fileInput.files && fileInput.files[0];
+    if (!selectedFile) {
+      setUploadStatus(statusSlot, "اختاري صورة أولاً.", "error");
+      return;
+    }
+
+    const auth = getAuthData();
+    if (!auth || !auth.token) {
+      window.location.href = "auth.html?redirect=" + encodeURIComponent(window.location.pathname.split("/").pop() || "");
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("image", selectedFile);
+
+    const initialText = uploadBtn.textContent;
+    uploadBtn.disabled = true;
+    uploadBtn.textContent = "جاري الرفع...";
+    setUploadStatus(statusSlot, "يتم رفع الصورة إلى Cloudinary...", "info");
+
+    try {
+      const response = await fetch("/api/uploads/image", {
+        method: "POST",
+        headers: {
+          Authorization: "Bearer " + auth.token,
+        },
+        body: formData,
+      });
+
+      const result = await response.json();
+      if (!response.ok || !result.success || !result.data || !result.data.url) {
+        throw new Error(result.message || "فشل رفع الصورة.");
+      }
+
+      urlInput.value = result.data.url;
+      fileInput.value = "";
+      setUploadStatus(statusSlot, "تم رفع الصورة وتعبئة الرابط بنجاح.", "success");
+    } catch (error) {
+      setUploadStatus(statusSlot, error.message || "حدث خطأ أثناء الرفع.", "error");
+    } finally {
+      uploadBtn.disabled = false;
+      uploadBtn.textContent = initialText;
+    }
+  }
+
+  function setUploadStatus(slot, message, type) {
+    if (!slot) {
+      return;
+    }
+
+    slot.textContent = message;
+    slot.style.color = type === "error"
+      ? "#ea4335"
+      : type === "success"
+        ? "#16a34a"
+        : "#6b7280";
   }
 
   function addQuestionItem() {

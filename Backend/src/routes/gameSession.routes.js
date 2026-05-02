@@ -12,6 +12,7 @@ router.post("/game/answer", controller.submitAnswer);
 router.post("/session/finish", controller.finishGame);
 router.get("/leaderboard", controller.getLeaderboard);
 router.get("/games/templates", controller.getTemplateGames);
+router.get("/games/templates/:id", controller.getTemplateById);
 router.get("/games/user", controller.getUserGames);
 router.get("/session/:sessionId", controller.getSession);
 
