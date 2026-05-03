@@ -218,6 +218,29 @@ async function loadQuestions() {
         }));
             }
         } else {
+      // الحالة الثانية: مرحلة مختارة من صفحة التعليمات
+      const surveyTemplateId = localStorage.getItem('surveyTemplateId');
+      if (surveyTemplateId) {
+        console.log("Loading survey template:", surveyTemplateId);
+        response = await fetch(`/api/games/templates/${encodeURIComponent(surveyTemplateId)}`);
+        const tplResult = await response.json();
+        if (tplResult.success && tplResult.data) {
+          const tpl = tplResult.data;
+          currentSessionId = 'TEMPLATE_' + tpl._id;
+          questionsData = (tpl.data.questions || []).map(q => ({
+            question: q.question || q.text,
+            answers: (q.answers || []).map(a => ({
+              answer: a.answer || a.text,
+              points: parseInt(a.points) || 10,
+              keywords: Array.isArray(a.keywords) ? a.keywords : (a.synonyms || [])
+            }))
+          }));
+          if (questionsData.length > 0) {
+            remainingQuestionIndexes = questionsData.map((_, index) => index);
+            return;
+          }
+        }
+      }
 
 
     const res = await fetch(`${FAMILY_FEUD_API_BASE}`, { cache: "no-store" });

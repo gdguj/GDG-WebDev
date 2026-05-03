@@ -231,6 +231,29 @@ async function loadQuestions() {
         }));
       }
     } else {
+      // مرحلة مختارة من صفحة التعليمات
+      const letterCellTemplateId = localStorage.getItem('letterCellTemplateId');
+      if (letterCellTemplateId) {
+        console.log('Loading letter cells template:', letterCellTemplateId);
+        response = await fetch(`/api/games/templates/${encodeURIComponent(letterCellTemplateId)}`);
+        const tplResult = await response.json();
+        if (tplResult.success && tplResult.data) {
+          const tpl = tplResult.data;
+          currentSessionId = 'TEMPLATE_' + tpl._id;
+          allQuestions = (tpl.data.questions || []).map((question) => ({
+            letter: question.letter,
+            questionText: question.question || question.text,
+            answer: question.answer
+          }));
+          if (allQuestions.length > 0) {
+            lettersArray = allQuestions.map((cell) => cell.letter);
+            drawHexGrid();
+            updateScoreBar();
+            return;
+          }
+        }
+      }
+
       response = await fetch('/api/init-game', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
