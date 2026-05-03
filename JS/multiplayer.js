@@ -732,12 +732,33 @@
       return gameLabels[key] || "كل الألعاب";
     }
 
-    function makeHandle(entry, rank) {
+    function maskEmail(entry, fallbackRank) {
       const email = String(entry && entry.email ? entry.email : "").trim();
-      if (email.includes("@")) {
-        return "@" + email.split("@")[0];
+      if (!email.includes("@")) {
+        return "@player_" + String(fallbackRank).padStart(2, "0");
       }
-      return "@player_" + String(rank).padStart(2, "0");
+      const atIdx = email.indexOf("@");
+      const local = email.slice(0, atIdx);
+      const domain = email.slice(atIdx + 1);
+      const halfLocal = Math.ceil(local.length / 2);
+      const halfDomain = Math.ceil(domain.length / 2);
+      return local.slice(0, halfLocal) + "***@" + domain.slice(0, halfDomain) + "***";
+    }
+
+    // Dense ranking: نفس النقاط = نفس الرتبة، والتالي يأخذ الرتبة التالية مباشرة
+    function computeRanks(board) {
+      const ranks = [];
+      let denseRank = 0;
+      let prevScore = null;
+      for (let i = 0; i < board.length; i++) {
+        const score = Number(board[i].totalScore || 0);
+        if (score !== prevScore) {
+          denseRank++;
+          prevScore = score;
+        }
+        ranks.push(denseRank);
+      }
+      return ranks;
     }
 
     function updateTopCard(board) {
@@ -756,17 +777,17 @@
       topCard.classList.remove("is-empty");
     }
 
-    function makeRow(entry, index) {
-      const rank = String(index + 1).padStart(2, "0");
+    function makeRow(entry, rank) {
+      const rankStr = String(rank).padStart(2, "0");
       const name = escapeHtml(entry.name || "لاعب");
       const score = new Intl.NumberFormat("en-US").format(Number(entry.totalScore || 0));
-      const gameType = gameLabelForType(entry.gameType);
+      const gameType = gameLabelForType(entry.lastGameType);
       const avatar = name.charAt(0);
-      const handle = escapeHtml(makeHandle(entry, index + 1));
+      const handle = escapeHtml(maskEmail(entry, rank));
 
       return (
-        '<div class="score-row" data-rank="' + rank + '">' +
-          '<div class="leaderboard-rank-badge">' + rank + '</div>' +
+        '<div class="score-row" data-rank="' + rankStr + '">' +
+          '<div class="leaderboard-rank-badge">' + rankStr + '</div>' +
           '<div class="leaderboard-player-cell">' +
             '<div class="leaderboard-avatar" aria-hidden="true">' + avatar + '</div>' +
             '<div class="leaderboard-player-text">' +
@@ -797,7 +818,9 @@
           return;
         }
 
-        rows.innerHTML = board.slice(0, 10).map(makeRow).join("");
+        const top10 = board.slice(0, 10);
+        const ranks = computeRanks(top10);
+        rows.innerHTML = top10.map((entry, i) => makeRow(entry, ranks[i])).join("");
         updateTopCard(board);
       } catch (error) {
         setMessage(error.message, true);

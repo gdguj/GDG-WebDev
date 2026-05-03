@@ -66,7 +66,7 @@ async function joinLobby(req, res, next) {
       status: session.status,
     });
   } catch (error) {
-    if (error.message.includes('ممتلئ') || error.message.includes('بدأت')) {
+    if (error.message.includes('ممتلئ') || error.message.includes('بدأت') || error.message.includes('انتهت')) {
       return res.status(400).json({ success: false, message: error.message });
     }
     next(error);
@@ -98,7 +98,13 @@ async function startLobby(req, res, next) {
 
 async function cancelLobby(req, res, next) {
   try {
-    const { code } = req.body;
+    // sendBeacon يرسل JSON كـ text/plain، بينما fetch العادي يرسل application/json
+    let code;
+    if (typeof req.body === 'string') {
+      try { code = JSON.parse(req.body).code; } catch (_) { code = null; }
+    } else {
+      code = req.body && req.body.code;
+    }
     if (!code) return res.status(400).json({ success: false, message: "code مطلوب" });
     await lobbyService.cancelSession(code);
     res.json({ success: true });

@@ -1,4 +1,3 @@
-const mongoose = require("mongoose");
 const Score = require("../models/Score.model");
 
 const ALLOWED_GAME_TYPES = new Set(["image_guessing", "letter_cells", "survey_game"]);
@@ -20,9 +19,6 @@ function normalizeGameType(value) {
 async function recordAuthenticatedScore(payload) {
   const gameType = normalizeGameType(payload.gameType);
   const points = Number(payload.points);
-  const externalSessionId = String(payload.externalSessionId || "").trim() || null;
-  const source = String(payload.source || "local").trim() || "local";
-  const metadata = payload.metadata && typeof payload.metadata === "object" ? payload.metadata : null;
 
   const email = normalizeEmail(payload.authUser && payload.authUser.email);
   const name = String((payload.authUser && payload.authUser.name) || "لاعب").trim() || "لاعب";
@@ -37,39 +33,18 @@ async function recordAuthenticatedScore(payload) {
     throw createError("points يجب أن تكون رقماً صالحاً >= 0.", 400);
   }
 
-  if (externalSessionId) {
-    const existing = await Score.findOne({ externalSessionId, accountEmail: email }).lean();
-    if (existing) {
-      return existing;
-    }
-  }
-
-  const created = await Score.create({
-    sessionId: new mongoose.Types.ObjectId(),
-    externalSessionId,
-    gameId: null,
-    gameType,
-    players: [
-      {
-        userId: null,
-        name,
-        email,
-        score: points,
-      },
-    ],
-    winner: {
-      userId: null,
-      name,
-      email,
-      score: points,
+  // upsert: سجل واحد لكل إيميل يتحدث في كل مرة
+  const updated = await Score.findOneAndUpdate(
+    { email },
+    {
+      $setOnInsert: { email },
+      $set: { name, lastPlayedAt: new Date(), lastGameType: gameType },
+      $inc: { totalScore: points, gamesPlayed: 1 },
     },
-    accountEmail: email,
-    source,
-    metadata,
-    playedAt: new Date(),
-  });
+    { upsert: true, new: true }
+  ).lean();
 
-  return created.toObject();
+  return updated;
 }
 
 module.exports = {

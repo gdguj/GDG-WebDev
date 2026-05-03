@@ -30,8 +30,6 @@ app.use("/api/family-feud", familyFeudRoutes);
 app.use("/api/custom-games", customGameRoutes);
 app.use("/api", wordGridRoutes);
 app.use("/api", gameSessionRoutes);
-app.use("/api/multiplayer", gameSessionRoutes);
-app.use("/", gameSessionRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/scores", scoreRoutes);
 app.use('/api/lobby', lobbyRoutes);

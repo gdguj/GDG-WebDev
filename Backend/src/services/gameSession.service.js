@@ -484,8 +484,7 @@ async function finishGame(payload) {
   const session = await getSessionById(sessionId);
 
   if (session.status === "finished") {
-    const existingScore = await Score.findOne({ sessionId: session._id }).lean();
-    return { session, score: existingScore };
+    return { session };
   }
 
   const sortedPlayers = [...session.players].sort((a, b) => b.score - a.score);
@@ -499,97 +498,47 @@ async function finishGame(payload) {
 
   await session.save();
 
-  const existingScore = await Score.findOne({ sessionId: session._id });
-  const scoreDoc =
-    existingScore ||
-    (await Score.create({
-      sessionId: session._id,
-      gameId: session.gameId,
-      gameType: session.gameType,
-      players: session.players.map((player) => ({
-        userId: player.userId || null,
-        name: player.name,
-        email: normalizeEmail(player.email),
-        score: player.score,
-      })),
-      winner: winnerPlayer
-        ? {
-            userId: winnerPlayer.userId,
-            name: winnerPlayer.name,
-            email: normalizeEmail(winnerPlayer.email),
-            score: winnerPlayer.score,
-          }
-        : {
-            userId: null,
-            name: "لا يوجد فائز",
-            email: null,
-            score: 0,
+  // upsert نقاط كل لاعب عنده إيميل – سجل واحد لكل مستخدم
+  const upsertPromises = session.players
+    .filter((p) => normalizeEmail(p.email))
+    .map((player) => {
+      const email = normalizeEmail(player.email);
+      const isWinner =
+        winnerPlayer && String(player.userId) === String(winnerPlayer.userId);
+      return Score.findOneAndUpdate(
+        { email },
+        {
+          $setOnInsert: { email },
+          $set: {
+            name: player.name,
+            lastPlayedAt: session.finishedAt,
+            lastGameType: session.gameType,
           },
-      accountEmail: winnerPlayer ? normalizeEmail(winnerPlayer.email) : null,
-      source: "multiplayer",
-      playedAt: session.finishedAt,
-    }));
+          $inc: {
+            totalScore: player.score,
+            gamesPlayed: 1,
+            wins: isWinner ? 1 : 0,
+          },
+        },
+        { upsert: true, new: true }
+      );
+    });
+
+  await Promise.all(upsertPromises);
 
   emitSession("session:finished", session);
-  return { session, score: scoreDoc };
+  return { session };
 }
 
 async function getLeaderboard(payload = {}) {
-  const gameType = String(payload.gameType || "").trim();
   const safeLimit = Math.min(Math.max(Number(payload.limit) || 20, 1), 100);
 
-  const pipeline = [];
-
-  if (gameType) {
-    pipeline.push({
-      $match: { gameType },
-    });
-  }
-
-  pipeline.push({ $unwind: "$players" });
-  pipeline.push({
-    $addFields: {
-      playerKey: {
-        $ifNull: [
-          "$players.email",
-          {
-            $concat: [
-              "legacy:",
-              { $ifNull: [{ $toString: "$players.userId" }, "unknown"] },
-              ":",
-              { $ifNull: ["$players.name", "لاعب"] },
-            ],
-          },
-        ],
-      },
-    },
-  });
-  pipeline.push({
-    $group: {
-      _id: "$playerKey",
-      userId: { $max: "$players.userId" },
-      email: { $max: "$players.email" },
-      name: { $last: "$players.name" },
-      totalScore: { $sum: "$players.score" },
-      gamesPlayed: { $sum: 1 },
-      bestSingleGame: { $max: "$players.score" },
-    },
-  });
-  pipeline.push({
-    $project: {
-      _id: 0,
-      userId: "$userId",
-      email: "$email",
-      name: "$name",
-      totalScore: 1,
-      gamesPlayed: 1,
-      bestSingleGame: 1,
-    },
-  });
-  pipeline.push({ $sort: { totalScore: -1, bestSingleGame: -1, name: 1 } });
-  pipeline.push({ $limit: safeLimit });
-
-  return Score.aggregate(pipeline);
+  // الكولكشن الآن سجل واحد لكل مستخدم – نرجع مباشرة
+  return Score.find({})
+    .sort({ totalScore: -1, gamesPlayed: -1, name: 1 })
+    .limit(safeLimit)
+    .select("email name totalScore gamesPlayed wins lastPlayedAt lastGameType")
+    .lean();
 }
 
 function setRealtimeEmitter(emitter) {

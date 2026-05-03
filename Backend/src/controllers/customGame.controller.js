@@ -29,6 +29,78 @@ async function createGame(req, res, next) {
       });
     }
 
+    const validatedQuestions = Array.isArray(normalizedData.questions) ? normalizedData.questions : [];
+
+    if (gameType === 'letter_cells') {
+      if (validatedQuestions.length !== 25) {
+        return res.status(400).json({
+          success: false,
+          message: 'لعبة الحروف يجب أن تحتوي على 25 سؤالاً بالضبط (شبكة 5×5).'
+        });
+      }
+      for (let i = 0; i < validatedQuestions.length; i++) {
+        const q = validatedQuestions[i];
+        if (!q.letter || !q.question || !q.answer) {
+          return res.status(400).json({
+            success: false,
+            message: 'السؤال رقم ' + (i + 1) + ': الحرف والسؤال والإجابة مطلوبة.'
+          });
+        }
+      }
+    }
+
+    if (gameType === 'survey_game') {
+      if (validatedQuestions.length < 2) {
+        return res.status(400).json({
+          success: false,
+          message: 'لعبة الاستبيان تحتاج سؤالين على الأقل.'
+        });
+      }
+      for (let i = 0; i < validatedQuestions.length; i++) {
+        const q = validatedQuestions[i];
+        if (!q.question) {
+          return res.status(400).json({
+            success: false,
+            message: 'السؤال رقم ' + (i + 1) + ': نص السؤال مطلوب.'
+          });
+        }
+        const answers = Array.isArray(q.answers) ? q.answers : [];
+        if (answers.length !== 10) {
+          return res.status(400).json({
+            success: false,
+            message: 'السؤال رقم ' + (i + 1) + ': يجب أن يحتوي على 10 خيارات بالضبط.'
+          });
+        }
+        for (let j = 0; j < answers.length; j++) {
+          const a = answers[j];
+          if (!a.text || !Number.isFinite(Number(a.points)) || Number(a.points) <= 0) {
+            return res.status(400).json({
+              success: false,
+              message: 'السؤال رقم ' + (i + 1) + '، الخيار رقم ' + (j + 1) + ': نص ونقاط صحيحة مطلوبة.'
+            });
+          }
+        }
+      }
+    }
+
+    if (gameType === 'image_guessing') {
+      if (!validatedQuestions.length) {
+        return res.status(400).json({
+          success: false,
+          message: 'لعبة الصور تحتاج سؤالاً واحداً على الأقل.'
+        });
+      }
+      for (let i = 0; i < validatedQuestions.length; i++) {
+        const q = validatedQuestions[i];
+        if (!q.imageOne || !q.imageTwo || !q.answer) {
+          return res.status(400).json({
+            success: false,
+            message: 'السؤال رقم ' + (i + 1) + ': رابطا الصورتين والإجابة مطلوبة.'
+          });
+        }
+      }
+    }
+
     const result = await customGameService.saveCustomGame({
       gameType,
       title,

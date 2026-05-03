@@ -96,10 +96,6 @@ app.use(express.static(jsPath));          // JS files
 app.use(express.static(imagesPath));      // Images
 
 
-app.use(express.json()); 
-app.use(express.urlencoded({ extended: true }));
-
-// Also expose assets under explicit folder prefixes used by HTML pages.
 app.use("/CSS", express.static(cssPath));
 app.use("/JS", express.static(jsPath));
 app.use("/Images", express.static(imagesPath));
@@ -125,6 +121,23 @@ async function startServer() {
 
     initSocket(server);
     gameSessionService.setRealtimeEmitter(emitSessionEvent);
+
+    // جلسات اللوبي المنتهية: تُحذف تلقائياً بعد ساعة من انتهائها
+    const Session = require("./src/models/Session.model");
+    setInterval(async () => {
+      try {
+        const oneHourAgo = new Date(Date.now() - 60 * 60 * 1000);
+        const result = await Session.deleteMany({
+          status: "finished",
+          finishedAt: { $lt: oneHourAgo },
+        });
+        if (result.deletedCount > 0) {
+          console.log(`🧹 تم حذف ${result.deletedCount} جلسة لوبي منتهية`);
+        }
+      } catch (err) {
+        console.error("خطأ في تنظيف الجلسات المنتهية:", err.message);
+      }
+    }, 5 * 60 * 1000); // كل 5 دقائق
 
     server.listen(PORT, () => {
       console.log(`🚀 Server running on http://localhost:${PORT}`);

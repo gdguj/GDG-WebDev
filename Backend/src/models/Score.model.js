@@ -1,123 +1,52 @@
 const mongoose = require("mongoose");
 
-const playerScoreSchema = new mongoose.Schema(
-  {
-    userId: {
-      type: mongoose.Schema.Types.ObjectId,
-      default: null,
-      index: true,
-    },
-    name: {
-      type: String,
-      required: true,
-      trim: true,
-    },
-    email: {
-      type: String,
-      default: null,
-      trim: true,
-      lowercase: true,
-      index: true,
-    },
-    score: {
-      type: Number,
-      required: true,
-      min: 0,
-    },
-  },
-  { _id: false }
-);
-
-const winnerScoreSchema = new mongoose.Schema(
-  {
-    userId: {
-      type: mongoose.Schema.Types.ObjectId,
-      default: null,
-      index: true,
-    },
-    name: {
-      type: String,
-      required: true,
-      trim: true,
-    },
-    email: {
-      type: String,
-      default: null,
-      trim: true,
-      lowercase: true,
-      index: true,
-    },
-    score: {
-      type: Number,
-      required: true,
-      min: 0,
-    },
-  },
-  { _id: false }
-);
-
+// كولكشن سكور: سجل واحد لكل مستخدم (يتحدث بدل ما يتكرر)
 const scoreSchema = new mongoose.Schema(
   {
-    sessionId: {
-      type: mongoose.Schema.Types.ObjectId,
-      default: null,
-      ref: "GameSession",
-      index: true,
-    },
-    externalSessionId: {
-      type: String,
-      default: null,
-      trim: true,
-      index: true,
-      sparse: true,
-    },
-    gameId: {
-      type: mongoose.Schema.Types.ObjectId,
-      default: null,
-      index: true,
-    },
-    gameType: {
+    email: {
       type: String,
       required: true,
-      enum: ["image_guessing", "letter_cells", "survey_game"],
-      index: true,
-    },
-    players: {
-      type: [playerScoreSchema],
-      required: true,
-      validate: {
-        validator: (v) => Array.isArray(v) && v.length > 0,
-        message: "At least one player result is required.",
-      },
-    },
-    winner: {
-      type: winnerScoreSchema,
-      required: true,
-    },
-    accountEmail: {
-      type: String,
-      default: null,
+      unique: true,
       trim: true,
       lowercase: true,
       index: true,
     },
-    source: {
+    name: {
       type: String,
-      default: "multiplayer",
+      required: true,
       trim: true,
-      index: true,
     },
-    metadata: {
-      type: mongoose.Schema.Types.Mixed,
+    userId: {
+      type: mongoose.Schema.Types.ObjectId,
       default: null,
     },
-    playedAt: {
+    totalScore: {
+      type: Number,
+      default: 0,
+      min: 0,
+    },
+    gamesPlayed: {
+      type: Number,
+      default: 0,
+      min: 0,
+    },
+    wins: {
+      type: Number,
+      default: 0,
+      min: 0,
+    },
+    lastPlayedAt: {
       type: Date,
       default: Date.now,
       index: true,
     },
+    lastGameType: {
+      type: String,
+      default: null,
+    },
   },
   {
+    timestamps: true,
     versionKey: false,
     collection: "scores",
   }

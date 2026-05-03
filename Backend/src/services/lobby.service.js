@@ -84,6 +84,7 @@ async function getSessionInfo(joinCode) {
 async function joinSession(joinCode, playerName, team) {
   const session = await Session.findOne({ joinCode: joinCode.toUpperCase() });
   if (!session) throw new Error("الكود غير صحيح أو انتهت الجلسة");
+  if (session.status === "finished") throw new Error("انتهت اللعبة بالفعل، هذا الكود لم يعد صالحاً");
   if (session.status === "started") throw new Error("اللعبة بدأت بالفعل");
 
   // إزالة اللاعب من أي فريق كان فيه مسبقاً (حتى لا يكون في فريقين)

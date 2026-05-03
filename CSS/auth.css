@@ -301,8 +301,8 @@ body {
 }
 
 .form-message {
-  min-height: 24px;
-  margin: 8px 0 0;
+  min-height: 20px;
+  margin: 6px 0 10px;
   font-size: 0.93rem;
   font-weight: 700;
 }

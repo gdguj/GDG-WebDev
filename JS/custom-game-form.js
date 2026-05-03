@@ -93,7 +93,7 @@
         throw new Error(result.message || "فشل حفظ اللعبة.");
       }
 
-      showStatus("تم حفظ اللعبة بنجاح", "success");
+      showSuccessPopup();
     } catch (error) {
       showStatus(normalizeSaveError(error.message), "error");
     } finally {
@@ -101,6 +101,53 @@
       saveGameBtn.textContent = "حفظ اللعبة";
     }
   });
+
+  function showSuccessPopup() {
+    // إنشاء الـ overlay
+    const overlay = document.createElement("div");
+    overlay.style.cssText = [
+      "position:fixed","inset:0","background:rgba(0,0,0,0.45)",
+      "display:flex","align-items:center","justify-content:center",
+      "z-index:9999","direction:rtl"
+    ].join(";");
+
+    const box = document.createElement("div");
+    box.style.cssText = [
+      "background:#fff","border-radius:18px","padding:40px 36px 32px",
+      "text-align:center","max-width:360px","width:90%",
+      "box-shadow:0 8px 40px rgba(0,0,0,0.18)"
+    ].join(";");
+
+    const icon = document.createElement("div");
+    icon.textContent = "✅";
+    icon.style.cssText = "font-size:3rem;margin-bottom:14px";
+
+    const title = document.createElement("h2");
+    title.textContent = "تم إنشاء اللعبة بنجاح!";
+    title.style.cssText = "font-size:1.3rem;font-weight:800;color:#1a1a1a;margin:0 0 8px";
+
+    const sub = document.createElement("p");
+    sub.textContent = "يمكنك الآن مشاركة لعبتك مع الآخرين.";
+    sub.style.cssText = "font-size:0.95rem;color:#555;margin:0 0 24px";
+
+    const btn = document.createElement("button");
+    btn.textContent = "حسناً";
+    btn.style.cssText = [
+      "background:#0078BF","color:#fff","border:none","border-radius:10px",
+      "padding:12px 36px","font-size:1rem","font-weight:700",
+      "cursor:pointer","width:100%"
+    ].join(";");
+    btn.addEventListener("click", () => {
+      window.location.href = "my-games.html";
+    });
+
+    box.appendChild(icon);
+    box.appendChild(title);
+    box.appendChild(sub);
+    box.appendChild(btn);
+    overlay.appendChild(box);
+    document.body.appendChild(overlay);
+  }
 
   addQuestionItem();
   renderQuestionIndices();
@@ -209,7 +256,7 @@
       throw new Error("لعبة الاستبيان تعتبر جولتين، لذلك يجب إدخال سؤالين على الأقل.");
     }
 
-    const questions = questionItems.map((item) => {
+    const questions = questionItems.map((item, index) => {
       const question = getValue(item, "question");
       const answerItems = Array.from(item.querySelectorAll(".answer-item"));
 
