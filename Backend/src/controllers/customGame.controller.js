@@ -56,6 +56,9 @@ async function createGame(req, res, next) {
           message: 'لعبة الاستبيان تحتاج سؤالين على الأقل.'
         });
       }
+
+      const normalizedSurveyQuestions = [];
+
       for (let i = 0; i < validatedQuestions.length; i++) {
         const q = validatedQuestions[i];
         if (!q.question) {
@@ -64,6 +67,7 @@ async function createGame(req, res, next) {
             message: 'السؤال رقم ' + (i + 1) + ': نص السؤال مطلوب.'
           });
         }
+
         const answers = Array.isArray(q.answers) ? q.answers : [];
         if (answers.length !== 10) {
           return res.status(400).json({
@@ -71,16 +75,48 @@ async function createGame(req, res, next) {
             message: 'السؤال رقم ' + (i + 1) + ': يجب أن يحتوي على 10 خيارات بالضبط.'
           });
         }
+
+        const normalizedAnswers = [];
+
         for (let j = 0; j < answers.length; j++) {
           const a = answers[j];
-          if (!a.text || !Number.isFinite(Number(a.points)) || Number(a.points) <= 0) {
+          const answer = String(a.answer || a.text || '').trim();
+          const points = Number(a.points);
+          const rawKeywords = Array.isArray(a.keywords)
+            ? a.keywords
+            : Array.isArray(a.synonyms)
+              ? a.synonyms
+              : [];
+          const keywords = rawKeywords
+            .map((entry) => String(entry || '').trim())
+            .filter(Boolean);
+
+          if (!answer || !Number.isFinite(points) || points <= 0) {
             return res.status(400).json({
               success: false,
-              message: 'السؤال رقم ' + (i + 1) + '، الخيار رقم ' + (j + 1) + ': نص ونقاط صحيحة مطلوبة.'
+              message:
+                'السؤال رقم ' +
+                (i + 1) +
+                '، الخيار رقم ' +
+                (j + 1) +
+                ': نص ونقاط صحيحة مطلوبة.'
             });
           }
+
+          normalizedAnswers.push({
+            answer,
+            keywords,
+            points,
+          });
         }
+
+        normalizedSurveyQuestions.push({
+          question: String(q.question).trim(),
+          answers: normalizedAnswers,
+        });
       }
+
+      normalizedData.questions = normalizedSurveyQuestions;
     }
 
     if (gameType === 'image_guessing') {

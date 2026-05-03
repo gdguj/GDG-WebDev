@@ -213,7 +213,7 @@ async function loadQuestions() {
             answers: (q.answers || []).map(a => ({
                 answer: a.answer || a.text,
                 points: parseInt(a.points) || 10,
-                synonyms: a.synonyms || []
+                keywords: Array.isArray(a.keywords) ? a.keywords : (a.synonyms || [])
             }))
         }));
             }
@@ -306,7 +306,7 @@ async function startNewRound() {
   gameState.answers = q.answers.map(a => ({
     answer: a.answer,
     points: a.points,
-    synonyms: a.synonyms || [],
+    keywords: Array.isArray(a.keywords) ? a.keywords : (a.synonyms || []),
     revealed: false
   }));
 
@@ -401,7 +401,14 @@ function submitAnswer() {
   const found = gameState.answers.find(a => {
     if (a.revealed) return false;
     if (normalize(a.answer) === normalized) return true;
-    if (Array.isArray(a.synonyms) && a.synonyms.some(s => normalize(s) === normalized)) return true;
+
+    const keywords = Array.isArray(a.keywords)
+      ? a.keywords
+      : Array.isArray(a.synonyms)
+        ? a.synonyms
+        : [];
+
+    if (keywords.some(s => normalize(s) === normalized)) return true;
     return false;
   });
 

@@ -386,8 +386,24 @@ function evaluateLetterAnswer(session, player, payload, context) {
 function evaluateSurveyAnswer(session, player, payload, context) {
   const given = normalizeText(payload.answer);
   const answers = Array.isArray(context.question.answers) ? context.question.answers : [];
-  const matched = answers.find((item) => normalizeText(item.text) === given);
-  const answerKey = matched ? normalizeText(matched.text) : "";
+
+  const matched = answers.find((item) => {
+    const answerText = normalizeText(item.answer || item.text);
+    if (answerText && answerText === given) {
+      return true;
+    }
+
+    const keywords = Array.isArray(item.keywords)
+      ? item.keywords
+      : Array.isArray(item.synonyms)
+        ? item.synonyms
+        : [];
+
+    return keywords.some((keyword) => normalizeText(keyword) === given);
+  });
+
+  const canonicalAnswer = matched ? String(matched.answer || matched.text || "").trim() : "";
+  const answerKey = canonicalAnswer ? normalizeText(canonicalAnswer) : "";
   const alreadyRevealed = answerKey && session.currentState.revealedAnswers.includes(answerKey);
   const isCorrect = Boolean(matched) && !alreadyRevealed;
 

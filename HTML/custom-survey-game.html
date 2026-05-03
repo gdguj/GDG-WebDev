@@ -192,7 +192,7 @@
 
     .answer-item {
       display: grid;
-      grid-template-columns: 1fr 160px auto;
+      grid-template-columns: 1fr 1fr 140px auto;
       gap: 12px;
       align-items: center;
       background: rgba(255, 255, 255, 0.65);
@@ -332,6 +332,7 @@
       <h2>أسئلة الاستبيان</h2>
       <p class="grid-hint">
         اللعبة الواحدة = جولتين، لذلك يجب إدخال سؤالين على الأقل. وكل سؤال يحتاج 10 خيارات بالضبط.
+        يمكن إضافة مرادفات لكل إجابة بشكل اختياري عبر فصلها بفاصلة (,)، وهذا يحسن دقة احتساب الإجابات الصحيحة.
       </p>
 
       <div id="questionsContainer">
@@ -348,6 +349,7 @@
           <div class="answers-wrap" data-answers-wrap>
             <div class="answer-item">
               <input type="text" data-field="answerText" placeholder="نص الإجابة">
+              <input type="text" data-field="answerKeywords" placeholder="مرادفات (اختياري) مثل: جوال, موبايل, هاتف">
               <input type="number" min="1" data-field="points" placeholder="النقاط">
               <button type="button" class="btn-danger" data-remove-answer>حذف</button>
             </div>
@@ -393,6 +395,7 @@
   <template id="surveyAnswerTemplate">
     <div class="answer-item">
       <input type="text" data-field="answerText" placeholder="نص الإجابة">
+      <input type="text" data-field="answerKeywords" placeholder="مرادفات (اختياري) مثل: جوال, موبايل, هاتف">
       <input type="number" min="1" data-field="points" placeholder="النقاط">
       <button type="button" class="btn-danger" data-remove-answer>حذف</button>
     </div>

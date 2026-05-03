@@ -499,7 +499,10 @@
         hintText.textContent = "الإجابات المكشوفة: " + revealed + " / " + total;
 
         if (surveyMatches) {
-          const answerMap = new Map((q.answers || []).map((item) => [normalizeText(item.text), item]));
+          const answerMap = new Map(
+            (q.answers || []).map((item) => [normalizeText(item.answer || item.text), item])
+          );
+
           if (!revealedAnswers.length) {
             const empty = document.createElement("div");
             empty.className = "small";
@@ -511,7 +514,7 @@
               const row = document.createElement("div");
               row.className = "survey-answer";
               row.innerHTML =
-                '<span>' + escapeHtml((matched && matched.text) || key) + '</span>' +
+                '<span>' + escapeHtml((matched && (matched.answer || matched.text)) || key) + '</span>' +
                 '<strong>' + Number((matched && matched.points) || 0) + ' نقطة</strong>';
               surveyMatches.appendChild(row);
             });

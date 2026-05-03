@@ -265,15 +265,27 @@
       }
 
       const answers = answerItems.map((answerItem) => {
-        const text = getValue(answerItem, "answerText");
+        const answer = getValue(answerItem, "answerText");
+        const keywordsRaw = getValue(answerItem, "answerKeywords");
         const pointsRaw = getValue(answerItem, "points");
         const points = Number(pointsRaw);
 
-        if (!text || !Number.isFinite(points) || points <= 0) {
+        if (!answer || !Number.isFinite(points) || points <= 0) {
           throw new Error("في الاستبيان: كل إجابة تحتاج نصاً ونقاطاً أكبر من صفر.");
         }
 
-        return { text, points };
+        const keywords = keywordsRaw
+          ? Array.from(
+              new Set(
+                keywordsRaw
+                  .split(/[,،]/)
+                  .map((entry) => entry.trim())
+                  .filter(Boolean)
+              )
+            ).filter((entry) => entry !== answer)
+          : [];
+
+        return { answer, keywords, points };
       });
 
       if (answers.length !== SURVEY_OPTIONS_PER_QUESTION) {

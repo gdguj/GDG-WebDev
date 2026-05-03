@@ -25,14 +25,20 @@ function normalizeAnswerEntry(entry) {
   if (!answerText) return null;
 
   const points = Number(entry.points) || 0;
-  const synonyms = Array.isArray(entry.synonyms)
-    ? entry.synonyms.map((s) => String(s || "").trim()).filter(Boolean)
-    : [];
+  const rawKeywords = Array.isArray(entry.keywords)
+    ? entry.keywords
+    : Array.isArray(entry.synonyms)
+      ? entry.synonyms
+      : [];
+
+  const keywords = rawKeywords
+    .map((s) => String(s || "").trim())
+    .filter(Boolean);
 
   return {
     answer: answerText,
     points,
-    synonyms,
+    keywords,
   };
 }
 
@@ -61,7 +67,9 @@ function buildRoundPayload(round) {
     answers: round.answers.map((a) => ({
       answer: a.answer,
       points: a.points,
-      synonyms: a.synonyms,
+      keywords: a.keywords,
+      // Keep old clients compatible until all UIs switch to keywords.
+      synonyms: a.keywords,
       revealed: Boolean(a.revealed),
     })),
     currentTeam: round.currentTeam,
@@ -162,7 +170,7 @@ function submitAnswer(payload = {}) {
   const matched = currentRound.answers.find((entry) => {
     if (entry.revealed) return false;
 
-    const accepted = [entry.answer, ...(entry.synonyms || [])]
+    const accepted = [entry.answer, ...(entry.keywords || []), ...(entry.synonyms || [])]
       .map((value) => normalizeArabic(value))
       .filter(Boolean);
 
