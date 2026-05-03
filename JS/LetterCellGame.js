@@ -82,15 +82,53 @@ let allQuestions = [];
 
 // تطبيع النص العربي للمقارنة
 function normalizeArabic(str) {
-  return str
+  return String(str || "")
     .trim()
-    .replace(/[\u064B-\u0652]/g, '')
+    .replace(/[\u064B-\u0652\u0640]/g, '')
     .replace(/[أإآٱ]/g, 'ا')
     .replace(/ة/g, 'ه')
-    .replace(/ى/g, 'ي')
+    .replace(/[ىي]/g, 'ي')
     .replace(/[ءؤئ]/g, '')
+    .replace(/[^\u0600-\u06FF0-9\s]/g, '')
     .replace(/\s+/g, ' ')
+    .replace(/^ال\s?/, '')
+    .replace(/\s+ال\s?/g, ' ')
     .toLowerCase();
+}
+
+function levenshteinDistance(a, b) {
+  const len1 = a.length;
+  const len2 = b.length;
+  const matrix = Array(len2 + 1).fill(null).map(() => Array(len1 + 1).fill(0));
+  for (let i = 0; i <= len1; i++) matrix[0][i] = i;
+  for (let i = 0; i <= len2; i++) matrix[i][0] = i;
+  for (let i = 1; i <= len2; i++) {
+    for (let j = 1; j <= len1; j++) {
+      const cost = a[j - 1] === b[i - 1] ? 0 : 1;
+      matrix[i][j] = Math.min(
+        matrix[i - 1][j] + 1,
+        matrix[i][j - 1] + 1,
+        matrix[i - 1][j - 1] + cost
+      );
+    }
+  }
+  return matrix[len2][len1];
+}
+
+function matchAnswer(userInput, expectedAnswer) {
+  const normalized = normalizeArabic(userInput);
+  const expected = normalizeArabic(expectedAnswer);
+  if (!normalized || !expected) return false;
+  if (normalized === expected) return true;
+  const userWords = normalized.split(' ').filter(Boolean);
+  const expectedWords = expected.split(' ').filter(Boolean);
+  if (userWords.length > 0 && expectedWords.length > 1) {
+    for (const word of expectedWords) {
+      if (userWords.some(w => w === word)) return true;
+    }
+  }
+  if (levenshteinDistance(normalized, expected) === 1) return true;
+  return false;
 }
 
 function toCellKey(row, col) {
@@ -515,7 +553,7 @@ async function submitTeamAnswer(team) {
 
     // مقارنة محلية مع الإجابة (مع تجاهل الفروقات الإملائية)
     const correct = currentQuestion?.answer
-        ? normalizeArabic(answer) === normalizeArabic(currentQuestion.answer)
+        ? matchAnswer(answer, currentQuestion.answer)
         : false;
 
     if (correct) {

@@ -12,12 +12,65 @@ function normalizeArabic(value) {
     .replace(/[\u064B-\u0652\u0640]/g, "")
     .replace(/[أإآ]/g, "ا")
     .replace(/[ىي]/g, "ي")
-    .replace(/[هة]/g, "ه")
+    .replace(/[ة]/g, "ه")
     .replace(/[ؤئء]/g, "")
     .replace(/[^\u0600-\u06FF0-9\s]/g, "")
     .replace(/\s+/g, " ")
     .replace(/^ال\s?/, "")
+    .replace(/\s+ال\s?/g, " ")
     .trim();
+}
+
+function levenshteinDistance(a, b) {
+  const len1 = a.length;
+  const len2 = b.length;
+  const matrix = Array(len2 + 1)
+    .fill(null)
+    .map(() => Array(len1 + 1).fill(0));
+
+  for (let i = 0; i <= len1; i++) matrix[0][i] = i;
+  for (let i = 0; i <= len2; i++) matrix[i][0] = i;
+
+  for (let i = 1; i <= len2; i++) {
+    for (let j = 1; j <= len1; j++) {
+      const cost = a[j - 1] === b[i - 1] ? 0 : 1;
+      matrix[i][j] = Math.min(
+        matrix[i - 1][j] + 1,
+        matrix[i][j - 1] + 1,
+        matrix[i - 1][j - 1] + cost
+      );
+    }
+  }
+
+  return matrix[len2][len1];
+}
+
+function matchAnswer(userInput, expectedAnswer) {
+  const normalized = normalizeArabic(userInput);
+  const expected = normalizeArabic(expectedAnswer);
+
+  if (!normalized || !expected) return false;
+
+  // مطابقة كاملة
+  if (normalized === expected) return true;
+
+  // مطابقة جزئية: كلمات منفردة
+  const userWords = normalized.split(" ").filter(Boolean);
+  const expectedWords = expected.split(" ").filter(Boolean);
+
+  if (userWords.length > 0 && expectedWords.length > 1) {
+    for (const word of expectedWords) {
+      if (userWords.some((w) => w === word)) {
+        return true;
+      }
+    }
+  }
+
+  // السماح بحرف واحد مختلف
+  const distance = levenshteinDistance(normalized, expected);
+  if (distance === 1) return true;
+
+  return false;
 }
 
 function normalizeAnswerEntry(entry) {
@@ -165,16 +218,20 @@ function submitAnswer(payload = {}) {
     throw createAppError("answer مطلوب.", 400);
   }
 
-  const normalizedGiven = normalizeArabic(givenAnswer);
-
   const matched = currentRound.answers.find((entry) => {
     if (entry.revealed) return false;
 
-    const accepted = [entry.answer, ...(entry.keywords || []), ...(entry.synonyms || [])]
-      .map((value) => normalizeArabic(value))
-      .filter(Boolean);
+    if (matchAnswer(givenAnswer, entry.answer)) {
+      return true;
+    }
 
-    return accepted.includes(normalizedGiven);
+    const keywords = Array.isArray(entry.keywords)
+      ? entry.keywords
+      : Array.isArray(entry.synonyms)
+        ? entry.synonyms
+        : [];
+
+    return keywords.some((keyword) => matchAnswer(givenAnswer, keyword));
   });
 
   if (matched) {

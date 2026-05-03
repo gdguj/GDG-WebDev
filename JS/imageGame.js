@@ -8,6 +8,56 @@ const _urlPlayerTeam = String(urlParams.get('team') || '').toUpperCase();
 const _urlTeamA = urlParams.get('teamA');
 const _urlTeamB = urlParams.get('teamB');
 
+function normalizeArabicFull(str) {
+  return String(str || '')
+    .toLowerCase()
+    .replace(/[\u064B-\u0652\u0640]/g, '')
+    .replace(/[أإآٱ]/g, 'ا')
+    .replace(/[ىي]/g, 'ي')
+    .replace(/ة/g, 'ه')
+    .replace(/[ءؤئ]/g, '')
+    .replace(/[^\u0600-\u06FF0-9\s]/g, '')
+    .replace(/\s+/g, ' ')
+    .replace(/^ال\s?/, '')
+    .replace(/\s+ال\s?/g, ' ')
+    .trim();
+}
+
+function levenshteinDistance(a, b) {
+  const len1 = a.length;
+  const len2 = b.length;
+  const matrix = Array(len2 + 1).fill(null).map(() => Array(len1 + 1).fill(0));
+  for (let i = 0; i <= len1; i++) matrix[0][i] = i;
+  for (let i = 0; i <= len2; i++) matrix[i][0] = i;
+  for (let i = 1; i <= len2; i++) {
+    for (let j = 1; j <= len1; j++) {
+      const cost = a[j - 1] === b[i - 1] ? 0 : 1;
+      matrix[i][j] = Math.min(
+        matrix[i - 1][j] + 1,
+        matrix[i][j - 1] + 1,
+        matrix[i - 1][j - 1] + cost
+      );
+    }
+  }
+  return matrix[len2][len1];
+}
+
+function matchAnswer(userInput, expectedAnswer) {
+  const normalized = normalizeArabicFull(userInput);
+  const expected = normalizeArabicFull(expectedAnswer);
+  if (!normalized || !expected) return false;
+  if (normalized === expected) return true;
+  const userWords = normalized.split(' ').filter(Boolean);
+  const expectedWords = expected.split(' ').filter(Boolean);
+  if (userWords.length > 0 && expectedWords.length > 1) {
+    for (const word of expectedWords) {
+      if (userWords.some(w => w === word)) return true;
+    }
+  }
+  if (levenshteinDistance(normalized, expected) === 1) return true;
+  return false;
+}
+
 function readTeamName(key, fallback) {
   const raw = localStorage.getItem(key);
   if (!raw) return fallback;
@@ -464,7 +514,7 @@ function check(answeringTeam) {
   // Only prevent check if answer is already submitted/confirmed
   if (STATE.answered) return;
 
-  const input = DOM.answer.value.trim().toLowerCase();
+  const input = DOM.answer.value.trim();
   if (!input) return;
 
   if (_lobbyJoinCode) {
@@ -478,7 +528,7 @@ function check(answeringTeam) {
   }
 
   const q       = STATE.shuffled[STATE.qi];
-  const isRight = q.answers.some(a => a.toLowerCase() === input);
+  const isRight = q.answers.some(a => matchAnswer(input, a));
 
   if (isRight) {
     handleCorrect(answeringTeam);

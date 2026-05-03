@@ -373,12 +373,62 @@ function normalize(str) {
     .replace(/[\u064B-\u0652\u0640]/g, "")  // شكل وتشديد
     .replace(/[أإآ]/g, "ا")                  // توحيد الألف
     .replace(/[ىي]/g, "ي")                   // توحيد الياء
-    .replace(/[هة]/g, "ه")                   // توحيد التاء المربوطة
+    .replace(/[ة]/g, "ه")                   // توحيد التاء المربوطة
     .replace(/[ؤئء]/g, "")                   // حذف الهمزات المتغيرة
     .replace(/[^؀-ۿ0-9\s]/g, "")  // إزالة غير العربي
     .replace(/\s+/g, " ")
     .replace(/^ال\s?/, "")                   // إزالة ال التعريف
+    .replace(/\s+ال\s?/g, " ")
     .trim();
+}
+
+function levenshteinDistance(a, b) {
+  const len1 = a.length;
+  const len2 = b.length;
+  const matrix = Array(len2 + 1)
+    .fill(null)
+    .map(() => Array(len1 + 1).fill(0));
+
+  for (let i = 0; i <= len1; i++) matrix[0][i] = i;
+  for (let i = 0; i <= len2; i++) matrix[i][0] = i;
+
+  for (let i = 1; i <= len2; i++) {
+    for (let j = 1; j <= len1; j++) {
+      const cost = a[j - 1] === b[i - 1] ? 0 : 1;
+      matrix[i][j] = Math.min(
+        matrix[i - 1][j] + 1,
+        matrix[i][j - 1] + 1,
+        matrix[i - 1][j - 1] + cost
+      );
+    }
+  }
+
+  return matrix[len2][len1];
+}
+
+function matchAnswer(userInput, expectedAnswer) {
+  const normalized = normalize(userInput);
+  const expected = normalize(expectedAnswer);
+
+  if (!normalized || !expected) return false;
+
+  if (normalized === expected) return true;
+
+  const userWords = normalized.split(" ").filter(Boolean);
+  const expectedWords = expected.split(" ").filter(Boolean);
+
+  if (userWords.length > 0 && expectedWords.length > 1) {
+    for (const word of expectedWords) {
+      if (userWords.some((w) => w === word)) {
+        return true;
+      }
+    }
+  }
+
+  const distance = levenshteinDistance(normalized, expected);
+  if (distance === 1) return true;
+
+  return false;
 }
 
 // -------------------------------
@@ -400,7 +450,7 @@ function submitAnswer() {
   // ابحث عن إجابة مطابقة (الإجابة الأصلية أو أي مرادف)
   const found = gameState.answers.find(a => {
     if (a.revealed) return false;
-    if (normalize(a.answer) === normalized) return true;
+    if (matchAnswer(userInput, a.answer)) return true;
 
     const keywords = Array.isArray(a.keywords)
       ? a.keywords
