@@ -147,39 +147,4 @@ function launchConfettiBursts() {
 
 
 
-async function saveScore() {
-  const token = localStorage.getItem('gdgAuthToken');
-  if (!token) return; // not logged in, skip silently
-
-  const points = result.winnerKey === 'tie'
-    ? Math.max(result.scoreA, result.scoreB)
-    : result.score;
-
-  try {
-    await fetch('/api/scores/record', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
-      },
-      body: JSON.stringify({
-        gameType: 'image_guessing',
-        points,
-        source: 'local',
-        metadata: {
-          teamNameA: result.teamNameA,
-          teamNameB: result.teamNameB,
-          scoreA: result.scoreA,
-          scoreB: result.scoreB,
-          winner: result.winner
-        }
-      })
-    });
-  } catch (err) {
-    console.error('saveScore error:', err);
-  }
-}
-
-saveScore();
-
 

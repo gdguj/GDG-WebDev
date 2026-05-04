@@ -674,6 +674,8 @@ function nextRound() {
 
 async function persistScore(gameType, points, externalSessionId, metadata) {
   try {
+    if (!customGameId) return;
+
     const token = localStorage.getItem('gdgAuthToken') || sessionStorage.getItem('gdgAuthToken');
     if (!token) return;
 
@@ -687,8 +689,11 @@ async function persistScore(gameType, points, externalSessionId, metadata) {
         gameType,
         points,
         externalSessionId,
-        source: 'image_guessing_local',
-        metadata,
+        source: 'image_guessing_custom',
+        metadata: {
+          ...metadata,
+          customGameId,
+        },
       }),
     });
   } catch (error) {

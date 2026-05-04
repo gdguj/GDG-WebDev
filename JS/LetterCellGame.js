@@ -135,40 +135,70 @@ function toCellKey(row, col) {
   return `${row}-${col}`;
 }
 
-function oddRowToCube(row, col) {
-  const x = col - (row - (row & 1)) / 2;
-  const z = row;
-  const y = -x - z;
-  return { x, y, z };
+function getNeighborKeys(row, col) {
+  const offsets = row % 2 === 0
+    ? [[-1, -1], [-1, 0], [0, -1], [0, 1], [1, -1], [1, 0]]
+    : [[-1, 0], [-1, 1], [0, -1], [0, 1], [1, 0], [1, 1]];
+
+  return offsets
+    .map(([dRow, dCol]) => ({ row: row + dRow, col: col + dCol }))
+    .filter(({ row: nextRow, col: nextCol }) => (
+      nextRow >= 0 && nextRow < BOARD_SIZE && nextCol >= 0 && nextCol < BOARD_SIZE
+    ))
+    .map(({ row: nextRow, col: nextCol }) => toCellKey(nextRow, nextCol));
 }
 
-function buildWinningLines() {
-  const groups = new Map();
+function hasSpanningWinningPath(team) {
+  const teamKeys = new Set(
+    Array.from(answeredCells.entries())
+      .filter(([, owner]) => owner === team)
+      .map(([key]) => key)
+  );
 
-  for (let row = 0; row < BOARD_SIZE; row++) {
-    for (let col = 0; col < BOARD_SIZE; col++) {
-      const cube = oddRowToCube(row, col);
-      const cell = { row, col, key: toCellKey(row, col) };
-
-      ['x', 'y', 'z'].forEach((axis) => {
-        const lineKey = `${axis}:${cube[axis]}`;
-        if (!groups.has(lineKey)) groups.set(lineKey, []);
-        groups.get(lineKey).push(cell);
-      });
-    }
+  if (teamKeys.size < BOARD_SIZE) {
+    return false;
   }
 
-  return Array.from(groups.values()).filter((line) => line.length === BOARD_SIZE);
-}
+  const edgePairs = [
+    {
+      starts: Array.from({ length: BOARD_SIZE }, (_, col) => toCellKey(0, col)),
+      ends: new Set(Array.from({ length: BOARD_SIZE }, (_, col) => toCellKey(BOARD_SIZE - 1, col))),
+    },
+    {
+      starts: Array.from({ length: BOARD_SIZE }, (_, row) => toCellKey(row, 0)),
+      ends: new Set(Array.from({ length: BOARD_SIZE }, (_, row) => toCellKey(row, BOARD_SIZE - 1))),
+    },
+  ];
 
-const winningLines = buildWinningLines();
+  return edgePairs.some(({ starts, ends }) => {
+    const stack = starts.filter((key) => teamKeys.has(key));
+    const visited = new Set(stack);
 
-function hasStraightWinningLine(team) {
-  return winningLines.some((line) => line.every((cell) => answeredCells.get(cell.key) === team));
+    while (stack.length > 0) {
+      const currentKey = stack.pop();
+      if (ends.has(currentKey)) {
+        return true;
+      }
+
+      const [row, col] = currentKey.split('-').map(Number);
+      for (const neighborKey of getNeighborKeys(row, col)) {
+        if (!teamKeys.has(neighborKey) || visited.has(neighborKey)) {
+          continue;
+        }
+
+        visited.add(neighborKey);
+        stack.push(neighborKey);
+      }
+    }
+
+    return false;
+  });
 }
 
 async function persistScore(gameType, points, externalSessionId, metadata) {
   try {
+    if (!customGameId) return;
+
     const token = localStorage.getItem('gdgAuthToken') || sessionStorage.getItem('gdgAuthToken');
     if (!token) return;
 
@@ -182,8 +212,11 @@ async function persistScore(gameType, points, externalSessionId, metadata) {
         gameType,
         points,
         externalSessionId,
-        source: 'letter_cells_local',
-        metadata,
+        source: 'letter_cells_custom',
+        metadata: {
+          ...metadata,
+          customGameId,
+        },
       }),
     });
   } catch (error) {
@@ -205,7 +238,7 @@ async function goToResultsPage(team) {
     winnerWords: scores[team].words,
     blue: { ...scores.blue },
     green: { ...scores.green },
-    winningRule: 'خط مستقيم كامل من 5 خلايا',
+    winningRule: 'مسار متصل من جهة إلى الجهة المقابلة',
     playedAt: Date.now()
   };
 
@@ -290,13 +323,14 @@ const _lobbyJoinCode = urlParams.get('joinCode');
 
 window.addEventListener('DOMContentLoaded', () => {
   const btn = document.getElementById('multiplayerBtn');
-  if (!btn) return;
-  if (!_lobbyJoinCode) {
+  if (btn && !_lobbyJoinCode) {
     btn.disabled = true;
     btn.style.opacity = '0.5';
     btn.style.cursor = 'not-allowed';
     btn.title = 'هذه اللعبة ليست من لوبي';
   }
+
+  initWheel();
 });
 
 function startMultiplayer() {
@@ -502,9 +536,8 @@ async function openQuestionScreen(letter, cellKey) {
     document.getElementById('question-text').textContent = result.questionText;
 
     startCountdown(() => {
-      document.getElementById('answer-blue').disabled  = false;
-      document.getElementById('answer-green').disabled = false;
-      startGlobalTimer();
+      // الفريق الذي اختار الحرف يبدأ أولاً
+      startPhaseTimer(currentTurn);
     });
 
   } catch (err) {
@@ -519,6 +552,7 @@ const teamAnswered = { blue: false, green: false };
 
 let timeLeft;
 let timerId = null;
+const PHASE_TIME = 15; // ثانية لكل فريق
 
 function startCountdown(onComplete) {
     const overlay = document.getElementById('countdown-overlay');
@@ -538,20 +572,72 @@ function startCountdown(onComplete) {
     }, 1000);
 }
 
-function startGlobalTimer() {
-    timeLeft = 10;
+// يبدأ مرحلة الـ15 ثانية للفريق المحدد
+function startPhaseTimer(activeTeam) {
     teamAnswered.blue  = false;
     teamAnswered.green = false;
     clearInterval(timerId);
 
+    const otherTeam = activeTeam === 'blue' ? 'green' : 'blue';
+
+    // فتح فيلد الفريق النشط وإقفال الآخر
+    document.getElementById(`answer-${activeTeam}`).disabled = false;
+    document.getElementById(`submit-${activeTeam}`).disabled = false;
+    document.getElementById(`answer-${otherTeam}`).disabled  = true;
+    document.getElementById(`submit-${otherTeam}`).disabled  = true;
+    document.getElementById(`answer-${activeTeam}`).focus();
+
+    timeLeft = PHASE_TIME;
     const fill = document.getElementById('timerFill');
     fill.style.width = '100%';
-    document.getElementById('Time').textContent = ': 10';
+    document.getElementById('Time').textContent = `: ${timeLeft}`;
 
     timerId = setInterval(() => {
         timeLeft--;
         document.getElementById('Time').textContent = `: ${timeLeft}`;
-        fill.style.width = `${(timeLeft / 10) * 100}%`;
+        fill.style.width = `${(timeLeft / PHASE_TIME) * 100}%`;
+
+        if (timeLeft <= 0) {
+            clearInterval(timerId);
+            // الفريق النشط ما أجاب — انتقل للفريق الآخر إذا لم يُجِب بعد
+            teamAnswered[activeTeam] = true;
+            document.getElementById(`answer-${activeTeam}`).disabled = true;
+            document.getElementById(`submit-${activeTeam}`).disabled = true;
+
+            if (!teamAnswered[otherTeam]) {
+                startSecondPhaseTimer(otherTeam);
+            } else {
+                endRoundNoWinner();
+            }
+        }
+    }, 1000);
+}
+
+// المرحلة الثانية: الفريق الآخر يحاول
+function startSecondPhaseTimer(activeTeam) {
+    clearInterval(timerId);
+
+    // أظهر تنبيه انتقال الدور
+    const teamName = scores[activeTeam]?.name || (activeTeam === 'blue' ? 'الفريق الأزرق' : 'الفريق الأخضر');
+    const toast = document.getElementById('phase-toast');
+    toast.textContent = `⏱️ انتهى وقت الفريق الأول — دور ${teamName} الآن!`;
+    toast.className = `phase-toast ${activeTeam === 'blue' ? 'toast-blue' : 'toast-green'}`;
+    toast.classList.remove('hidden');
+    setTimeout(() => toast.classList.add('hidden'), 2500);
+
+    document.getElementById(`answer-${activeTeam}`).disabled = false;
+    document.getElementById(`submit-${activeTeam}`).disabled = false;
+    document.getElementById(`answer-${activeTeam}`).focus();
+
+    timeLeft = PHASE_TIME;
+    const fill = document.getElementById('timerFill');
+    fill.style.width = '100%';
+    document.getElementById('Time').textContent = `: ${timeLeft}`;
+
+    timerId = setInterval(() => {
+        timeLeft--;
+        document.getElementById('Time').textContent = `: ${timeLeft}`;
+        fill.style.width = `${(timeLeft / PHASE_TIME) * 100}%`;
 
         if (timeLeft <= 0) {
             clearInterval(timerId);
@@ -601,7 +687,7 @@ async function submitTeamAnswer(team) {
         popup.classList.remove('hidden');
         requestAnimationFrame(() => popup.classList.add('show'));
 
-        if (hasStraightWinningLine(team)) {
+        if (hasSpanningWinningPath(team)) {
           popup.textContent = `🏆 فاز ${scores[team].name}`;
           gameStarted = false;
           setTimeout(() => goToResultsPage(team), 1400);
@@ -615,9 +701,15 @@ async function submitTeamAnswer(team) {
         status.className   = 'team-answer-status status-wrong';
         box.classList.add('answered-wrong');
 
-        // لو كلا الفريقين أجابا وكلاهم خطأ
-        if (teamAnswered.blue && teamAnswered.green) {
-            clearInterval(timerId);
+        // أقفل فيلد هذا الفريق وانتقل للفريق الآخر إذا لم يكن قد أجاب
+        clearInterval(timerId);
+        document.getElementById(`answer-${team}`).disabled = true;
+        document.getElementById(`submit-${team}`).disabled = true;
+
+        const other = team === 'blue' ? 'green' : 'blue';
+        if (!teamAnswered[other]) {
+            startSecondPhaseTimer(other);
+        } else {
             endRoundNoWinner();
         }
     }
@@ -696,8 +788,14 @@ function handleWinnerChoice(team) {
     scores[team].pts   += 4;
     scores[team].words += 1;
     updateScoreBar();
-    answeredCells.set(selectedLetter, team);
+    answeredCells.set(selectedCellKey, team);
     currentTurn = team; // الفائز يختار الحرف التالي
+
+    if (hasSpanningWinningPath(team)) {
+      gameStarted = false;
+      goToResultsPage(team);
+      return;
+    }
   } else {
     // لم يجب أحد أو إجابة خاطئة → الدور للفريق الآخر
     currentTurn = currentTurn === 'blue' ? 'green' : 'blue';

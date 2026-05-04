@@ -4,7 +4,7 @@ const defaultResult = {
   winnerWords: 0,
   blue: { name: 'الفريق الأزرق', pts: 0, words: 0 },
   green: { name: 'الفريق الأخضر', pts: 0, words: 0 },
-  winningRule: 'خط مستقيم كامل من 5 خلايا'
+  winningRule: 'مسار متصل من جهة إلى الجهة المقابلة'
 };
 
 function loadLetterCellResult() {
@@ -25,6 +25,7 @@ function setText(id, value) {
 const result = loadLetterCellResult();
 
 setText('results-heading-label', 'نتيجة المباراة');
+setText('results-congrats-text', 'مبروووك!');
 setText('winner-text-label', 'الفائز:');
 setText('winner-name', result.winnerName);
 setText('score-line-label', 'النقاط:');
@@ -54,34 +55,5 @@ const backHomeButton = document.getElementById('back-home-btn');
 if (backHomeButton) {
   backHomeButton.addEventListener('click', () => {
     window.location.href = 'main page.html';
-
-  async function saveScore() {
-    const token = localStorage.getItem('gdgAuthToken');
-    if (!token) return;
-
-    try {
-      await fetch('/api/scores/record', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({
-          gameType: 'letter_cells',
-          points: result.winnerScore,
-          source: 'local',
-          metadata: {
-            winnerName: result.winnerName,
-            blueScore: result.blue.pts,
-            greenScore: result.green.pts
-          }
-        })
-      });
-    } catch (err) {
-      console.error('saveScore error:', err);
-    }
-  }
-
-  saveScore();
   });
 }

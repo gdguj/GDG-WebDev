@@ -67,39 +67,4 @@ if (!resultData) {
   renderNoData();
 } else {
   renderResults(resultData);
-
-async function saveScore() {
-  const token = localStorage.getItem('gdgAuthToken');
-  if (!token) return;
-
-  const data = parseResult();
-  if (!data) return;
-
-  const points = Math.max(data.scoreTeam1 ?? 0, data.scoreTeam2 ?? 0);
-
-  try {
-    await fetch('/api/scores/record', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
-      },
-      body: JSON.stringify({
-        gameType: 'survey_game',
-        points,
-        source: 'local',
-        metadata: {
-          winner: data.winnerLabel,
-          scoreTeam1: data.scoreTeam1,
-          scoreTeam2: data.scoreTeam2,
-          roundsPlayed: data.roundsPlayed
-        }
-      })
-    });
-  } catch (err) {
-    console.error('saveScore error:', err);
-  }
-}
-
-saveScore();
 }

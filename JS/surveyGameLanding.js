@@ -1,6 +1,4 @@
-const teamAInput = document.getElementById('landingTeamA');
-const teamBInput = document.getElementById('landingTeamB');
-const startButton = document.getElementById('letterGameStartBtn');
+const startButton = document.getElementById('surveyGameStartBtn');
 const levelsGrid = document.getElementById('levelsGrid');
 const levelsDots = document.getElementById('levelsDots');
 const prevBtn = document.getElementById('levelsPrev');
@@ -11,17 +9,8 @@ let allTemplates = [];
 let currentPage = 0;
 let selectedTemplateId = null;
 
-teamAInput.value = localStorage.getItem('blueTeamName') || 'أ';
-teamBInput.value = localStorage.getItem('greenTeamName') || 'ب';
-
-function sanitizeName(value) {
-  return value.trim().replace(/\s+/g, ' ');
-}
-
 function updateStartButton() {
-  const hasA = sanitizeName(teamAInput.value).length > 0;
-  const hasB = sanitizeName(teamBInput.value).length > 0;
-  startButton.disabled = !(hasA && hasB && selectedTemplateId);
+  startButton.disabled = !selectedTemplateId;
 }
 
 function escapeHtml(str) {
@@ -56,7 +45,7 @@ function renderPage(page) {
       <div class="level-number">المرحلة ${globalIndex + 1}</div>
       <div class="level-title">${escapeHtml(template.title || 'بدون عنوان')}</div>
       <div class="level-desc">${escapeHtml(template.description || '')}</div>
-      <div class="level-meta">🔤 ${questionCount} سؤال</div>
+      <div class="level-meta">📋 ${questionCount} سؤال</div>
     `;
     card.addEventListener('click', () => selectLevel(card, template._id));
     levelsGrid.appendChild(card);
@@ -76,7 +65,7 @@ function renderPage(page) {
 
 async function loadLevels() {
   try {
-    const response = await fetch('/api/games/templates?gameType=letter_cells');
+    const response = await fetch('/api/games/templates?gameType=survey_game');
     const result = await response.json();
     if (!response.ok || !result.success) {
       throw new Error(result.message || 'فشل جلب المراحل');
@@ -90,7 +79,7 @@ async function loadLevels() {
       return;
     }
 
-    const savedTemplateId = localStorage.getItem('letterCellTemplateId');
+    const savedTemplateId = localStorage.getItem('surveyTemplateId');
     if (savedTemplateId) {
       selectedTemplateId = savedTemplateId;
       const savedIndex = allTemplates.findIndex((template) => template._id === savedTemplateId);
@@ -109,25 +98,15 @@ async function loadLevels() {
 }
 
 function saveAndStart() {
-  const teamAName = sanitizeName(teamAInput.value);
-  const teamBName = sanitizeName(teamBInput.value);
-  if (!teamAName || !teamBName) {
-    window.alert('اكتب أسماء الفريقين أولاً.');
-    return;
-  }
   if (!selectedTemplateId) {
     window.alert('اختر مرحلة أولاً.');
     return;
   }
 
-  localStorage.setItem('blueTeamName', teamAName);
-  localStorage.setItem('greenTeamName', teamBName);
-  localStorage.setItem('letterCellTemplateId', selectedTemplateId);
-  window.location.href = 'LetterCellGame.html';
+  localStorage.setItem('surveyTemplateId', selectedTemplateId);
+  window.location.href = 'wheelPage.html?next=survey-game.html';
 }
 
-teamAInput.addEventListener('input', updateStartButton);
-teamBInput.addEventListener('input', updateStartButton);
 prevBtn.addEventListener('click', () => renderPage(currentPage - 1));
 nextBtn.addEventListener('click', () => renderPage(currentPage + 1));
 startButton.addEventListener('click', saveAndStart);
