@@ -24,15 +24,23 @@ function setText(id, value) {
 
 const result = loadLetterCellResult();
 
+const noWinner = Boolean(result.noWinner);
+const winnerNameText = noWinner ? 'لا يوجد فائز (الجميع خسر)' : result.winnerName;
+const congratsText = noWinner ? 'انتهت اللعبة' : 'مبروووك!';
+const winnerLabel = noWinner ? 'النتيجة:' : 'الفائز:';
+const wordsSummary = noWinner
+  ? 'انتهت جميع الخلايا بدون مسار فوز لأي فريق'
+  : `الخلايا التي كسبها الفريق الفائز: ${result.winnerWords}`;
+
 setText('results-heading-label', 'نتيجة المباراة');
-setText('results-congrats-text', 'مبروووك!');
-setText('winner-text-label', 'الفائز:');
-setText('winner-name', result.winnerName);
+setText('results-congrats-text', congratsText);
+setText('winner-text-label', winnerLabel);
+setText('winner-name', winnerNameText);
 setText('score-line-label', 'النقاط:');
 setText('winner-score', result.winnerScore);
 setText('score-line-suffix', result.winnerScore === 1 ? 'نقطة' : 'نقاط');
 setText('stats-title-text', 'إحصائيات المباراة');
-setText('stat-total-words', `الخلايا التي كسبها الفريق الفائز: ${result.winnerWords}`);
+setText('stat-total-words', wordsSummary);
 setText('stat-winning-rule', `شرط الفوز: ${result.winningRule}`);
 setText('stat-blue-score', `${result.blue.name}: ${result.blue.pts} نقطة`);
 setText('stat-green-score', `${result.green.name}: ${result.green.pts} نقطة`);

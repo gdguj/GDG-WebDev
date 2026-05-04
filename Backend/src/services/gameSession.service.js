@@ -616,8 +616,8 @@ async function finishGame(payload) {
 async function getLeaderboard(payload = {}) {
   const safeLimit = Math.min(Math.max(Number(payload.limit) || 20, 1), 100);
 
-  // الكولكشن الآن سجل واحد لكل مستخدم – نرجع مباشرة
-  return Score.find({})
+  // الكولكشن الآن سجل واحد لكل مستخدم – نرجع فقط من لعب فعلاً
+  return Score.find({ totalScore: { $gt: 0 }, name: { $nin: ["", null] }, email: { $nin: ["", null] } })
     .sort({ totalScore: -1, gamesPlayed: -1, name: 1 })
     .limit(safeLimit)
     .select("email name totalScore gamesPlayed wins lastPlayedAt lastGameType")

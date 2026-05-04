@@ -246,6 +246,32 @@ async function goToResultsPage(team) {
   window.location.href = 'game-results.html';
 }
 
+function isBoardFull() {
+  return answeredCells.size >= BOARD_SIZE * BOARD_SIZE;
+}
+
+function hasAnyTeamWinningPath() {
+  return hasSpanningWinningPath('blue') || hasSpanningWinningPath('green');
+}
+
+function goToNoWinnerResultsPage() {
+  const payload = {
+    game: 'letter-cells',
+    winnerTeam: null,
+    winnerName: 'لا يوجد فائز',
+    winnerScore: 0,
+    winnerWords: 0,
+    blue: { ...scores.blue },
+    green: { ...scores.green },
+    winningRule: 'مسار متصل من جهة إلى الجهة المقابلة',
+    noWinner: true,
+    playedAt: Date.now()
+  };
+
+  sessionStorage.setItem('letterCellGameResult', JSON.stringify(payload));
+  window.location.href = 'game-results.html';
+}
+
 async function loadQuestions() {
   try {
     let response;
@@ -694,6 +720,13 @@ async function submitTeamAnswer(team) {
           return;
         }
 
+        if (isBoardFull() && !hasAnyTeamWinningPath()) {
+          popup.textContent = 'انتهت الخلايا ولم يحقق أي فريق مسار الفوز';
+          gameStarted = false;
+          setTimeout(() => goToNoWinnerResultsPage(), 1400);
+          return;
+        }
+
         setTimeout(() => returnToBoard(), 2000);
 
     } else {
@@ -730,6 +763,12 @@ function endRoundNoWinner() {
 
     answeredCells.set(selectedCellKey, null); // خلية رمادية
     currentTurn = currentTurn === 'blue' ? 'green' : 'blue';
+
+    if (isBoardFull() && !hasAnyTeamWinningPath()) {
+      gameStarted = false;
+      setTimeout(() => goToNoWinnerResultsPage(), 1200);
+      return;
+    }
 
     setTimeout(() => returnToBoard(), 2500);
 }
