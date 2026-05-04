@@ -67,7 +67,7 @@
 
     games.forEach((game) => {
       const card = document.createElement("article");
-      card.className = "game-card";
+      card.className = "game-card game-card--" + String(game.gameType || "unknown").replace(/_/g, "-");
 
       const questionsCount = getQuestionsCount(game.data);
       const createdAt = formatArabicDate(game.createdAt);

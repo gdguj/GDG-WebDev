@@ -19,7 +19,7 @@
     if (!questionCounter) return;
     const count = questionsContainer.querySelectorAll(".question-item").length;
     questionCounter.textContent = count + " / 25";
-    questionCounter.style.background = count > 25 ? "#ef4444" : "#0078BF";
+    questionCounter.style.background = count > 25 ? "#ef4444" : "#4285F4";
     questionCounter.style.color = "#fff";
   }
 
@@ -134,7 +134,7 @@
     const btn = document.createElement("button");
     btn.textContent = "حسناً";
     btn.style.cssText = [
-      "background:#0078BF","color:#fff","border:none","border-radius:10px",
+      "background:#4285F4","color:#fff","border:none","border-radius:10px",
       "padding:12px 36px","font-size:1rem","font-weight:700",
       "cursor:pointer","width:100%"
     ].join(";");
@@ -149,6 +149,11 @@
     overlay.appendChild(box);
     document.body.appendChild(overlay);
   }
+
+  // ربط الأزرار على الأسئلة الموجودة مسبقاً في HTML
+  Array.from(questionsContainer.querySelectorAll(".question-item")).forEach(function(node) {
+    bindQuestionItemButtons(node);
+  });
 
   addQuestionItem();
   renderQuestionIndices();
@@ -430,8 +435,6 @@
   (function bindQuickFillControls() {
     const applyJsonBtn = document.getElementById("applyJsonBtn");
     const letterJsonInput = document.getElementById("letterJsonInput");
-    const importJsonFileBtn = document.getElementById("importJsonFileBtn");
-    const jsonImportFile = document.getElementById("jsonImportFile");
     const applyPresetBtn = document.getElementById("applyPresetBtn");
     const templatePresetSelect = document.getElementById("templatePresetSelect");
 
@@ -443,24 +446,6 @@
         } catch (e) {
           showStatus("صيغة JSON غير صحيحة. تأكد من الصيغة.", "error");
         }
-      });
-    }
-
-    if (importJsonFileBtn && jsonImportFile) {
-      importJsonFileBtn.addEventListener("click", function() {
-        const file = jsonImportFile.files && jsonImportFile.files[0];
-        if (!file) { showStatus("اختر ملف JSON أولاً.", "error"); return; }
-        const reader = new FileReader();
-        reader.onload = function(e) {
-          try {
-            let parsed = JSON.parse(e.target.result);
-            if (!Array.isArray(parsed) && parsed.questions) parsed = parsed.questions;
-            applyLetterJson(parsed);
-          } catch (err) {
-            showStatus("فشل قراءة الملف. تأكد أنه JSON صحيح.", "error");
-          }
-        };
-        reader.readAsText(file);
       });
     }
 
@@ -555,25 +540,22 @@
 
     const node = template.content.firstElementChild.cloneNode(true);
 
+    bindQuestionItemButtons(node);
+
+    if (gameType === "survey_game") {
+      bindSurveyAnswers(node);
+    }
+
+    questionsContainer.appendChild(node);
+  }
+
+  function bindQuestionItemButtons(node) {
     const removeBtn = node.querySelector("[data-remove-question]");
     if (removeBtn) {
       removeBtn.addEventListener("click", () => {
         node.remove();
         renderQuestionIndices();
         updateCounter();
-      });
-    }
-
-    const copyPrevBtn = node.querySelector("[data-copy-prev]");
-    if (copyPrevBtn) {
-      copyPrevBtn.addEventListener("click", () => {
-        const allItems = Array.from(questionsContainer.querySelectorAll(".question-item"));
-        const idx = allItems.indexOf(node);
-        if (idx <= 0) return;
-        const prev = allItems[idx - 1];
-        setValue(node, "letter", getValue(prev, "letter"));
-        setValue(node, "question", getValue(prev, "question"));
-        setValue(node, "answer", getValue(prev, "answer"));
       });
     }
 
@@ -599,12 +581,6 @@
         setValue(node, "answer", "");
       });
     }
-
-    if (gameType === "survey_game") {
-      bindSurveyAnswers(node);
-    }
-
-    questionsContainer.appendChild(node);
   }
 
   function bindSurveyAnswers(questionNode) {
