@@ -254,6 +254,24 @@ function hasAnyTeamWinningPath() {
   return hasSpanningWinningPath('blue') || hasSpanningWinningPath('green');
 }
 
+let noWinnerEndingTriggered = false;
+
+function shouldEndAsNoWinner() {
+  return isBoardFull() && !hasAnyTeamWinningPath();
+}
+
+function handleBoardFullNoWinner() {
+  if (noWinnerEndingTriggered || !shouldEndAsNoWinner()) {
+    return false;
+  }
+
+  noWinnerEndingTriggered = true;
+  gameStarted = false;
+  showPopup('انتهت جميع الخلايا ولم يحقق أي فريق مسار الفوز. النتيجة: الجميع خسر.');
+  setTimeout(() => goToNoWinnerResultsPage(), 1400);
+  return true;
+}
+
 function goToNoWinnerResultsPage() {
   const payload = {
     game: 'letter-cells',
@@ -720,10 +738,7 @@ async function submitTeamAnswer(team) {
           return;
         }
 
-        if (isBoardFull() && !hasAnyTeamWinningPath()) {
-          popup.textContent = 'انتهت الخلايا ولم يحقق أي فريق مسار الفوز';
-          gameStarted = false;
-          setTimeout(() => goToNoWinnerResultsPage(), 1400);
+        if (handleBoardFullNoWinner()) {
           return;
         }
 
@@ -764,9 +779,7 @@ function endRoundNoWinner() {
     answeredCells.set(selectedCellKey, null); // خلية رمادية
     currentTurn = currentTurn === 'blue' ? 'green' : 'blue';
 
-    if (isBoardFull() && !hasAnyTeamWinningPath()) {
-      gameStarted = false;
-      setTimeout(() => goToNoWinnerResultsPage(), 1200);
+    if (handleBoardFullNoWinner()) {
       return;
     }
 
@@ -784,6 +797,9 @@ function returnToBoard() {
   clearInterval(timerId);
   updateTurnIndicator();
   drawHexGrid();
+
+  // فحص نهائي بعد كل رجوع للوحة لضمان إنهاء اللعبة عند امتلاء الخلايا بدون فائز.
+  handleBoardFullNoWinner();
 }
 
 drawHexGrid();
