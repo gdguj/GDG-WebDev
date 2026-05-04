@@ -902,6 +902,10 @@ function spinWheel() {
   wheelAngle = totalRotation;
 
   setTimeout(() => {
+    if (document.getElementById('wheel-overlay').style.display === 'none') {
+      return;
+    }
+
     const needle = document.querySelector('.needle');
     const needleRect = needle.getBoundingClientRect();
     const tipX = needleRect.left + needleRect.width / 2;
@@ -925,6 +929,11 @@ function spinWheel() {
     resultEl.style.color = wheelResult === 'blue' ? '#4285F4' : '#34A853';
     document.getElementById('start-game-btn').classList.remove('hidden');
   }, 4100);
+}
+
+function closeWheelOverlay() {
+  wheelResult = wheelResult || currentTurn || 'blue';
+  startGame();
 }
 
 function startGame() {

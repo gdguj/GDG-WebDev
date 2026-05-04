@@ -721,6 +721,7 @@ canvas {
   background: #fff;
   border-radius: 22px;
   padding: 30px 36px;
+  position: relative;
   text-align: center;
   display: flex;
   flex-direction: column;
@@ -729,6 +730,31 @@ canvas {
   max-width: 360px;
   width: 92%;
   box-shadow: 0 12px 48px rgba(0,0,0,0.35);
+}
+.close-wheel-btn {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  width: 34px;
+  height: 34px;
+  border: none;
+  border-radius: 999px;
+  background: #f3f4f6;
+  color: #374151;
+  font-size: 1.4rem;
+  font-weight: 800;
+  line-height: 1;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s ease, transform 0.1s ease;
+}
+.close-wheel-btn:hover {
+  background: #e5e7eb;
+}
+.close-wheel-btn:active {
+  transform: scale(0.95);
 }
 .wheel-title {
   font-size: 1.2rem;
