@@ -19,7 +19,8 @@
     if (!questionCounter) return;
     const count = questionsContainer.querySelectorAll(".question-item").length;
     questionCounter.textContent = count + " / 25";
-    questionCounter.style.background = count === 25 ? "#22c55e" : (count > 25 ? "#ef4444" : "#3674d8");
+    questionCounter.style.background = count > 25 ? "#ef4444" : "#0078BF";
+    questionCounter.style.color = "#fff";
   }
 
   addQuestionBtn.addEventListener("click", () => {
@@ -309,6 +310,169 @@
     return String((element && element.value) || "").trim();
   }
 
+  function setValue(scope, fieldName, val) {
+    const el = scope.querySelector('[data-field="' + fieldName + '"]');
+    if (el) el.value = val;
+  }
+
+  /* ── Quick-fill: apply JSON array of 25 items ── */
+  function applyLetterJson(arr) {
+    if (!Array.isArray(arr) || arr.length !== 25) {
+      showStatus("يجب أن يحتوي JSON على 25 عنصر بالضبط. عدد العناصر الحالي: " + (Array.isArray(arr) ? arr.length : "غير صحيح") + ".", "error");
+      return;
+    }
+    questionsContainer.innerHTML = "";
+    for (let i = 0; i < 25; i++) { addQuestionItem(); }
+    renderQuestionIndices();
+    updateCounter();
+    const items = Array.from(questionsContainer.querySelectorAll(".question-item"));
+    arr.forEach(function(data, i) {
+      setValue(items[i], "letter", String(data.letter || "").charAt(0));
+      setValue(items[i], "question", String(data.question || ""));
+      setValue(items[i], "answer", String(data.answer || ""));
+    });
+    showStatus("تم تعبئة الـ 25 سؤال بنجاح.", "success");
+  }
+
+  /* ── Preset templates ── */
+  function applyPreset(presetId) {
+    const presets = {
+      letters_basic: [
+        {letter:"ا",question:"اكتب كلمة تبدأ بحرف الألف",answer:"أسد"},
+        {letter:"ب",question:"اكتب كلمة تبدأ بحرف الباء",answer:"بيت"},
+        {letter:"ت",question:"اكتب كلمة تبدأ بحرف التاء",answer:"تفاحة"},
+        {letter:"ث",question:"اكتب كلمة تبدأ بحرف الثاء",answer:"ثعلب"},
+        {letter:"ج",question:"اكتب كلمة تبدأ بحرف الجيم",answer:"جمل"},
+        {letter:"ح",question:"اكتب كلمة تبدأ بحرف الحاء",answer:"حصان"},
+        {letter:"خ",question:"اكتب كلمة تبدأ بحرف الخاء",answer:"خروف"},
+        {letter:"د",question:"اكتب كلمة تبدأ بحرف الدال",answer:"دب"},
+        {letter:"ذ",question:"اكتب كلمة تبدأ بحرف الذال",answer:"ذئب"},
+        {letter:"ر",question:"اكتب كلمة تبدأ بحرف الراء",answer:"رمانة"},
+        {letter:"ز",question:"اكتب كلمة تبدأ بحرف الزاي",answer:"زرافة"},
+        {letter:"س",question:"اكتب كلمة تبدأ بحرف السين",answer:"سمكة"},
+        {letter:"ش",question:"اكتب كلمة تبدأ بحرف الشين",answer:"شجرة"},
+        {letter:"ص",question:"اكتب كلمة تبدأ بحرف الصاد",answer:"صقر"},
+        {letter:"ض",question:"اكتب كلمة تبدأ بحرف الضاد",answer:"ضفدع"},
+        {letter:"ط",question:"اكتب كلمة تبدأ بحرف الطاء",answer:"طاولة"},
+        {letter:"ظ",question:"اكتب كلمة تبدأ بحرف الظاء",answer:"ظبي"},
+        {letter:"ع",question:"اكتب كلمة تبدأ بحرف العين",answer:"عصفور"},
+        {letter:"غ",question:"اكتب كلمة تبدأ بحرف الغين",answer:"غزال"},
+        {letter:"ف",question:"اكتب كلمة تبدأ بحرف الفاء",answer:"فراشة"},
+        {letter:"ق",question:"اكتب كلمة تبدأ بحرف القاف",answer:"قط"},
+        {letter:"ك",question:"اكتب كلمة تبدأ بحرف الكاف",answer:"كتاب"},
+        {letter:"ل",question:"اكتب كلمة تبدأ بحرف اللام",answer:"ليمون"},
+        {letter:"م",question:"اكتب كلمة تبدأ بحرف الميم",answer:"منزل"},
+        {letter:"ن",question:"اكتب كلمة تبدأ بحرف النون",answer:"نخلة"}
+      ],
+      letters_tech: [
+        {letter:"ا",question:"برنامج يربط الأجهزة بالإنترنت",answer:"إنترنت"},
+        {letter:"ب",question:"مجموعة تعليمات تنفذها الحاسوب",answer:"برنامج"},
+        {letter:"ت",question:"عملية البحث عن أخطاء الكود وإصلاحها",answer:"تصحيح"},
+        {letter:"ث",question:"الأداء الثانوي الذي يعمل في خلفية النظام",answer:"ثريد"},
+        {letter:"ج",question:"جهاز يجمع شبكات متعددة معاً",answer:"جدار ناري"},
+        {letter:"ح",question:"الحماية الرقمية للأنظمة من الهجمات",answer:"حماية"},
+        {letter:"خ",question:"خطأ في الكود يسبب توقف البرنامج",answer:"خلل"},
+        {letter:"د",question:"تخزين نسخة من البيانات للحماية",answer:"دعم احتياطي"},
+        {letter:"ر",question:"لغة برمجة تستخدم كثيراً في تطوير الويب",answer:"ريأكت"},
+        {letter:"ز",question:"زيادة قدرة السيرفر بإضافة موارد",answer:"زيادة القدرة"},
+        {letter:"س",question:"خادم يستجيب لطلبات المستخدمين",answer:"سيرفر"},
+        {letter:"ش",question:"واجهة تربط بين برنامجين",answer:"شبكة API"},
+        {letter:"ص",question:"صيغة تبادل البيانات النصية الشائعة",answer:"صيغة JSON"},
+        {letter:"ض",question:"ضغط الملفات لتقليل حجمها",answer:"ضغط"},
+        {letter:"ط",question:"طبقة الأمان في الاتصالات المشفرة",answer:"طبقة SSL"},
+        {letter:"ع",question:"العنوان الفريد لكل جهاز في الشبكة",answer:"عنوان IP"},
+        {letter:"غ",question:"غياب الخادم وتوزيع المهام على عدة أجهزة",answer:"غير مركزي"},
+        {letter:"ف",question:"فحص الكود للتأكد من صحته قبل النشر",answer:"فحص الكود"},
+        {letter:"ق",question:"قاعدة تخزن البيانات بشكل منظم",answer:"قاعدة بيانات"},
+        {letter:"ك",question:"كيف يختصر اسم CSS؟",answer:"كاسكاد"},
+        {letter:"ل",question:"لغة تصف هيكل صفحة الويب",answer:"لغة HTML"},
+        {letter:"م",question:"منهجية تطوير البرمجيات بالدورات القصيرة",answer:"منهجية Agile"},
+        {letter:"ن",question:"نظام تتبع تغييرات الكود",answer:"نظام Git"},
+        {letter:"ه",question:"هجوم يعترض الاتصالات بين طرفين",answer:"هجوم MITM"},
+        {letter:"و",question:"واجهة المستخدم الرسومية",answer:"واجهة GUI"}
+      ],
+      letters_university: [
+        {letter:"ا",question:"مكان يجلس فيه الطلاب للدراسة في الجامعة",answer:"أكاديمية"},
+        {letter:"ب",question:"ما اسم الشهادة التي تحصل عليها بعد 4 سنوات جامعية؟",answer:"بكالوريوس"},
+        {letter:"ت",question:"الاختبار الذي يأتي في نهاية الفصل الدراسي",answer:"تجميعي"},
+        {letter:"ث",question:"ما كلمة تصف شيئاً ثابتاً في الجدول الدراسي؟",answer:"ثابت"},
+        {letter:"ج",question:"توزيع الدرجات حسب الأداء في المقرر",answer:"جدول الدرجات"},
+        {letter:"ح",question:"الحضور المطلوب لدخول الاختبار",answer:"حضور"},
+        {letter:"خ",question:"خريطة المقررات الدراسية لكل تخصص",answer:"خطة دراسية"},
+        {letter:"د",question:"الوثيقة التي تثبت إتمام الدراسة",answer:"دبلوم"},
+        {letter:"ذ",question:"ذكر أسماء المصادر المستخدمة في البحث",answer:"ذكر المراجع"},
+        {letter:"ر",question:"رسالة تُكتب لنيل درجة الماجستير",answer:"رسالة بحثية"},
+        {letter:"ز",question:"زميل يساعدك في شرح المادة",answer:"زميل دراسة"},
+        {letter:"س",question:"سنة التخرج من الجامعة",answer:"سنة أخيرة"},
+        {letter:"ش",question:"الشهادة المصغرة التي تحصل عليها من دورة قصيرة",answer:"شهادة"},
+        {letter:"ص",question:"الصفحة الأولى في البحث الأكاديمي",answer:"صفحة العنوان"},
+        {letter:"ض",question:"ضرورة لإتمام المشروع الجامعي بنجاح",answer:"ضبط الوقت"},
+        {letter:"ط",question:"طالب يساعد الدكتور في تدريس المادة",answer:"طالب دكتوراه"},
+        {letter:"ع",question:"عرض تقديمي بين الطلاب في القاعة",answer:"عرض"},
+        {letter:"غ",question:"غياب متكرر يؤثر على درجة الطالب",answer:"غياب"},
+        {letter:"ف",question:"فترة التدريب الصيفي في الشركات",answer:"فترة تدريب"},
+        {letter:"ق",question:"القاعة الكبيرة التي يلتقي فيها جميع الطلاب",answer:"قاعة"},
+        {letter:"ك",question:"الكتاب الذي يضم المقرر الدراسي",answer:"كتاب جامعي"},
+        {letter:"ل",question:"لقاء أسبوعي بين الطالب والمشرف",answer:"لقاء"},
+        {letter:"م",question:"مرحلة الدراسة العليا بعد البكالوريوس",answer:"ماجستير"},
+        {letter:"ن",question:"نتيجة الاختبار التي تظهر في البوابة",answer:"نتائج"},
+        {letter:"ه",question:"هيئة التدريس في الجامعة",answer:"هيئة"}
+      ]
+    };
+    if (!presets[presetId]) {
+      showStatus("القالب غير موجود.", "error");
+      return;
+    }
+    applyLetterJson(presets[presetId]);
+  }
+
+  /* ── Event listeners for quick-fill controls ── */
+  (function bindQuickFillControls() {
+    const applyJsonBtn = document.getElementById("applyJsonBtn");
+    const letterJsonInput = document.getElementById("letterJsonInput");
+    const importJsonFileBtn = document.getElementById("importJsonFileBtn");
+    const jsonImportFile = document.getElementById("jsonImportFile");
+    const applyPresetBtn = document.getElementById("applyPresetBtn");
+    const templatePresetSelect = document.getElementById("templatePresetSelect");
+
+    if (applyJsonBtn && letterJsonInput) {
+      applyJsonBtn.addEventListener("click", function() {
+        try {
+          const arr = JSON.parse(letterJsonInput.value.trim());
+          applyLetterJson(arr);
+        } catch (e) {
+          showStatus("صيغة JSON غير صحيحة. تأكد من الصيغة.", "error");
+        }
+      });
+    }
+
+    if (importJsonFileBtn && jsonImportFile) {
+      importJsonFileBtn.addEventListener("click", function() {
+        const file = jsonImportFile.files && jsonImportFile.files[0];
+        if (!file) { showStatus("اختر ملف JSON أولاً.", "error"); return; }
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          try {
+            let parsed = JSON.parse(e.target.result);
+            if (!Array.isArray(parsed) && parsed.questions) parsed = parsed.questions;
+            applyLetterJson(parsed);
+          } catch (err) {
+            showStatus("فشل قراءة الملف. تأكد أنه JSON صحيح.", "error");
+          }
+        };
+        reader.readAsText(file);
+      });
+    }
+
+    if (applyPresetBtn && templatePresetSelect) {
+      applyPresetBtn.addEventListener("click", function() {
+        const val = templatePresetSelect.value;
+        if (!val) { showStatus("اختر قالباً من القائمة أولاً.", "error"); return; }
+        applyPreset(val);
+      });
+    }
+  })();
+
   async function uploadImageForField(questionItem, fieldName, uploadBtn) {
     const fileInput = questionItem.querySelector('[data-upload-file="' + fieldName + '"]');
     const urlInput = questionItem.querySelector('[data-field="' + fieldName + '"]');
@@ -397,6 +561,42 @@
         node.remove();
         renderQuestionIndices();
         updateCounter();
+      });
+    }
+
+    const copyPrevBtn = node.querySelector("[data-copy-prev]");
+    if (copyPrevBtn) {
+      copyPrevBtn.addEventListener("click", () => {
+        const allItems = Array.from(questionsContainer.querySelectorAll(".question-item"));
+        const idx = allItems.indexOf(node);
+        if (idx <= 0) return;
+        const prev = allItems[idx - 1];
+        setValue(node, "letter", getValue(prev, "letter"));
+        setValue(node, "question", getValue(prev, "question"));
+        setValue(node, "answer", getValue(prev, "answer"));
+      });
+    }
+
+    const duplicateBtn = node.querySelector("[data-duplicate-row]");
+    if (duplicateBtn) {
+      duplicateBtn.addEventListener("click", () => {
+        addQuestionItem();
+        renderQuestionIndices();
+        updateCounter();
+        const allItems = Array.from(questionsContainer.querySelectorAll(".question-item"));
+        const newItem = allItems[allItems.length - 1];
+        setValue(newItem, "letter", getValue(node, "letter"));
+        setValue(newItem, "question", getValue(node, "question"));
+        setValue(newItem, "answer", getValue(node, "answer"));
+      });
+    }
+
+    const clearBtn = node.querySelector("[data-clear-row]");
+    if (clearBtn) {
+      clearBtn.addEventListener("click", () => {
+        setValue(node, "letter", "");
+        setValue(node, "question", "");
+        setValue(node, "answer", "");
       });
     }
 
