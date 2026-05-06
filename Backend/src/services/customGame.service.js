@@ -93,9 +93,32 @@ async function findAllCommunityGames(options = {}) {
     .lean();
 }
 
+async function deleteGameById(gameId, requesterId) {
+  const parsedId = parseMongoId(gameId, "gameId");
+  const requesterIdStr = String(requesterId || "").trim();
+
+  const game = await UserGame.findById(parsedId).lean();
+  if (!game) {
+    return null;
+  }
+
+  const ownerAccountId = String((game.createdBy && game.createdBy.accountId) || "").trim();
+  const ownerEmail = String((game.createdBy && game.createdBy.email) || "").trim().toLowerCase();
+
+  if (ownerAccountId !== requesterIdStr && ownerEmail !== requesterIdStr.toLowerCase()) {
+    const err = new Error("غير مصرح لك بحذف هذه اللعبة.");
+    err.statusCode = 403;
+    throw err;
+  }
+
+  await UserGame.findByIdAndDelete(parsedId);
+  return true;
+}
+
 module.exports = {
   saveCustomGame,
   findGameById,
   findGamesByCreator,
   findAllCommunityGames,
+  deleteGameById,
 };

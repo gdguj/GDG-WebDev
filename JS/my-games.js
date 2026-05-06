@@ -87,6 +87,7 @@
         '</div>' +
         '<div class="game-actions">' +
           '<button class="btn-play" data-game-id="' + escapeHtml(String(game._id || "")) + '" data-game-type="' + escapeHtml(String(game.gameType || "")) + '">العب</button>' +
+          '<button class="btn-delete" data-game-id="' + escapeHtml(String(game._id || "")) + '" title="حذف اللعبة"><i class="fa-solid fa-trash"></i></button>' +
         '</div>';
 
       gamesGrid.appendChild(card);
@@ -97,9 +98,17 @@
           e.stopPropagation();
           const gameId = this.getAttribute('data-game-id');
           const gameType = this.getAttribute('data-game-type');
-          // انتقل لغرفة اللعبة (لوبي) بدلاً من الدخول المباشر
           window.location.href = 'game-lobby.html?gameId=' + encodeURIComponent(gameId)
             + '&gameType=' + encodeURIComponent(gameType) + '&role=host';
+        });
+      }
+
+      const deleteBtn = card.querySelector('.btn-delete');
+      if (deleteBtn) {
+        deleteBtn.addEventListener('click', function(e) {
+          e.stopPropagation();
+          const gameId = this.getAttribute('data-game-id');
+          showDeleteConfirm(gameId, card);
         });
       }
     });
@@ -156,6 +165,64 @@
         }, 2000);
       });
     });
+  }
+
+  function showDeleteConfirm(gameId, cardElement) {
+    const overlay = document.createElement('div');
+    overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.45);display:flex;align-items:center;justify-content:center;z-index:9999;direction:rtl';
+
+    const box = document.createElement('div');
+    box.style.cssText = 'background:#fff;border-radius:18px;padding:36px 32px 28px;text-align:center;max-width:340px;width:90%;box-shadow:0 8px 40px rgba(0,0,0,0.18)';
+
+    box.innerHTML =
+      '<div style="font-size:2.4rem;margin-bottom:12px">🗑️</div>' +
+      '<h2 style="font-size:1.2rem;font-weight:800;color:#1a1a1a;margin:0 0 8px">حذف اللعبة</h2>' +
+      '<p style="font-size:0.95rem;color:#555;margin:0 0 24px">هل أنت متأكد من حذف هذه اللعبة؟ لا يمكن التراجع عن هذا الإجراء.</p>' +
+      '<div style="display:flex;gap:12px;justify-content:center">' +
+        '<button id="confirmDeleteBtn" style="background:#ea4335;color:#fff;border:none;border-radius:10px;padding:11px 28px;font-size:0.95rem;font-weight:700;cursor:pointer">نعم، احذف</button>' +
+        '<button id="cancelDeleteBtn" style="background:#f3f4f6;color:#333;border:none;border-radius:10px;padding:11px 28px;font-size:0.95rem;font-weight:700;cursor:pointer">إلغاء</button>' +
+      '</div>';
+
+    overlay.appendChild(box);
+    document.body.appendChild(overlay);
+
+    box.querySelector('#cancelDeleteBtn').addEventListener('click', () => overlay.remove());
+    overlay.addEventListener('click', (e) => { if (e.target === overlay) overlay.remove(); });
+
+    box.querySelector('#confirmDeleteBtn').addEventListener('click', async () => {
+      overlay.remove();
+      await deleteGame(gameId, cardElement);
+    });
+  }
+
+  async function deleteGame(gameId, cardElement) {
+    try {
+      const response = await fetch('/api/custom-games/' + encodeURIComponent(gameId), {
+        method: 'DELETE',
+        headers: { Authorization: 'Bearer ' + authToken },
+      });
+
+      const result = await response.json();
+
+      if (!response.ok || !result.success) {
+        throw new Error(result.message || 'تعذر حذف اللعبة.');
+      }
+
+      cardElement.style.transition = 'opacity 0.3s, transform 0.3s';
+      cardElement.style.opacity = '0';
+      cardElement.style.transform = 'scale(0.95)';
+      setTimeout(() => {
+        cardElement.remove();
+        const remaining = gamesGrid.querySelectorAll('.game-card').length;
+        pageMessage.textContent = 'عدد ألعابك: ' + remaining;
+        if (!remaining) {
+          gamesGrid.innerHTML = '<div class="empty-state">لا توجد نتائج حالياً.</div>';
+          pageMessage.textContent = 'لا توجد ألعاب أنشأتها بعد. أنشئ لعبتك الأولى الآن.';
+        }
+      }, 300);
+    } catch (error) {
+      alert(error.message || 'حدث خطأ أثناء الحذف.');
+    }
   }
 
   function getQuestionsCount(data) {

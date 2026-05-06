@@ -1,4 +1,5 @@
 const customGameService = require('../services/customGame.service');
+const mongoose = require('mongoose');
 
 async function createGame(req, res, next) {
   try {
@@ -231,9 +232,38 @@ async function getCommunityGames(req, res, next) {
   }
 }
 
+async function deleteGame(req, res, next) {
+  try {
+    const { gameId } = req.params;
+    const authUser = req.authUser;
+
+    if (!gameId) {
+      return res.status(400).json({ success: false, message: 'Game ID is required.' });
+    }
+
+    if (!authUser || !authUser.id) {
+      return res.status(401).json({ success: false, message: 'يجب تسجيل الدخول أولاً.' });
+    }
+
+    const result = await customGameService.deleteGameById(gameId, authUser.id);
+
+    if (result === null) {
+      return res.status(404).json({ success: false, message: 'اللعبة غير موجودة.' });
+    }
+
+    return res.status(200).json({ success: true, message: 'تم حذف اللعبة بنجاح.' });
+  } catch (error) {
+    if (error.statusCode === 403) {
+      return res.status(403).json({ success: false, message: error.message });
+    }
+    next(error);
+  }
+}
+
 module.exports = {
   createGame,
   getGameById,
   getMyGames,
   getCommunityGames,
+  deleteGame,
 };
