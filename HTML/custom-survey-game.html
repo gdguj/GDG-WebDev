@@ -14,7 +14,7 @@
 
   <style>
     :root {
-      --g-blue: #0078BF;
+      --g-blue: #4285F4;
       --g-red: #ea4335;
       --g-yellow: #fbbc04;
       --g-green: #34a853;
@@ -346,17 +346,9 @@
             </div>
           </div>
 
-          <div class="answers-wrap" data-answers-wrap>
-            <div class="answer-item">
-              <input type="text" data-field="answerText" placeholder="نص الإجابة">
-              <input type="text" data-field="answerKeywords" placeholder="مرادفات (اختياري) مثل: جوال, موبايل, هاتف">
-              <input type="number" min="1" data-field="points" placeholder="النقاط">
-              <button type="button" class="btn-danger" data-remove-answer>حذف</button>
-            </div>
-          </div>
+          <div class="answers-wrap" data-answers-wrap></div>
 
           <div class="actions">
-            <button type="button" class="btn-secondary" data-add-answer>إضافة إجابة</button>
             <button type="button" class="btn-danger" data-remove-question>حذف السؤال</button>
           </div>
         </article>
@@ -386,7 +378,6 @@
       <div class="answers-wrap" data-answers-wrap></div>
 
       <div class="actions">
-        <button type="button" class="btn-secondary" data-add-answer>إضافة إجابة</button>
         <button type="button" class="btn-danger" data-remove-question>حذف السؤال</button>
       </div>
     </article>
@@ -397,7 +388,6 @@
       <input type="text" data-field="answerText" placeholder="نص الإجابة">
       <input type="text" data-field="answerKeywords" placeholder="مرادفات (اختياري) مثل: جوال, موبايل, هاتف">
       <input type="number" min="1" data-field="points" placeholder="النقاط">
-      <button type="button" class="btn-danger" data-remove-answer>حذف</button>
     </div>
   </template>
 

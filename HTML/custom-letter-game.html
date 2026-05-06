@@ -78,62 +78,22 @@
       </p>
 
       <div class="assist-box">
-        <h3 class="assist-title">ملء سريع — بدلاً من الكتابة اليدوية 25 مرة</h3>
-        <p class="assist-subtitle">اختر طريقة واحدة واضغط على التبويب المناسب:</p>
-
-        <div class="fill-tabs" role="tablist">
-          <button class="fill-tab active" data-tab="preset" type="button">قالب جاهز</button>
-          <button class="fill-tab" data-tab="paste" type="button">لصق JSON</button>
-          <button class="fill-tab" data-tab="speed" type="button">أزرار التسريع</button>
-        </div>
-
-        <div class="fill-panel" id="tab-preset">
-          <p class="fill-panel-title">قالب جاهز — مناسب للبداية</p>
-          <ol class="steps">
-            <li>اختر قالب من القائمة.</li>
-            <li>اضغط <strong>تطبيق القالب</strong> — ستُملأ الحقول الـ 25 تلقائياً.</li>
-            <li>بعد التطبيق، عدّل أي سؤال أو إجابة حسب رغبتك.</li>
-          </ol>
-          <div class="fill-control">
-            <select id="templatePresetSelect">
-              <option value="">اختر قالباً...</option>
-              <option value="letters_basic">أساسي — كلمات تبدأ بالحرف</option>
-              <option value="letters_tech">تقني — مصطلحات تقنية مبسطة</option>
-              <option value="letters_university">جامعي — كلمات من الحياة الجامعية</option>
-            </select>
-          </div>
-          <div class="assist-actions">
-            <button id="applyPresetBtn" type="button" class="btn-secondary quick-btn">تطبيق القالب</button>
-          </div>
-        </div>
-
-        <div class="fill-panel" id="tab-paste" style="display:none">
-          <p class="fill-panel-title">لصق JSON — إذا عندك البيانات جاهزة</p>
-          <ol class="steps">
-            <li>انسخ JSON يحتوي على <strong>25 عنصر بالضبط</strong> (الصيغة أسفله).</li>
-            <li>الصق في المربع.</li>
-            <li>اضغط <strong>تطبيق</strong>.</li>
-          </ol>
-          <div class="json-example">[
+        <h3 class="assist-title">لصق JSON — إذا عندك البيانات جاهزة</h3>
+        <ol class="steps">
+          <li>انسخ JSON يحتوي على <strong>25 عنصر بالضبط</strong> (الصيغة أسفله).</li>
+          <li>الصق في المربع.</li>
+          <li>اضغط <strong>تطبيق</strong>.</li>
+        </ol>
+        <div class="json-example">[
   {"letter":"ا","question":"حيوان يبدأ بحرف ا","answer":"أسد"},
   {"letter":"ب","question":"فاكهة تبدأ بحرف ب","answer":"برتقال"},
   ... (25 عنصر إجمالاً)
 ]</div>
-          <div class="fill-control">
-            <textarea id="letterJsonInput" placeholder='[{"letter":"ا","question":"...","answer":"..."},...]'></textarea>
-          </div>
-          <div class="assist-actions">
-            <button id="applyJsonBtn" type="button" class="btn-primary quick-btn">تطبيق</button>
-          </div>
+        <div class="fill-control">
+          <textarea id="letterJsonInput" placeholder='[{"letter":"ا","question":"...","answer":"..."},...]'></textarea>
         </div>
-
-        <div class="fill-panel" id="tab-speed" style="display:none">
-          <p class="fill-panel-title">أزرار التسريع — داخل كل سؤال</p>
-          <p class="speed-desc">بعد إضافة الأسئلة يدوياً، تجد في كل سؤال زرين:</p>
-          <ul class="steps">
-            <li><strong>تكرار هذا السؤال</strong> — يضيف سؤال جديد بنفس البيانات.</li>
-            <li><strong>تفريغ الحقول</strong> — يمسح بيانات هذا السؤال فقط.</li>
-          </ul>
+        <div class="assist-actions">
+          <button id="applyJsonBtn" type="button" class="btn-primary quick-btn">تطبيق</button>
         </div>
       </div>
 

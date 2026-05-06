@@ -13,17 +13,39 @@
     return;
   }
 
+  const LETTER_GRID_SIZE = 25; // شبكة 5×5
+  const SURVEY_MIN_QUESTIONS = 2; // اللعبة = جولتين على الأقل
+  const SURVEY_MAX_QUESTIONS = 2; // لا يسمح بأكثر من سؤالين
+  const SURVEY_OPTIONS_PER_QUESTION = 10; // عدد مربعات الإجابات في لعبة الاستبيان
+
   const questionCounter = document.getElementById("questionCounter");
 
   function updateCounter() {
     if (!questionCounter) return;
     const count = questionsContainer.querySelectorAll(".question-item").length;
-    questionCounter.textContent = count + " / 25";
-    questionCounter.style.background = count > 25 ? "#ef4444" : "#4285F4";
+    const maxCount = gameType === "survey_game" ? SURVEY_MAX_QUESTIONS : LETTER_GRID_SIZE;
+    questionCounter.textContent = count + " / " + maxCount;
+    questionCounter.style.background = count > maxCount ? "#ef4444" : "#4285F4";
     questionCounter.style.color = "#fff";
+
+    if (gameType === "survey_game") {
+      addQuestionBtn.disabled = count >= SURVEY_MAX_QUESTIONS;
+      addQuestionBtn.title = addQuestionBtn.disabled
+        ? "تم الوصول للحد الأقصى: سؤالين فقط"
+        : "إضافة سؤال آخر";
+    }
   }
 
   addQuestionBtn.addEventListener("click", () => {
+    if (gameType === "survey_game") {
+      const currentCount = questionsContainer.querySelectorAll(".question-item").length;
+      if (currentCount >= SURVEY_MAX_QUESTIONS) {
+        showStatus("في لعبة الاستبيان يسمح بسؤالين فقط.", "error");
+        updateCounter();
+        return;
+      }
+    }
+
     addQuestionItem();
     renderQuestionIndices();
     updateCounter();
@@ -153,6 +175,9 @@
   // ربط الأزرار على الأسئلة الموجودة مسبقاً في HTML
   Array.from(questionsContainer.querySelectorAll(".question-item")).forEach(function(node) {
     bindQuestionItemButtons(node);
+    if (gameType === "survey_game") {
+      bindSurveyAnswers(node);
+    }
   });
 
   addQuestionItem();
@@ -221,10 +246,6 @@
 
     return { questions };
   }
-
-  const LETTER_GRID_SIZE = 25; // شبكة 5×5
-  const SURVEY_MIN_QUESTIONS = 2; // اللعبة = جولتين على الأقل
-  const SURVEY_OPTIONS_PER_QUESTION = 10; // عدد مربعات الإجابات في لعبة الاستبيان
 
   function collectLetterData() {
     const questionItems = Array.from(questionsContainer.querySelectorAll(".question-item"));
@@ -526,6 +547,13 @@
   }
 
   function addQuestionItem() {
+    if (gameType === "survey_game") {
+      const currentCount = questionsContainer.querySelectorAll(".question-item").length;
+      if (currentCount >= SURVEY_MAX_QUESTIONS) {
+        return;
+      }
+    }
+
     const templateId =
       gameType === "image_guessing"
         ? "imageQuestionTemplate"
@@ -584,12 +612,13 @@
   }
 
   function bindSurveyAnswers(questionNode) {
-    const addAnswerBtn = questionNode.querySelector("[data-add-answer]");
     const answersWrap = questionNode.querySelector("[data-answers-wrap]");
 
-    if (!addAnswerBtn || !answersWrap) {
+    if (!answersWrap) {
       return;
     }
+
+    answersWrap.innerHTML = "";
 
     const addAnswerItem = () => {
       const answerTemplate = document.getElementById("surveyAnswerTemplate");
@@ -603,32 +632,16 @@
       }
 
       const answerNode = answerTemplate.content.firstElementChild.cloneNode(true);
-      const removeAnswerBtn = answerNode.querySelector("[data-remove-answer]");
-
-      if (removeAnswerBtn) {
-        removeAnswerBtn.addEventListener("click", () => {
-          answerNode.remove();
-          syncAnswerControls();
-        });
+      const pointsInput = answerNode.querySelector('[data-field="points"]');
+      if (pointsInput) {
+        pointsInput.value = String(SURVEY_OPTIONS_PER_QUESTION - currentCount);
       }
-
       answersWrap.appendChild(answerNode);
-      syncAnswerControls();
     };
 
-    const syncAnswerControls = () => {
-      const count = answersWrap.querySelectorAll(".answer-item").length;
-      addAnswerBtn.disabled = count >= SURVEY_OPTIONS_PER_QUESTION;
-      addAnswerBtn.title = addAnswerBtn.disabled
-        ? "وصلت للحد المطلوب: " + SURVEY_OPTIONS_PER_QUESTION + " خيارات"
-        : "إضافة إجابة";
-    };
-
-    addAnswerBtn.addEventListener("click", addAnswerItem);
     for (let i = 0; i < SURVEY_OPTIONS_PER_QUESTION; i += 1) {
       addAnswerItem();
     }
-    syncAnswerControls();
   }
 
   function renderQuestionIndices() {
