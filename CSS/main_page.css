@@ -53,6 +53,8 @@ html {
 
 body {
     font-family: 'Cairo', sans-serif;
+    margin: 0;
+    overflow-x: hidden;
 }
 
 .flip-card {
@@ -86,47 +88,97 @@ body {
 
 /* iPhone/Mobile Responsive Adjustments */
 @media (max-width: 390px) {
-    body {
-        margin: 0;
-        padding: 0;
-        overflow-x: hidden;
+    html, body {
+        margin: 0 !important;
+        padding: 0 !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        overflow-x: hidden !important;
     }
 
     *, *::before, *::after {
         box-sizing: border-box;
     }
 
-    nav, section {
-        width: 100%;
-        max-width: 100%;
+    nav {
+        width: 100% !important;
     }
 
-    /* RTL-safe: avoid any unexpected right/left offsets */
-    nav > div {
-        margin-left: 0;
-        margin-right: 0;
+    nav > div.max-w-7xl {
+        width: 100% !important;
+        max-width: 100% !important;
+        margin: 0 !important;
+        padding-left: 0.75rem !important;
+        padding-right: 0.75rem !important;
+        box-sizing: border-box !important;
+    }
+
+    section,
+    #hero,
+    #about,
+    #goals,
+    #games,
+    #play-methods,
+    #faq,
+    footer {
+        width: 100% !important;
+        max-width: 100% !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+        box-sizing: border-box !important;
+    }
+
+    /* prevent fixed-width tailwind utility from pushing page */
+    .w-96 {
+        width: 100% !important;
+        max-width: 100% !important;
     }
 }
 
 @media (max-width: 375px) {
-    body {
-        margin: 0;
-        padding: 0;
-        overflow-x: hidden;
+    html, body {
+        margin: 0 !important;
+        padding: 0 !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        overflow-x: hidden !important;
     }
 
     *, *::before, *::after {
         box-sizing: border-box;
     }
 
-    nav, section {
-        width: 100%;
-        max-width: 100%;
+    nav {
+        width: 100% !important;
     }
 
-    nav > div {
-        margin-left: 0;
-        margin-right: 0;
+    nav > div.max-w-7xl {
+        width: 100% !important;
+        max-width: 100% !important;
+        margin: 0 !important;
+        padding-left: 0.5rem !important;
+        padding-right: 0.5rem !important;
+        box-sizing: border-box !important;
+    }
+
+    section,
+    #hero,
+    #about,
+    #goals,
+    #games,
+    #play-methods,
+    #faq,
+    footer {
+        width: 100% !important;
+        max-width: 100% !important;
+        margin-left: 0 !important;
+        margin-right: 0 !important;
+        box-sizing: border-box !important;
+    }
+
+    .w-96 {
+        width: 100% !important;
+        max-width: 100% !important;
     }
 }
 
@@ -144,6 +196,34 @@ body {
     nav div.max-w-7xl {
         padding-left: 0.75rem !important;
         padding-right: 0.75rem !important;
+        gap: 0.4rem !important;
+    }
+
+    /* Navbar buttons/links smaller on all small frames */
+    nav a,
+    nav button {
+        font-size: 0.75rem !important;
+        line-height: 1.1 !important;
+        padding: 0.35rem 0.6rem !important;
+        border-radius: 0.55rem !important;
+        white-space: nowrap !important;
+    }
+
+    #nav-login-btn,
+    #nav-logout-btn {
+        padding: 0.3rem 0.55rem !important;
+        font-size: 0.72rem !important;
+    }
+
+    #nav-my-games-btn {
+        padding: 0.35rem 0.7rem !important;
+        font-size: 0.74rem !important;
+    }
+
+    nav .hidden.lg\:flex,
+    nav .hidden.md\:flex,
+    nav .md\:flex {
+        gap: 0.45rem !important;
     }
 
     section {

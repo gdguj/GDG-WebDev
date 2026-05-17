@@ -179,6 +179,63 @@ body {
   }
 }
 
+/* Explicit iPhone widths requested: 430, 414, 390, 375 */
+@media (max-width: 430px) {
+  html, body {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+
+  nav, section, .max-w-7xl, .max-w-6xl, .max-w-3xl, .container, .wrapper, .content, .page, .main {
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+  }
+}
+
+@media (max-width: 414px) {
+  html, body {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+
+  nav, section, .max-w-7xl, .max-w-6xl, .max-w-3xl, .container, .wrapper, .content, .page, .main {
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+  }
+}
+
+@media (max-width: 390px) {
+  html, body {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+
+  nav, section, .max-w-7xl, .max-w-6xl, .max-w-3xl, .container, .wrapper, .content, .page, .main {
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+  }
+}
+
+@media (max-width: 375px) {
+  html, body {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+
+  nav, section, .max-w-7xl, .max-w-6xl, .max-w-3xl, .container, .wrapper, .content, .page, .main {
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+  }
+}
+
 @media (max-width: 768px) {
   /* Show main navigation links on mobile when they are hidden by Tailwind classes */
   nav .hidden.lg\:flex,
