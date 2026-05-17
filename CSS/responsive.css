@@ -1,0 +1,345 @@
+﻿/* Responsive helper rules for all CSS files */
+
+/* Prevent horizontal bleed and stabilize viewport sizing on small devices */
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  min-height: 100%;
+  box-sizing: border-box;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Make media assets flexible */
+img, video, iframe, embed, svg {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* General layout safety */
+body {
+  min-width: 0;
+}
+
+/* Responsive breakpoints */
+@media (max-width: 1024px) {
+  .container,
+  .wrapper,
+  .content,
+  .page,
+  .section,
+  .main,
+  .panel,
+  .box {
+    width: 100%;
+    max-width: 100%;
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+
+  .grid,
+  .row,
+  .flex,
+  .cards-row,
+  .home-cards,
+  .levels-grid,
+  .leaderboard-columns,
+  .leaderboard-rows,
+  .survey-answer,
+  .team-setup {
+    grid-template-columns: 1fr !important;
+    flex-wrap: wrap !important;
+  }
+
+  .nav,
+  .nav-bar,
+  .nav-menu,
+  .nav-links,
+  .hero-content {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  h1 {
+    font-size: clamp(1.8rem, 2.2vw, 2.4rem);
+  }
+
+  h2 {
+    font-size: clamp(1.5rem, 2vw, 1.9rem);
+  }
+}
+
+@media (max-width: 768px) {
+  body {
+    font-size: 14px;
+  }
+
+  .grid,
+  .row,
+  .flex,
+  .cards-row,
+  .home-cards,
+  .levels-grid,
+  .leaderboard-columns,
+  .leaderboard-rows,
+  .team-setup,
+  .join-page-head,
+  .join-card-panel {
+    grid-template-columns: 1fr !important;
+    flex-direction: column !important;
+    flex-wrap: wrap !important;
+  }
+
+  .text-3xl {
+    font-size: 1.6rem !important;
+  }
+
+  .text-2xl {
+    font-size: 1.35rem !important;
+  }
+}
+
+@media (max-width: 480px) {
+  body {
+    font-size: 13px;
+  }
+
+  h1 {
+    font-size: 1.4rem !important;
+  }
+
+  h2 {
+    font-size: 1.2rem !important;
+  }
+
+  .hide-mobile {
+    display: none !important;
+  }
+
+  .stack-mobile {
+    display: block !important;
+    width: 100% !important;
+  }
+
+  .button,
+  .btn,
+  .play-btn,
+  .submit-btn,
+  .join-submit-btn {
+    padding: 0.9rem 1rem !important;
+    font-size: 0.95rem !important;
+  }
+
+  /* Shrink main page icons and images on small screens */
+  .h-40,
+  .h-24,
+  .h-20,
+  .h-16 {
+    width: auto !important;
+    max-width: 85% !important;
+    height: auto !important;
+    max-height: 150px !important;
+  }
+
+  #hero img,
+  .flip-card-front img,
+  .flip-card-back img,
+  .logo img {
+    max-width: 100% !important;
+    height: auto !important;
+  }
+
+  .text-5xl,
+  .text-4xl,
+  .text-3xl {
+    font-size: 2rem !important;
+  }
+
+  .text-2xl {
+    font-size: 1.5rem !important;
+  }
+
+  .text-lg {
+    font-size: 1rem !important;
+  }
+
+  .rounded-3xl,
+  .rounded-2xl {
+    padding: 1.5rem !important;
+  }
+
+  .p-10 {
+    padding: 1.5rem !important;
+  }
+
+  .p-8 {
+    padding: 1rem !important;
+  }
+}
+
+@media (max-width: 768px) {
+  /* Show main navigation links on mobile when they are hidden by Tailwind classes */
+  nav .hidden.lg\:flex,
+  nav .hidden.md\:flex,
+  nav .md\:flex {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    justify-content: center !important;
+    gap: 0.75rem !important;
+  }
+
+  nav .hidden.lg\:flex a,
+  nav .hidden.lg\:flex button,
+  nav .hidden.md\:flex a,
+  nav .hidden.md\:flex button,
+  nav .md\:flex a,
+  nav .md\:flex button {
+    display: inline-flex !important;
+    white-space: nowrap !important;
+  }
+
+  /* Main page hero and images */
+  #hero .w-96 {
+    width: auto !important;
+    max-width: 95% !important;
+  }
+
+  #hero .max-w-3xl,
+  .max-w-6xl,
+  .max-w-7xl {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  nav > div,
+  .hero,
+  .hero-content,
+  .hero-copy,
+  .hero-image,
+  .header,
+  .header-nav,
+  .header-boxes,
+  .header1-boxes {
+    width: 100% !important;
+    max-width: 100% !important;
+    box-sizing: border-box !important;
+  }
+
+  .hero img,
+  .hero-character,
+  .flex img,
+  .header img,
+  .logo img {
+    max-width: 100% !important;
+    height: auto !important;
+  }
+
+  .header,
+  .logo,
+  .header-nav,
+  .header-boxes,
+  .header1-boxes {
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 10px !important;
+  }
+
+  .logo {
+    width: auto !important;
+  }
+
+  .header-nav {
+    width: 100% !important;
+  }
+
+  .hero {
+    padding-left: 1rem !important;
+    padding-right: 1rem !important;
+    gap: 1.5rem !important;
+  }
+
+  nav .max-w-7xl {
+    flex-wrap: wrap !important;
+    justify-content: center !important;
+    gap: 1rem !important;
+    padding-left: 0.75rem !important;
+    padding-right: 0.75rem !important;
+  }
+
+  nav .max-w-7xl .mr-auto {
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+  }
+
+  nav .hidden.lg\:flex,
+  nav .hidden.md\:flex,
+  nav .md\:flex {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    justify-content: center !important;
+    gap: 0.75rem !important;
+  }
+
+  nav .hidden.lg\:flex a,
+  nav .hidden.lg\:flex button,
+  nav .hidden.md\:flex a,
+  nav .hidden.md\:flex button,
+  nav .md\:flex a,
+  nav .md\:flex button {
+    display: inline-flex !important;
+    white-space: normal !important;
+    justify-content: center !important;
+  }
+
+  nav .hidden.lg\:flex a,
+  nav .hidden.lg\:flex button {
+    width: auto !important;
+  }
+
+  body.multiplayer-body[data-page="home"] .grid-3,
+  body.multiplayer-body[data-page="home"] .grid-2,
+  body.multiplayer-body[data-page="home"] .home-cards {
+    grid-template-columns: 1fr !important;
+  }
+
+  body.multiplayer-body[data-page="home"] .card {
+    width: 100% !important;
+  }
+
+  body.multiplayer-body[data-page="home"] .hero {
+    gap: 24px !important;
+    padding: 24px !important;
+    margin: 40px auto 28px !important;
+  }
+
+  body.multiplayer-body[data-page="home"] .hero-character {
+    width: min(70vw, 260px) !important;
+  }
+
+  body.multiplayer-body[data-page="home"] .home-cards {
+    gap: 18px !important;
+  }
+
+  body.multiplayer-body[data-page="home"] .home-cards .card {
+    padding: 22px !important;
+    min-height: auto !important;
+  }
+
+  body.multiplayer-body[data-page="home"] .card-top {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+    gap: 10px !important;
+  }
+
+  body.multiplayer-body[data-page="home"] .card-icon {
+    width: 42px !important;
+    height: 42px !important;
+  }
+
+  body.multiplayer-body[data-page="home"] .mp-nav a {
+    min-width: 100% !important;
+  }
+}

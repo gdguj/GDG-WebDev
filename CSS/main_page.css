@@ -84,3 +84,76 @@ body {
     transform: rotateY(180deg);
 }
 
+/* iPhone/Mobile Responsive Adjustments */
+@media (max-width: 390px) {
+    body {
+        margin: 0;
+        padding: 0;
+        overflow-x: hidden;
+    }
+
+    *, *::before, *::after {
+        box-sizing: border-box;
+    }
+
+    nav, section {
+        width: 100%;
+        max-width: 100%;
+    }
+
+    /* RTL-safe: avoid any unexpected right/left offsets */
+    nav > div {
+        margin-left: 0;
+        margin-right: 0;
+    }
+}
+
+@media (max-width: 375px) {
+    body {
+        margin: 0;
+        padding: 0;
+        overflow-x: hidden;
+    }
+
+    *, *::before, *::after {
+        box-sizing: border-box;
+    }
+
+    nav, section {
+        width: 100%;
+        max-width: 100%;
+    }
+
+    nav > div {
+        margin-left: 0;
+        margin-right: 0;
+    }
+}
+
+@media (max-width: 480px) {
+    header {
+        margin: 5px;
+    }
+
+    /* Reduce padding on mobile for better space usage */
+    nav {
+        padding-left: 0.5rem !important;
+        padding-right: 0.5rem !important;
+    }
+
+    nav div.max-w-7xl {
+        padding-left: 0.75rem !important;
+        padding-right: 0.75rem !important;
+    }
+
+    section {
+        padding-left: 0.75rem !important;
+        padding-right: 0.75rem !important;
+    }
+
+    .max-w-3xl, .max-w-6xl, .max-w-7xl {
+        padding-left: 0.75rem !important;
+        padding-right: 0.75rem !important;
+    }
+}
+
