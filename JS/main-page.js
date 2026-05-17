@@ -105,6 +105,29 @@
     });
   }
 
+  const mobileMenuToggle = document.getElementById("mobile-menu-toggle");
+  const mobileNavMenu = document.getElementById("mobile-nav-menu");
+
+  if (mobileMenuToggle && mobileNavMenu) {
+    mobileMenuToggle.addEventListener("click", function () {
+      const isHidden = mobileNavMenu.classList.contains("hidden");
+      if (isHidden) {
+        mobileNavMenu.classList.remove("hidden");
+        mobileMenuToggle.setAttribute("aria-expanded", "true");
+      } else {
+        mobileNavMenu.classList.add("hidden");
+        mobileMenuToggle.setAttribute("aria-expanded", "false");
+      }
+    });
+
+    mobileNavMenu.querySelectorAll("a").forEach(function (link) {
+      link.addEventListener("click", function () {
+        mobileNavMenu.classList.add("hidden");
+        mobileMenuToggle.setAttribute("aria-expanded", "false");
+      });
+    });
+  }
+
   const raw =
     localStorage.getItem("gdgCurrentUser") ||
     sessionStorage.getItem("gdgCurrentUser");

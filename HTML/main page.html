@@ -32,13 +32,18 @@
             </div>
 
             <!-- Links -->
-            <div class="hidden lg:flex items-center gap-6 font-semibold text-gray-600 mr-10">
+            <div class="desktop-nav-links hidden lg:flex items-center gap-6 font-semibold text-gray-600 mr-10">
                 <a href="#hero" class="hover:text-[#4285F4]">الرئيسية</a>
                 <a href="#about" class="hover:text-[#4285F4]">من نحن</a>
                 <a href="#goals" class="hover:text-[#4285F4]">أهدافنا</a>
                 <a href="#games" class="hover:text-[#4285F4]">الألعاب</a>
                 <a href="#faq" class="hover:text-[#4285F4]">الأسئلة الشائعة</a>
             </div>
+
+            <!-- Mobile menu toggle -->
+            <button id="mobile-menu-toggle" class="mobile-menu-toggle hidden" aria-label="فتح القائمة" aria-expanded="false" aria-controls="mobile-nav-menu">
+                <i class="fa-solid fa-bars"></i>
+            </button>
 
             <!-- Action buttons (left side in RTL) -->
             <div class="flex items-center gap-4 mr-auto">
@@ -52,6 +57,15 @@
                 </a>
             </div>
 
+        </div>
+
+        <!-- Mobile nav menu -->
+        <div id="mobile-nav-menu" class="mobile-nav-menu hidden">
+            <a href="#hero">الرئيسية</a>
+            <a href="#about">من نحن</a>
+            <a href="#goals">أهدافنا</a>
+            <a href="#games">الألعاب</a>
+            <a href="#faq">الأسئلة الشائعة</a>
         </div>
     </nav>
 

@@ -86,6 +86,39 @@ body {
     transform: rotateY(180deg);
 }
 
+/* Mobile nav */
+.mobile-menu-toggle {
+    display: none;
+    margin-right: 0.5rem;
+    margin-left: 0;
+    color: #374151;
+    font-size: 1.15rem;
+    line-height: 1;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+}
+
+.mobile-nav-menu {
+    display: none;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem 1rem;
+    border-top: 1px solid #e5e7eb;
+    background: #ffffff;
+}
+
+.mobile-nav-menu a {
+    display: block;
+    font-weight: 600;
+    color: #4b5563;
+    padding: 0.45rem 0.25rem;
+}
+
+.mobile-nav-menu:not(.hidden) {
+    display: flex;
+}
+
 /* iPhone/Mobile Responsive Adjustments */
 @media (max-width: 390px) {
     html, body {
@@ -179,6 +212,129 @@ body {
     .w-96 {
         width: 100% !important;
         max-width: 100% !important;
+    }
+}
+
+@media (max-width: 768px) {
+    nav > div.max-w-7xl {
+        display: flex !important;
+        align-items: center !important;
+        flex-wrap: nowrap !important;
+        justify-content: flex-start !important;
+        gap: 0.35rem !important;
+        direction: rtl !important;
+    }
+
+    .desktop-nav-links {
+        display: none !important;
+    }
+
+    /* right side group stays right: logo + auth + greeting */
+    nav > div.max-w-7xl > .flex.items-center.gap-4 {
+        order: 1 !important;
+        margin-right: 0 !important;
+        margin-left: 0 !important;
+        min-width: 0 !important;
+        gap: 0.3rem !important;
+        direction: rtl !important;
+    }
+
+    nav > div.max-w-7xl > .flex.items-center.gap-4 img.h-10 {
+        height: 30px !important;
+        width: auto !important;
+    }
+
+    .mobile-menu-toggle {
+        display: inline-flex !important;
+        align-items: center;
+        justify-content: center;
+        order: 2 !important;          /* right side next to auth group */
+        margin: 0 !important;
+        padding: 0.15rem !important;
+        min-width: 20px !important;
+    }
+
+    /* left side group: ألعابي + ابدأ اللعب */
+    nav > div.max-w-7xl > .flex.items-center.gap-4.mr-auto {
+        order: 3 !important;
+        margin-right: auto !important; /* pushes this block to far left in RTL */
+        margin-left: 0 !important;
+        gap: 0.3rem !important;
+        direction: rtl !important;
+    }
+
+    #nav-greeting {
+        display: inline-flex !important;
+        max-width: 62px !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+        white-space: nowrap !important;
+        font-size: 0.64rem !important;
+        line-height: 1 !important;
+    }
+
+    #nav-login-btn,
+    #nav-logout-btn,
+    #nav-my-games-btn,
+    nav a[href="#games"] {
+        font-size: 0.66rem !important;
+        line-height: 1 !important;
+        padding: 0.22rem 0.42rem !important;
+        border-radius: 0.46rem !important;
+        white-space: nowrap !important;
+    }
+}
+
+@media (min-width: 769px) {
+    .mobile-menu-toggle,
+    .mobile-nav-menu {
+        display: none !important;
+    }
+
+    .desktop-nav-links {
+        display: flex !important;
+    }
+}
+
+/* iPad Air-ish widths: make navbar more compact */
+@media (min-width: 769px) and (max-width: 900px) {
+    nav > div.max-w-7xl {
+        padding-left: 0.7rem !important;
+        padding-right: 0.7rem !important;
+        gap: 0.45rem !important;
+    }
+
+    nav > div.max-w-7xl > .flex.items-center.gap-4 {
+        gap: 0.35rem !important;
+    }
+
+    nav > div.max-w-7xl > .flex.items-center.gap-4.mr-auto {
+        gap: 0.35rem !important;
+    }
+
+    nav > div.max-w-7xl > .flex.items-center.gap-4 img.h-10 {
+        height: 32px !important; /* smaller logo */
+        width: auto !important;
+    }
+
+    .desktop-nav-links a {
+        font-size: 0.8rem !important;
+        line-height: 1.1 !important;
+    }
+
+    #nav-login-btn,
+    #nav-logout-btn,
+    #nav-my-games-btn,
+    nav a[href="#games"] {
+        font-size: 0.72rem !important;
+        line-height: 1.05 !important;
+        padding: 0.28rem 0.48rem !important;
+        border-radius: 0.5rem !important;
+        white-space: nowrap !important;
+    }
+
+    #nav-greeting {
+        font-size: 0.72rem !important;
     }
 }
 
