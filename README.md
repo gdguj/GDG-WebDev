@@ -21,7 +21,7 @@ The platform enhances attendee engagement through interactive digital games whil
 
 ## Visual Overview
 
-
+<img src="main.png" width="100%"/>
 
 ---
 
